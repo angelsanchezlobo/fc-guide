@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="logo.ico">
-<title>FC26 — Guía de Mecánicas</title>
+<title>FC Guide — Mecánicas</title>
 <style>
 :root {
   --bg: #09090e;
@@ -151,7 +151,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 <body>
 
 <header class="mobile-header">
-  <span class="mobile-logo">FC26</span>
+  <span class="mobile-logo">FC Guide</span>
   <input class="mobile-search" type="text" placeholder="Buscar..." oninput="doSearch(this.value)">
   <button class="hamburger" onclick="toggleDrawer()">&#9776;</button>
 </header>
@@ -179,7 +179,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 <div class="layout">
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-top">
-    <span class="sidebar-logo">FC26</span>
+    <span class="sidebar-logo">FC Guide</span>
     <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()">&#9664;</button>
   </div>
   <div class="sidebar-scroll">
@@ -318,17 +318,125 @@ const DATA = {
     {name:'Croqueta cancel',buttons:['Mantén L1','RS → lado','→ L2+R2'],cuando:'Cancelar la croqueta y salir en otra dirección. Muy rápido de dedos',skill:'—',no:''},
   ],
   conduccion:[
-    {name:'Tipos de aceleración',buttons:['—'],cuando:'Explosive: arranca rápido, se frena a larga distancia. Controlled: equilibrado. Lengthy: arranca lento pero imparable a distancia → buscar en extremos y laterales',notas:'Se puede cambiar con el estilo de química (ej. Sniper)',no:''},
-    {name:'Control de primer toque',buttons:['LS → espacio libre'],cuando:'Al recibir, observar hacia dónde se compromete el defensa y controlar en la dirección opuesta, hacia el espacio libre',notas:'El regate empieza con el primer toque. Cómo controlas el balón determina tu siguiente jugada',no:''},
-    {name:'Giro solo con LS',buttons:['LS → dirección'],cuando:'Dentro del área, mediocampo, línea de fondo',notas:'Espera a que acabe la animación antes de volver a girar o el jugador se bloquea',no:''},
-    {name:'Giros rápidos con LS',buttons:['LS → dirección','(antes de acabar animación)'],cuando:'Cuando quieres cambiar de dirección bruscamente para congelar al defensa',notas:'No esperar a que termine la animación del cuerpo. Mover el LS antes de que el jugador complete el giro. Ángulos más fáciles: arriba-abajo e izquierda-derecha',no:''},
-    {name:'L2 + LS',buttons:['L2','→ LS'],cuando:'Defensa muy pegado en la espalda, recibir de espaldas',notas:'Primero cubres el balón con L2, luego giras solo con LS',no:''},
-    {name:'Sprint analógico',buttons:['R2','al 70-80%'],cuando:'Romper líneas, meterse entre central y lateral, conducción rápida con balón pegado',notas:'Activar en ajustes del mando. Solo funciona con R2, no con R1. Activa PlayStyle Rapid',no:''},
-    {name:'Sprint controlado R1',buttons:['LS giro','→ R1 diagonal'],cuando:'Delantero de espaldas que recibe y quiere girarse hacia portería',notas:'No usar R1 para girar, solo para acelerar una vez orientado. Suelta R1 justo antes del tiro raso',no:''},
-    {name:'Regate en zigzag con R1',buttons:['LS → dirección','R1','→ cambio brusco'],cuando:'Rival viene a presionarte — atraerle en una dirección con LS, cuando se compromete explotar el espacio contrario con R1',notas:'Mostrar el balón para que el defensa se comprometa, luego alejarse al espacio opuesto. Combinar con giros rápidos para hacerlo imparable',no:''},
-    {name:'Doble R2 (máxima velocidad)',buttons:['R2 x2','→ toque largo controlado'],cuando:'Autopista delante, mucho espacio libre',no:'Con rivales cerca o en el área → pierde el control'},
-    {name:'R2 por toque (Rapid)',buttons:['R2','(al contacto)','→ soltar → repetir'],cuando:'Rival cerca en carrera, espacio moderado',notas:'Requiere PlayStyle Rapid en blanco. Más rápido que mantener R2 continuo',no:''},
-    {name:'Balroll + amago de tiro',buttons:['RS balroll','→ Cuadrado/Circulo+Cruz'],cuando:'Girarse cambiando de dirección cuando el defensa está cerca',notas:'El balroll aleja el balón del rival, el amago completa el giro',no:''},
+    {
+      name:'Conducción con LS (analog dribble)',
+      buttons:['LS → dirección'],
+      cuando:'Base de todo regate. Cambiar dirección, crear ángulos de pase, proteger el balón. La mecánica más importante del juego este parche.',
+      notas:'Cuatro principios de uso: (1) Evitar el oversprinting — cuando sprintas el balón se aleja de los pies y pierdes control en el momento de presión. (2) Driblat alejándote del defensa — nunca directo hacia él, siempre hacia el lado contrario. (3) Buscar espacios — desarrollar el instinto de ver el hueco antes de moverse. (4) Usar el cuerpo como escudo — posicionar el jugador entre el balón y el defensa. No sobredriblar: cambio de dirección, amago y pase es mejor que acumular regates.',
+      no:'Sprintar en el momento de presión → el balón está lejos de los pies y no puedes cambiar de dirección a tiempo',
+      videoId:'TlxmPd4CpbI',videoStart:49,source:'Deep Researcher FC'
+    },
+    {
+      name:'Stand still (pausa táctica)',
+      buttons:['(soltar todo)'],
+      cuando:'Primer toque al recibir: soltar el mando ~1 segundo y observar la reacción del rival. El rival anticipa tu movimiento y se compromete → tú explotas el espacio que abre. También funciona mientras driblas para pausar y releer la situación.',
+      notas:'Más efectivo en el primer toque. En el área final: fuerza al rival a leer mal y expone huecos para skill moves, stepovers o elasticos. Con mediocampistas: abre carriles de pase que estaban bloqueados. Situacional — no abusar.',
+      no:'',
+      videoId:'TlxmPd4CpbI',videoStart:225,source:'Deep Researcher FC'
+    },
+    {
+      name:'Strafe dribble',
+      buttons:['L1','(mantener)'],
+      cuando:'Rival se acerca en carrera: activar L1, moverse lateralmente para frenarte y cambiar de dirección. El cuerpo queda siempre mirando a portería contraria. Muy útil cuando tienes un runner delante — el rival presiona al portador y el strafe lo deja fuera de posición.',
+      notas:'Patrón óptimo: primero moverse ligeramente hacia atrás, luego al lado — evitas la presión mientras cambias dirección. No overusarlo.',
+      no:'',
+      videoId:'TlxmPd4CpbI',videoStart:318,source:'Deep Researcher FC'
+    },
+    {
+      name:'L1 stop',
+      buttons:['L1','(tap)'],
+      cuando:'Cuando necesitas orientarte a portería rápido y el LS tarda. Un toque de L1 para instantáneamente y coloca al jugador mirando al frente en posición de amenaza (puede pasar, tirar o hacer skill de inmediato).',
+      notas:'Variante del strafe. Más rápido que girar solo con LS en situaciones de presión. La parada + cambio de ángulo es lo que lo hace efectivo.',
+      no:'',
+      videoId:'TlxmPd4CpbI',videoStart:379,source:'Deep Researcher FC'
+    },
+    {
+      name:'Sprint controlado (R1)',
+      buttons:['R1','+ LS'],
+      cuando:'Espacio abierto moderado, explotar huecos en zonas centrales donde R2 sería demasiado rápido. Velocidad intermedia entre driblar normal y sprintar — balón más pegado que con R2.',
+      notas:'Fue nerfeado pero sigue siendo efectivo usado con criterio — no spamearlo. Usar para atacar el espacio, no para driblar con rivales encima.',
+      no:'Zonas apretadas con rivales cerca → usar LS sin modificador',
+      videoId:'TlxmPd4CpbI',videoStart:415,source:'Deep Researcher FC'
+    },
+    {
+      name:'Knock-on (toque largo)',
+      buttons:['RS → adelante','(o R2 x2)'],
+      cuando:'Espacio grande detrás de la defensa y distancia larga hasta portería. Tras romper la línea defensiva. También usable en el primer toque para ganar metros rápido. Libera al jugador para sprintar a máxima velocidad sin preocuparse del control.',
+      notas:'Método clásico: RS flick hacia adelante mientras corres. Método fácil: doble tap de R2. Jugadores con buena aceleración (Explosive/Lengthy) se benefician especialmente.',
+      no:'Con rivales cerca o en el área → pierdes el balón antes de recuperarlo',
+      videoId:'TlxmPd4CpbI',videoStart:449,source:'Deep Researcher FC'
+    },
+    {
+      name:'One sprint touch',
+      buttons:['R2','(un toque)','→ soltar'],
+      cuando:'Cuando quieres atraer al defensa hacia una dirección y luego cambiar. Sprint breve → defensa se compromete → sueltas R2 → cambias de dirección. Movimiento impredecible sin los riesgos del sprint sostenido.',
+      notas:'No hay secreto técnico: es disciplina de uso. Bursts cortos de velocidad para crear incertidumbre, no para cubrir distancia.',
+      no:'',
+      videoId:'TlxmPd4CpbI',videoStart:494,source:'Deep Researcher FC'
+    },
+    {
+      name:'Tipos de aceleración',
+      buttons:['—'],
+      cuando:'Explosive: arranca rápido, se frena a larga distancia. Controlled: equilibrado. Lengthy: arranca lento pero imparable a distancia → buscar en extremos y laterales',
+      notas:'Se puede cambiar con el estilo de química (ej. Sniper)',
+      no:''
+    },
+    {
+      name:'Control de primer toque',
+      buttons:['LS → espacio libre'],
+      cuando:'Al recibir, observar hacia dónde se compromete el defensa y controlar en la dirección opuesta, hacia el espacio libre',
+      notas:'El regate empieza con el primer toque. Cómo controlas el balón determina tu siguiente jugada',
+      no:''
+    },
+    {
+      name:'Giros rápidos con LS',
+      buttons:['LS → dirección','(antes de acabar animación)'],
+      cuando:'Cuando quieres cambiar de dirección bruscamente para congelar al defensa',
+      notas:'No esperar a que termine la animación del cuerpo. Mover el LS antes de que el jugador complete el giro. Ángulos más fáciles: arriba-abajo e izquierda-derecha',
+      no:''
+    },
+    {
+      name:'L2 + LS (cuerpo a tierra)',
+      buttons:['L2','→ LS'],
+      cuando:'Defensa muy pegado en la espalda, recibir de espaldas',
+      notas:'Primero cubres el balón con L2, luego giras solo con LS',
+      no:''
+    },
+    {
+      name:'Sprint analógico',
+      buttons:['R2','al 70-80%'],
+      cuando:'Romper líneas, meterse entre central y lateral, conducción rápida con balón pegado',
+      notas:'Activar en ajustes del mando. Solo funciona con R2, no con R1. Activa PlayStyle Rapid',
+      no:''
+    },
+    {
+      name:'Sprint controlado R1 (giro delantero)',
+      buttons:['LS giro','→ R1 diagonal'],
+      cuando:'Delantero de espaldas que recibe y quiere girarse hacia portería',
+      notas:'No usar R1 para girar, solo para acelerar una vez orientado. Suelta R1 justo antes del tiro raso',
+      no:''
+    },
+    {
+      name:'Regate en zigzag con R1',
+      buttons:['LS → dirección','R1','→ cambio brusco'],
+      cuando:'Rival viene a presionarte — atraerle en una dirección con LS, cuando se compromete explotar el espacio contrario con R1',
+      notas:'Mostrar el balón para que el defensa se comprometa, luego alejarse al espacio opuesto. Combinar con giros rápidos para hacerlo imparable',
+      no:''
+    },
+    {
+      name:'R2 por toque (Rapid)',
+      buttons:['R2','(al contacto)','→ soltar → repetir'],
+      cuando:'Rival cerca en carrera, espacio moderado',
+      notas:'Requiere PlayStyle Rapid en blanco. Más rápido que mantener R2 continuo',
+      no:''
+    },
+    {
+      name:'Balroll + amago de tiro',
+      buttons:['RS balroll','→ Cuadrado/Circulo+Cruz'],
+      cuando:'Girarse cambiando de dirección cuando el defensa está cerca',
+      notas:'El balroll aleja el balón del rival, el amago completa el giro',
+      no:''
+    },
   ],
   pelota:[
     {name:'Corner ofensivo — player lock',buttons:['L3+R3','→ RS jugador','→ desmarcar al área'],cuando:'Jugador más alto con aerial al 2º palo. Puntero al portero casi a tope. Player lock al salir el balón → RS selecciona frontal del área → mandarlo al espacio libre',notas:'Variante: asignar jugador con buen tiro al top del área, cabecear hacia él y hacer player lock para disparar',no:''},
