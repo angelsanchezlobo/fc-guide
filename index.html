@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="logo.ico">
+<title>FC Guide — Mecánicas FC27</title>
+<style>
+:root {
+  --bg: #09090e;
+  --bg2: #0f0f17;
+  --surface: #111118;
+  --surface2: #18181f;
+  --border: #1e1e2a;
+  --border2: #2a2a3a;
+  --accent: #4f8ef7;
+  --accent-dim: #0d1f48;
+  --accent-text: #a8c8ff;
+  --text: #ffffff;
+  --text3: #6b6b80;
+  --red: #ff5555;
+  --red-dim: #200a0a;
+  --warn: #f59e0b;
+  --warn-dim: #1e1400;
+  --green: #22c55e;
+  --green-dim: #061a0e;
+  --green-text: #6ee79a;
+  --sidebar-w: 196px;
+  --sidebar-col-w: 44px;
+  --header-h: 50px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
+a{color:inherit;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+/* ── MOBILE HEADER ── */
+.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);z-index:200;align-items:center;padding:0 14px;gap:10px;}
+.mobile-logo{display:flex;align-items:baseline;gap:6px;font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.3px;}
+.logo-badge{font-size:9px;font-weight:800;letter-spacing:0.04em;color:var(--accent-text);background:var(--accent-dim);border:1px solid var(--accent);border-radius:20px;padding:1px 6px;}
+.mobile-search{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:#fff;font-size:13px;padding:6px 10px;outline:none;}
+.mobile-search::placeholder{color:var(--text3);}
+.mobile-search:focus{border-color:var(--accent);}
+.hamburger{background:none;border:1px solid var(--border2);border-radius:6px;color:#fff;font-size:16px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── MOBILE DRAWER ── */
+.drawer{display:none;position:fixed;inset:var(--header-h) 0 0 0;background:rgba(0,0,0,0.7);z-index:150;}
+.drawer.open{display:block;}
+.drawer-inner{background:var(--surface);width:210px;height:100%;overflow-y:auto;padding:8px 0 20px;}
+.drawer-sep{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:14px 16px 4px;font-weight:700;}
+.drawer-btn{display:flex;align-items:center;width:100%;background:none;border:none;border-left:2px solid transparent;color:#fff;font-size:13px;padding:9px 16px;cursor:pointer;text-align:left;opacity:0.7;transition:all 0.1s;}
+.drawer-btn:hover{opacity:1;background:var(--surface2);}
+.drawer-btn.active{opacity:1;border-left-color:var(--accent);color:var(--accent-text);background:var(--accent-dim);}
+
+/* ── DESKTOP LAYOUT ── */
+.layout{display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow:hidden;flex-shrink:0;transition:width 0.2s ease,min-width 0.2s ease;}
+.sidebar.collapsed{width:var(--sidebar-col-w);min-width:var(--sidebar-col-w);}
+.sidebar-top{display:flex;align-items:center;justify-content:space-between;padding:14px 12px;border-bottom:1px solid var(--border);height:50px;}
+.sidebar-logo{display:flex;align-items:baseline;gap:6px;font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;transition:opacity 0.15s,width 0.2s;}
+.sidebar.collapsed .sidebar-logo{opacity:0;width:0;pointer-events:none;}
+.collapse-btn{background:none;border:1px solid var(--border2);border-radius:5px;color:var(--text3);width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:color 0.1s,border-color 0.1s;}
+.collapse-btn:hover{color:#fff;border-color:var(--accent);}
+.sidebar-scroll{overflow-y:auto;height:calc(100vh - 50px);padding-bottom:20px;}
+.nav-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:12px 12px 4px;white-space:nowrap;overflow:hidden;transition:opacity 0.15s;font-weight:700;}
+.sidebar.collapsed .nav-lbl{opacity:0;}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-left:2px solid transparent;color:#fff;font-size:13px;padding:8px 12px;cursor:pointer;text-align:left;white-space:nowrap;opacity:0.65;transition:all 0.1s;}
+.nav-btn:hover{opacity:1;background:var(--surface2);}
+.nav-btn.active{opacity:1;border-left-color:var(--accent);color:var(--accent-text);background:var(--accent-dim);}
+.nav-icon{font-size:13px;flex-shrink:0;font-style:normal;font-weight:700;width:16px;text-align:center;color:var(--accent-text);}
+.nav-label{overflow:hidden;transition:opacity 0.15s;}
+.sidebar.collapsed .nav-label{opacity:0;}
+.sidebar-filters{padding:4px 10px 8px;}
+.sidebar.collapsed .sidebar-filters{display:none;}
+.sf-btn{display:block;width:100%;background:none;border:1px solid var(--border2);border-radius:20px;color:#fff;font-size:11px;padding:4px 10px;cursor:pointer;text-align:left;margin-bottom:4px;opacity:0.6;transition:all 0.1s;}
+.sf-btn:hover{opacity:1;border-color:var(--accent);}
+.sf-btn.active{opacity:1;background:var(--accent-dim);border-color:var(--accent);color:var(--accent-text);}
+
+/* ── MAIN ── */
+.main{flex:1;padding:28px 28px 80px;min-width:0;overflow-x:hidden;}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.search-wrap{position:relative;flex:1;max-width:280px;}
+.search-wrap input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:#fff;font-size:13px;padding:7px 12px 7px 30px;outline:none;transition:border-color 0.15s;}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;}
+
+/* ── SECTIONS ── */
+.section-wrap{margin-bottom:4px;}
+.section-wrap.hidden{display:none;}
+.section-header{display:flex;align-items:baseline;gap:10px;margin-top:40px;margin-bottom:8px;}
+.section-header:first-of-type{margin-top:0;}
+.sec-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);font-weight:800;}
+.sec-title{font-size:20px;font-weight:800;color:#fff;}
+.section-note{font-size:12px;color:#fff;opacity:0.6;background:var(--surface);border-left:2px solid var(--accent);padding:8px 12px;border-radius:0 4px 4px 0;margin-bottom:16px;line-height:1.6;}
+.section-empty{font-size:13px;color:var(--text3);background:var(--surface);border:1px dashed var(--border2);border-radius:8px;padding:16px;margin-bottom:8px;}
+.no-results{display:none;color:var(--text3);font-size:14px;padding:40px 0;text-align:center;}
+.no-results.visible{display:block;}
+
+/* ── GRID ── */
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-bottom:8px;}
+
+/* ── CARD ── */
+.item{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color 0.15s;}
+.item:hover{border-color:var(--border2);}
+.item.has-video{cursor:pointer;}
+.item.has-video:hover{border-color:var(--accent);}
+
+.item-head{padding:14px 16px 12px;}
+.item-name{font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;line-height:1.3;}
+.item-btns{display:flex;flex-wrap:wrap;gap:5px;}
+.btn-pill{background:var(--accent-dim);border:1px solid var(--accent);border-radius:5px;color:var(--accent-text);font-size:12px;font-weight:700;padding:3px 9px;font-family:'Consolas','Fira Mono',monospace;white-space:nowrap;}
+.btn-sep{color:var(--text3);font-size:12px;padding:3px 2px;align-self:center;}
+
+.item-body{padding:2px 16px 14px;display:flex;flex-direction:column;gap:10px;}
+.field-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);font-weight:800;margin-bottom:3px;}
+.field-value{font-size:13px;color:#fff;line-height:1.6;opacity:0.85;}
+.field-no-wrap{background:var(--red-dim);border:1px solid var(--red);border-radius:6px;padding:8px 12px;margin-top:2px;}
+.field-no-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--red);font-weight:800;margin-bottom:3px;}
+.field-no{font-size:13px;color:var(--red);line-height:1.6;}
+
+.item-footer{display:flex;gap:5px;flex-wrap:wrap;padding:8px 16px;border-top:1px solid var(--border);}
+.tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;display:inline-block;letter-spacing:0.04em;}
+.tag-skill{background:var(--warn-dim);border:1px solid var(--warn);color:var(--warn);}
+.tag-no-skill{background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent-text);}
+.tag-video{background:var(--green-dim);border:1px solid var(--green);color:var(--green-text);}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:720px;overflow:hidden;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+.modal-title{font-size:15px;font-weight:800;color:#fff;}
+.modal-src{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-top:2px;}
+.modal-close{background:none;border:1px solid var(--border2);border-radius:6px;color:var(--text3);width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:color 0.1s,border-color 0.1s;}
+.modal-close:hover{color:#fff;border-color:var(--accent);}
+.modal-body{padding:16px 18px 18px;background:var(--bg2);}
+.modal-body iframe{width:100%;height:380px;border-radius:8px;border:none;display:block;margin-bottom:12px;}
+.modal-yt{display:inline-flex;align-items:center;gap:5px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:5px;color:var(--accent-text);font-size:12px;font-weight:700;padding:5px 12px;text-decoration:none;}
+.modal-yt:hover{opacity:0.85;}
+@media(max-width:768px){
+  .modal-body iframe{height:200px;}
+  .modal{border-radius:8px;}
+}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .mobile-header{display:flex;}
+  .layout{flex-direction:column;margin-top:var(--header-h);}
+  .sidebar{display:none;}
+  .main{padding:18px 14px 60px;}
+  .topbar{display:none;}
+  .items{grid-template-columns:1fr;}
+  .section-header{margin-top:28px;}
+  .sec-title{font-size:17px;}
+  .item-head{padding:12px 14px 10px;}
+  .item-body{padding:2px 14px 12px;}
+  .item-footer{padding:7px 14px;}
+}
+</style>
+</head>
+<body>
+
+<header class="mobile-header">
+  <span class="mobile-logo">FC Guide <span class="logo-badge">FC27</span></span>
+  <input class="mobile-search" type="text" placeholder="Buscar..." id="mobileSearchInput">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">&#9776;</button>
+</header>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-inner" id="drawerInner">
+    <div class="drawer-sep">Secciones</div>
+    <button class="drawer-btn active" data-section-btn="all">Todo</button>
+    <button class="drawer-btn" data-section-btn="patrones">Patrones</button>
+    <button class="drawer-btn" data-section-btn="defensa">Defensa</button>
+    <button class="drawer-btn" data-section-btn="desmarques">Desmarques</button>
+    <button class="drawer-btn" data-section-btn="pases">Pases</button>
+    <button class="drawer-btn" data-section-btn="ataque">Ataque</button>
+    <button class="drawer-btn" data-section-btn="regates">Regates</button>
+    <button class="drawer-btn" data-section-btn="conduccion">Conducción</button>
+    <button class="drawer-btn" data-section-btn="pelota">Pelota parada</button>
+    <div class="drawer-sep">Filtros</div>
+    <button class="drawer-btn active" data-tag-btn="all">Todos</button>
+    <button class="drawer-btn" data-tag-btn="cuando">Con cuándo NO</button>
+    <button class="drawer-btn" data-tag-btn="skill">Requiere skill</button>
+    <button class="drawer-btn" data-tag-btn="noskill">Sin skill</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-src" id="modalSrc"></div>
+      </div>
+      <button class="modal-close" id="modalCloseBtn" aria-label="Cerrar">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="modalIframe" src="" allowfullscreen title="Vídeo de la mecánica"></iframe>
+      <a class="modal-yt" id="modalYtLink" href="#" target="_blank" rel="noopener">Abrir en YouTube</a>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-logo">FC Guide <span class="logo-badge">FC27</span></span>
+    <button class="collapse-btn" id="collapseBtn" aria-label="Colapsar barra lateral">&#9664;</button>
+  </div>
+  <div class="sidebar-scroll">
+    <div class="nav-lbl">Secciones</div>
+    <button class="nav-btn active" data-section-btn="all"><span class="nav-icon">·</span><span class="nav-label">Todo</span></button>
+    <button class="nav-btn" data-section-btn="patrones"><span class="nav-icon">T</span><span class="nav-label">Patrones</span></button>
+    <button class="nav-btn" data-section-btn="defensa"><span class="nav-icon">D</span><span class="nav-label">Defensa</span></button>
+    <button class="nav-btn" data-section-btn="desmarques"><span class="nav-icon">R</span><span class="nav-label">Desmarques</span></button>
+    <button class="nav-btn" data-section-btn="pases"><span class="nav-icon">P</span><span class="nav-label">Pases</span></button>
+    <button class="nav-btn" data-section-btn="ataque"><span class="nav-icon">A</span><span class="nav-label">Ataque</span></button>
+    <button class="nav-btn" data-section-btn="regates"><span class="nav-icon">G</span><span class="nav-label">Regates</span></button>
+    <button class="nav-btn" data-section-btn="conduccion"><span class="nav-icon">C</span><span class="nav-label">Conducción</span></button>
+    <button class="nav-btn" data-section-btn="pelota"><span class="nav-icon">F</span><span class="nav-label">Pelota parada</span></button>
+    <div class="nav-lbl">Filtros</div>
+    <div class="sidebar-filters">
+      <button class="sf-btn active" data-tag-btn="all">Todos</button>
+      <button class="sf-btn" data-tag-btn="cuando">Con cuándo NO</button>
+      <button class="sf-btn" data-tag-btn="skill">Requiere skill</button>
+      <button class="sf-btn" data-tag-btn="noskill">Sin skill</button>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Buscar mecánica...">
+    </div>
+  </div>
+  <div id="noResults" class="no-results">No hay resultados.</div>
+
+  <div class="section-wrap" data-section="patrones">
+    <div class="section-header"><span class="sec-label">Táctica</span><span class="sec-title">Patrones de ataque</span></div>
+    <div class="section-note">Situaciones recurrentes de partido. Reconocerlas antes que el rival es la diferencia entre reaccionar y anticipar.</div>
+    <div class="items" id="items-patrones"></div>
+  </div>
+  <div class="section-wrap" data-section="defensa">
+    <div class="section-header"><span class="sec-label">Defensa</span><span class="sec-title">Mecánicas defensivas</span></div>
+    <div class="section-note">Errores de defensa detectados en FC27 y cómo corregirlos. Fuente: Deep Researcher FC.</div>
+    <div class="items" id="items-defensa"></div>
+  </div>
+  <div class="section-wrap" data-section="desmarques">
+    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Desmarques</span></div>
+    <div class="items" id="items-desmarques"></div>
+  </div>
+  <div class="section-wrap" data-section="pases">
+    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Pases</span></div>
+    <div class="items" id="items-pases"></div>
+  </div>
+  <div class="section-wrap" data-section="ataque">
+    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Conceptos y tiros</span></div>
+    <div class="items" id="items-ataque"></div>
+  </div>
+  <div class="section-wrap" data-section="regates">
+    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Regates</span></div>
+    <div class="items" id="items-regates"></div>
+  </div>
+  <div class="section-wrap" data-section="conduccion">
+    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Movimiento y conducción</span></div>
+    <div class="items" id="items-conduccion"></div>
+  </div>
+  <div class="section-wrap" data-section="pelota">
+    <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
+    <div class="items" id="items-pelota"></div>
+  </div>
+</main>
+</div>
+
+<script>
+const DATA = {
+  patrones:[],
+  defensa:[
+    {
+      name:'Defender el espacio, no el balón',
+      buttons:['L2 (jockey)'],
+      cuando:'1v1 contra un atacante, antes de comprometerte a robar el balón',
+      como:'No vayas directo al balón. Bloquea primero el espacio que lleva al atacante hacia tu portería y fuérzalo hacia una zona menos peligrosa. Si el defensa que controlas no puede llegar a tiempo a esa posición, cambia al que ya esté bien colocado.',
+      notas:'Alterna la velocidad del jockey: muy cerca del atacante, jockey lento para reaccionar a cambios de dirección; más lejos o en lateral, jockey rápido para cerrar distancia. Primero controla el espacio, luego el balón.',
+      no:'Ir directo a por el balón sin mirar el ángulo → un simple cambio de dirección del rival te deja fuera de posición y abre un hueco grande',
+      videoId:'tRuPbAjcvuc',videoStart:34,source:'Deep Researcher FC'
+    },
+    {
+      name:'Recular con centrocampistas antes que con la defensa',
+      buttons:[],
+      cuando:'El rival tiene el balón pero no hay amenaza directa inmediata hacia tu línea defensiva',
+      como:'Usa primero tus centrocampistas para replegar y proteger el área en vez de cambiar de inmediato a tu última línea. Mantén centrales y laterales conectados a la posición de la línea.',
+      no:'Confiar en que la IA cubra sola una carrera al espacio o una conducción directa hacia tus centrales, como en FC26 → en FC27 la IA no lo resuelve de forma consistente, hay que cambiar manualmente al defensor amenazado',
+      notas:'Prioridad número uno en FC27: mantener la forma defensiva. Un central o lateral que se descuelga persiguiendo el balón obliga a reaccionar muy rápido para sobrevivir; mejor evitarlo desde el principio.',
+      videoId:'tRuPbAjcvuc',videoStart:159,source:'Deep Researcher FC'
+    },
+    {
+      name:'Reposicionar antes de cambiar de jugador',
+      buttons:[],
+      cuando:'Has llevado a un central lejos de su posición y el rival hace un pase o regate que no es inmediatamente peligroso',
+      como:'Antes de cambiar de jugador, dale un pequeño movimiento de vuelta hacia su posición defensiva. No hace falta recorrer todo el camino: basta un empujón para que empiece a recuperar la posición antes de soltarlo.',
+      no:'Cambiar de jugador al instante y dejar a ese central completamente descolocado, sin haberlo movido ni un poco hacia su sitio',
+      notas:'No siempre aplica: si hay que presionar de inmediato o seguir una carrera peligrosa, cambia sin reposicionar antes. El equilibrio es la clave — no persigas el balón a costa de tu forma defensiva.',
+      videoId:'tRuPbAjcvuc',videoStart:271,source:'Deep Researcher FC'
+    },
+    {
+      name:'Lateral: cerrar el interior, no perseguir el exterior',
+      buttons:[],
+      cuando:'Lateral rival con espacio en banda y un delantero libre en el centro (amenaza doble)',
+      como:'Cambia al lateral y arrástralo hacia dentro (pin) para cubrir el carril interior, en vez de dejarlo defendiendo ancho. El central se encarga del pase al delantero mientras el lateral tapa el carril de conducción.',
+      no:'Dejar al lateral defendiendo ancho por instinto → el rival conduce directo por el hueco interior. O ir directo a por el lateral sin protección → deja libre el pase al delantero del centro',
+      notas:'Cubres las dos opciones a la vez: ni conducción directa por dentro, ni pase fácil al delantero.',
+      videoId:'tRuPbAjcvuc',videoStart:326,source:'Deep Researcher FC'
+    },
+    {
+      name:'Cambio de jugador: L1 vs stick derecho',
+      buttons:['L1','RS → jugador'],
+      cuando:'Elegir qué defensor controlar en cada momento — la base de defender bien en FC27',
+      como:'L1 selecciona rápido al jugador más cercano al balón, útil cuando ese es el que necesitas. El stick derecho te deja elegir exactamente al defensor que quieres aunque no sea el más cercano al balón — por ejemplo, un central que debe seguir una carrera mientras un centrocampista está más cerca del balón.',
+      notas:'El stick derecho es una habilidad que hay que entrenar. Practícalo en Leyenda sin buscar ganar: cambia de jugador, jockea y usa la doble presión repetidamente; cuando robes el balón, devuélveselo a la IA y sigue practicando.',
+      no:'Depender solo de L1 esperando que siempre seleccione al jugador correcto → normalmente coge al más cercano al balón, no al más útil para la jugada',
+      videoId:'tRuPbAjcvuc',videoStart:496,source:'Deep Researcher FC'
+    },
+    {
+      name:'Cambiar pronto, no tarde',
+      buttons:[],
+      cuando:'En cuanto veas que el rival va a atacar un espacio o carril peligroso',
+      como:'Cambia al defensor correcto lo antes posible, antes de que el rival entre en zona peligrosa. Cuanto antes llegues, antes presionas y mejor te posiciona el juego — FC27 premia el control manual.',
+      no:'Esperar a que el rival ya esté en la zona peligrosa para cambiar de jugador → por muy bien que responda el jockey este año, llegas tarde para cerrar el espacio o la línea de pase',
+      notas:'No hace falta usar el stick derecho para cambiar pronto: un L1 rápido también sirve si te pone en posición a tiempo.',
+      videoId:'tRuPbAjcvuc',videoStart:612,source:'Deep Researcher FC'
+    },
+    {
+      name:'Second man press: solo fuera del balón',
+      buttons:['R1 (second man press)'],
+      cuando:'Estás controlando manualmente a un defensor que marca una carrera peligrosa o tapa una línea de pase, mientras el balón lo tiene otro rival',
+      como:'Activa second man press para que la IA presione al portador del balón mientras tú sigues controlando manualmente al defensor que atiende la amenaza real. La presión de la IA no siempre roba el balón, pero reduce el tiempo del rival para pensar el pase.',
+      no:'Activar second man press y mantener R1 pulsado sin prestar atención a tu propio defensor → mientras la IA persigue el balón, dejas un hueco grande en otra zona. En FC27 la IA ya no se acerca tanto al portador, así que no puedes depender de ella para defender el balón por ti',
+      notas:'Es una herramienta de apoyo, no un sustituto: tú sigues siendo el defensor principal.',
+      videoId:'tRuPbAjcvuc',videoStart:688,source:'Deep Researcher FC'
+    }
+  ],
+  desmarques:[],
+  pases:[],
+  ataque:[],
+  regates:[],
+  conduccion:[],
+  pelota:[]
+};
+
+const SECTION_IDS = Object.keys(DATA);
+let activeSection='all',activeTag='all',searchText='',sidebarCollapsed=false;
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
+  document.getElementById('collapseBtn').innerHTML=sidebarCollapsed?'&#9654;':'&#9664;';
+}
+function toggleDrawer(){document.getElementById('drawer').classList.toggle('open');}
+
+function cardBtns(buttons){
+  if(!buttons||!buttons.length) return '';
+  return buttons.map(b=>{
+    const isSep=b.startsWith('(')||b.startsWith('→')||b==='x2'||b==='—';
+    return '<span class="'+(isSep?'btn-sep':'btn-pill')+'">'+escapeHtml(b)+'</span>';
+  }).join('');
+}
+
+function openModal(videoId, videoStart, title, source){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalSrc').textContent=source||'';
+  const src='https://www.youtube.com/embed/'+encodeURIComponent(videoId)+'?start='+encodeURIComponent(videoStart)+'&rel=0&autoplay=1';
+  document.getElementById('modalIframe').src=src;
+  document.getElementById('modalYtLink').href='https://youtu.be/'+encodeURIComponent(videoId)+'?t='+encodeURIComponent(videoStart);
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('modalCloseBtn').focus();
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('modalIframe').src='';
+  document.body.style.overflow='';
+}
+document.getElementById('modalCloseBtn').addEventListener('click',closeModal);
+document.getElementById('modalOverlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modalOverlay')) closeModal();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+function makeItem(item,section){
+  const hasNo=item.no&&item.no!=='';
+  const hasSkill=item.skill&&item.skill!=='—';
+  const noSkill=item.skill==='—';
+  const hasVideo=!!item.videoId;
+  const tags=[];
+  if(hasNo) tags.push('cuando');
+  if(hasSkill) tags.push('skill');
+  if(noSkill) tags.push('noskill');
+  const searchable=escapeHtml([item.name,item.cuando||'',item.no||'',item.notas||'',item.situacion||'',item.como||'',item.skill||''].join(' ').toLowerCase());
+  const fields=[];
+  if(item.cuando) fields.push('<div class="item-field"><span class="field-label">Cuándo</span><span class="field-value">'+escapeHtml(item.cuando)+'</span></div>');
+  if(item.situacion) fields.push('<div class="item-field"><span class="field-label">Situación</span><span class="field-value">'+escapeHtml(item.situacion)+'</span></div>');
+  if(item.como) fields.push('<div class="item-field"><span class="field-label">Cómo</span><span class="field-value">'+escapeHtml(item.como)+'</span></div>');
+  if(item.notas) fields.push('<div class="item-field"><span class="field-label">Notas</span><span class="field-value">'+escapeHtml(item.notas)+'</span></div>');
+  if(hasNo) fields.push('<div class="field-no-wrap"><span class="field-no-label">Cuándo NO</span><div class="field-no">'+escapeHtml(item.no)+'</div></div>');
+  const skillTag=item.skill!==undefined?(hasSkill?'<span class="tag tag-skill">Skill '+escapeHtml(item.skill)+'</span>':'<span class="tag tag-no-skill">Sin skill</span>'):'';
+  const videoTag=hasVideo?'<span class="tag tag-video">▶ Ver vídeo</span>':'';
+  const videoAttrs=hasVideo
+    ?' data-video-id="'+escapeHtml(item.videoId)+'" data-video-start="'+escapeHtml(item.videoStart)+'" data-video-title="'+escapeHtml(item.name)+'" data-video-source="'+escapeHtml(item.source||'')+'"'
+    :'';
+  return '<div class="item'+(hasVideo?' has-video':'')+'" data-section="'+section+'" data-tags="'+tags.join(',')+'" data-search="'+searchable+'"'+videoAttrs
+    +(hasVideo?' role="button" tabindex="0"':'')+'>'
+    +'<div class="item-head"><div class="item-name">'+escapeHtml(item.name)+'</div>'+(item.buttons&&item.buttons.length?'<div class="item-btns">'+cardBtns(item.buttons)+'</div>':'')+'</div>'
+    +(fields.length?'<div class="item-body">'+fields.join('')+'</div>':'')
+    +((skillTag||videoTag)?'<div class="item-footer">'+skillTag+videoTag+'</div>':'')
+    +'</div>';
+}
+
+function render(){
+  SECTION_IDS.forEach(section=>{
+    const el=document.getElementById('items-'+section);
+    if(!el) return;
+    const list=DATA[section];
+    el.innerHTML=list.length
+      ? list.map(item=>makeItem(item,section)).join('')
+      : '<div class="section-empty">Próximamente — pendiente de contenido FC27 para esta sección.</div>';
+  });
+  applyFilters();
+}
+
+document.querySelectorAll('.items').forEach(el=>{
+  el.addEventListener('click',e=>{
+    const card=e.target.closest('.item.has-video');
+    if(card) openModal(card.dataset.videoId,card.dataset.videoStart,card.dataset.videoTitle,card.dataset.videoSource);
+  });
+  el.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ') return;
+    const card=e.target.closest('.item.has-video');
+    if(!card) return;
+    e.preventDefault();
+    openModal(card.dataset.videoId,card.dataset.videoStart,card.dataset.videoTitle,card.dataset.videoSource);
+  });
+});
+
+function doSearch(val){
+  searchText=(val||'').toLowerCase().trim();
+  applyFilters();
+}
+document.getElementById('searchInput').addEventListener('input',e=>doSearch(e.target.value));
+document.getElementById('mobileSearchInput').addEventListener('input',e=>doSearch(e.target.value));
+
+function setActiveSection(section){
+  activeSection=section;
+  document.querySelectorAll('[data-section-btn]').forEach(b=>b.classList.toggle('active',b.dataset.sectionBtn===section));
+  applyFilters();
+}
+function setActiveTag(tag){
+  activeTag=tag;
+  document.querySelectorAll('[data-tag-btn]').forEach(b=>b.classList.toggle('active',b.dataset.tagBtn===tag));
+  applyFilters();
+}
+document.querySelectorAll('[data-section-btn]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    setActiveSection(btn.dataset.sectionBtn);
+    if(btn.closest('#drawer')) document.getElementById('drawer').classList.remove('open');
+  });
+});
+document.querySelectorAll('[data-tag-btn]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    setActiveTag(btn.dataset.tagBtn);
+    if(btn.closest('#drawer')) document.getElementById('drawer').classList.remove('open');
+  });
+});
+
+document.getElementById('collapseBtn').addEventListener('click',toggleSidebar);
+document.getElementById('hamburgerBtn').addEventListener('click',toggleDrawer);
+document.getElementById('drawer').addEventListener('click',e=>{
+  if(e.target===document.getElementById('drawer')) document.getElementById('drawer').classList.remove('open');
+});
+
+function applyFilters(){
+  let anyVisible=false;
+  document.querySelectorAll('.section-wrap').forEach(sw=>{
+    const sec=sw.dataset.section;
+    const sectionMatch=activeSection==='all'||activeSection===sec;
+    const cards=sw.querySelectorAll('.item');
+    const placeholder=sw.querySelector('.section-empty');
+    let sectionHasVisible=false;
+    cards.forEach(card=>{
+      const tagMatch=activeTag==='all'||card.dataset.tags.includes(activeTag);
+      const searchMatch=!searchText||card.dataset.search.includes(searchText);
+      const visible=sectionMatch&&tagMatch&&searchMatch;
+      card.style.display=visible?'':'none';
+      if(visible) sectionHasVisible=true;
+    });
+    // pending (empty) section: always counts as "visible" while its section matches,
+    // regardless of tag/search, since there's nothing in it to filter yet
+    const showPending=sectionMatch&&!!placeholder&&cards.length===0;
+    const wrapVisible=sectionMatch&&(sectionHasVisible||showPending);
+    if(wrapVisible) anyVisible=true;
+    sw.classList.toggle('hidden',!wrapVisible);
+  });
+  document.getElementById('noResults').classList.toggle('visible',!anyVisible);
+}
+render();
+</script>
+</body>
+</html>
