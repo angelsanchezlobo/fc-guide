@@ -347,12 +347,193 @@ const DATA = {
       videoId:'tRuPbAjcvuc',videoStart:688,source:'Deep Researcher FC'
     }
   ],
-  desmarques:[],
-  pases:[],
-  ataque:[],
-  regates:[],
-  conduccion:[],
-  pelota:[]
+  desmarques:[
+    {
+      name:'Confirmar la carrera (doble trigger)',
+      buttons:['L1','→ L1 (otra vez)'],
+      cuando:'Un compañero ya está haciendo una carrera automática al espacio y quieres mantenerla activa mientras esperas el momento del pase',
+      como:'Aunque el jugador ya esté corriendo por su cuenta, apunta el stick izquierdo hacia él y pulsa L1 otra vez para confirmar el desmarque manualmente. Asegúrate de que sigue corriendo hacia delante antes de dar el pase filtrado.',
+      notas:'Las carreras automáticas se frenan solas pasado un tiempo — repetir el L1 evita que el compañero se pare justo cuando estás esperando el momento perfecto para el pase.',
+      videoId:'mOLGH3mvqKE',videoStart:73,source:'Deep Researcher FC'
+    },
+    {
+      name:'Desmarque L1+R1 (curva al lado contrario)',
+      buttons:['L1','R1'],
+      cuando:'Quieres que un compañero se desmarque en curva hacia el lado contrario de donde estás mirando — típico para que el delantero coja la espalda del lateral en banda, o para atacar el hueco entre central y lateral',
+      como:'Apunta con el stick izquierdo al jugador que quieres desmarcar y pulsa L1+R1 a la vez. El jugador arranca en curva hacia el lado contrario de hacia donde estás mirando, y después corre en línea recta.',
+      notas:'Todavía muy poco explotado online — casi nadie lo usa. Muy útil yendo por dentro para que el delantero se vaya a la espalda del lateral en banda, o para atacar el espacio entre central y lateral, el más peligroso de defender.',
+      videoId:'VQ3e6baTc0k',videoStart:108,source:'Andoni'
+    },
+    {
+      name:'Desmarque L1+R1+pase (corre hacia donde pasas)',
+      buttons:['L1','R1','+ botón de pase'],
+      cuando:'Quieres tener al jugador cerca tras el pase para combinar rápido (pared, doble pase)',
+      como:'Apunta al jugador con L1+R1 y, en el mismo gesto, da el pase con el botón correspondiente. A diferencia del L1+R1 solo, el jugador corre hacia la dirección donde estás mirando/pasando, no hacia el lado contrario.',
+      notas:'Ideal para paredes rápidas: el extremo pasa atrás al mediocentro, este se la devuelve al delantero, y justo tras dar el pase el delantero ya está corriendo hacia el hueco entre central y lateral.',
+      videoId:'VQ3e6baTc0k',videoStart:237,source:'Andoni'
+    },
+    {
+      name:'Desmarque normal (L1)',
+      buttons:['L1'],
+      cuando:'Extremos y delanteros con espacio a la espalda del defensa — desmarque básico, en todas las jugadas de ataque',
+      como:'Apunta con el stick izquierdo al jugador y pulsa L1 una vez.',
+      no:'No repetir el L1 cuando el jugador vaya a frenar → este año la carrera dura mucho menos que antes (~3 segundos, frente a los 8-9 del año pasado). Si ves que va a pararse, vuelve a apuntarlo y pulsa L1 otra vez para que siga corriendo',
+      videoId:'VQ3e6baTc0k',videoStart:320,source:'Andoni'
+    },
+    {
+      name:'Player Lock al espacio (triángulo teledirigido)',
+      buttons:['L3+R3 (player lock)','→ Triangulo'],
+      cuando:'Con player lock activo, jugador corriendo al espacio — meterte entre centrales con el delantero, o al hueco entre lateral y central con el extremo',
+      como:'Con el player lock activado, el jugador corre mucho al espacio. Al pulsar Triángulo, el pase va teledirigido hacia él.',
+      notas:'Este año los pases filtrados con Triángulo van más manuales, pero con player lock siguen funcionando muy bien porque el pase queda teledirigido al jugador bloqueado. La línea defensiva suele estar muy arriba en FC27, así que atacar la espalda es relativamente fácil. Combínalo con un amago justo antes de recibir para meterte entre los dos centrales.',
+      videoId:'VQ3e6baTc0k',videoStart:401,source:'Andoni'
+    },
+    {
+      name:'Player Lock como referencia (venir a recibir)',
+      buttons:['L3+R3 (player lock)','→ R1+Cruz'],
+      cuando:'Tu delantero se esconde detrás de los centrales sin bajar a recibir, o quieres atraer a un mediocentro/lateral para darle un pase corto y meterlo en un espacio peligroso',
+      como:'Con el player lock activado sobre el jugador, dale el pase con R1+Cruz. El player lock actúa como referencia para que venga a recibir, en vez de para lanzarlo al espacio.',
+      notas:'Sirve para frenar a tus centrocampistas y darles el pase, o para bajar a un extremo muy adelantado y meterlo en un hueco peligroso.',
+      videoId:'VQ3e6baTc0k',videoStart:464,source:'Andoni'
+    },
+    {
+      name:'Llamar al jugador con R1 (sin player lock)',
+      buttons:['R1'],
+      cuando:'Necesitas que un compañero venga a recibir en corto y no quieres o no puedes usar player lock',
+      como:'Apunta con el stick izquierdo al jugador y pulsa R1. Viene a recibir, igual que con el player lock pero de forma más simple.',
+      notas:'Evita que el defensa anticipe el pase: los jugadores tienden a irse, y si pasas sin llamarlos antes se lo puedes dar al rival. Player lock funciona mejor, pero R1 es la alternativa rápida.',
+      videoId:'VQ3e6baTc0k',videoStart:506,source:'Andoni'
+    },
+    {
+      name:'Desmarque direccional (L1 + toque de stick derecho)',
+      buttons:['L1','→ RS (toque breve)'],
+      cuando:'Meter a un extremo por dentro, o cambiar la dirección del desmarque de tu delantero para despistar a la marca',
+      como:'Desmarca al jugador con L1 apuntando con el stick izquierdo. En una ventana de 2-3 segundos, dale un toque breve (no mantenido) al stick derecho en diagonal o hacia el lado que quieras — el jugador cambia de dirección hacia allí.',
+      notas:'Menos determinante que el año pasado pero sigue funcionando bien para meter jugadores en diagonales, más fáciles de rematar después con un pase filtrado (Triángulo). Útil para cambiar de dirección al delantero si el defensa le sigue el desmarque, dejándolo solo para el pase.',
+      videoId:'VQ3e6baTc0k',videoStart:569,source:'Andoni'
+    }
+  ],
+  pases:[
+    {
+      name:'Pase filtrado: apuntar y dosificar potencia',
+      buttons:['Cruz (pase filtrado)'],
+      cuando:'Buscas romper la línea defensiva con un pase al espacio',
+      como:'Apunta con precisión hacia donde quieres que llegue el balón, no te limites a pulsar el botón esperando que el juego encuentre al jugador. Dosifica la potencia según la distancia: receptor cerca, poca potencia; receptor lejos, unas 2,5-3 barras.',
+      no:'Pulsar el pase filtrado sin apuntar y sin ajustar potencia → en FC27 no puedes confiar en que un mal posicionamiento rival compense un mal pase, la ejecución depende de ti',
+      videoId:'mOLGH3mvqKE',videoStart:164,source:'Deep Researcher FC'
+    },
+    {
+      name:'Pase raso rápido (driven pass)',
+      buttons:['R1 (mantener)','Cruz'],
+      cuando:'Tercio final del campo, quieres aislar a un defensor en un 1v1',
+      como:'Mantén R1 y pulsa Cruz. El balón viaja muy rápido — sirve para alimentar al delantero y acelerar el ataque, dando menos tiempo al rival para cerrar el espacio alrededor del receptor.',
+      notas:'Especialmente efectivo porque muchos rivales todavía no dominan la defensa manual en FC27 — forzar el 1v1 les complica la vida.',
+      videoId:'mOLGH3mvqKE',videoStart:216,source:'Deep Researcher FC'
+    },
+    {
+      name:'Pase filtrado bombeado (lobbed through pass)',
+      buttons:['L1 (mantener)','Triangulo'],
+      cuando:'La IA rival hace buenas carreras en profundidad pero el rival no tiene al defensor correcto cubriendo ese espacio',
+      como:'Mantén L1 y pulsa Triángulo apuntando bien. El balón pasa por encima de la línea defensiva hacia la carrera de tu atacante.',
+      notas:'Una de las mejores herramientas de pase en FC27 ahora mismo — el pase filtrado raso es más difícil de ejecutar de forma consistente, este es la alternativa. Combinación muy peligrosa con un jugador rápido haciendo la carrera.',
+      videoId:'mOLGH3mvqKE',videoStart:250,source:'Deep Researcher FC'
+    }
+  ],
+  ataque:[
+    {
+      name:'Tiro raso potente (doble pulsación)',
+      buttons:['Tiro','Tiro','(doble pulsación)'],
+      cuando:'Dentro o cerca del área, buscas un tiro raso y potente',
+      como:'Pulsa el botón de tiro dos veces seguidas. Con un jugador con el playstyle adecuado es aún mejor, pero funciona igual sin él.',
+      videoId:'mOLGH3mvqKE',videoStart:429,source:'Deep Researcher FC'
+    },
+    {
+      name:'Tiro normal (no lo descartes)',
+      buttons:['Tiro (normal)'],
+      cuando:'Atacando hacia el palo cercano',
+      como:'No ignores el tiro básico solo porque haya otras mecánicas de finalización disponibles — sigue siendo muy efectivo en FC27, sobre todo al palo cercano.',
+      videoId:'mOLGH3mvqKE',videoStart:448,source:'Deep Researcher FC'
+    },
+    {
+      name:'Vaselina en 1v1 con el portero',
+      buttons:['Tiro (vaselina/lob)'],
+      cuando:'1v1 con el portero saliendo, cuando se compromete pronto',
+      como:'Levanta el balón por encima del portero en el momento en que se adelanta. Apunta con cuidado, sobre todo si usas tiro de precisión, porque el apunte se vuelve determinante.',
+      no:'Tiro normal en 1v1 con el portero saliendo → menos consistente que la vaselina cuando el portero se compromete pronto',
+      videoId:'mOLGH3mvqKE',videoStart:460,source:'Deep Researcher FC'
+    },
+    {
+      name:'Finesse desde ángulo incómodo',
+      buttons:['Tiro','Circulo'],
+      cuando:'Atacas desde un ángulo extraño donde el tiro normal no da una buena opción',
+      como:'Usa el finesse para rematar desde esa posición incómoda en vez de forzar el tiro normal.',
+      videoId:'mOLGH3mvqKE',videoStart:477,source:'Deep Researcher FC'
+    },
+    {
+      name:'Trivela (finalización)',
+      buttons:['L2','Tiro'],
+      cuando:'Necesitas rosca desde un ángulo alternativo, con jugador con playstyle de tiro adecuado',
+      como:'Mantén L2 mientras tiras.',
+      no:'Sin el playstyle de tiro adecuado → el efecto no sale correctamente',
+      videoId:'mOLGH3mvqKE',videoStart:488,source:'Deep Researcher FC'
+    }
+  ],
+  regates:[
+    {
+      name:'Ball roll (croqueta simple)',
+      buttons:['RS 90°','(mantener)'],
+      cuando:'Cambiar el ángulo de conducción, abrir una línea de pase o de tiro cuando el ángulo es incómodo',
+      como:'Mantén el stick derecho girado 90° respecto a la dirección hacia la que mira tu jugador. Sirve para regatear, para abrir un ángulo de pase cuando el defensor tapa la línea directa, o para abrir el ángulo de tiro antes de disparar.',
+      skill:'—',
+      notas:'Casi cualquier jugador de tu plantilla puede hacerlo. Funciona bien en FC27 porque la defensa manual reacciona más lento si el rival no está atento.',
+      videoId:'mOLGH3mvqKE',videoStart:338,source:'Deep Researcher FC'
+    },
+    {
+      name:'Tacón a ball roll (heel to ball roll)',
+      buttons:['L1 (mantener)','RS hacia delante','→ RS dirección opuesta'],
+      cuando:'Dentro del área, necesitas alejarte del defensor y salir hacia otro ángulo de tiro',
+      como:'Mantén L1 y da un toque con el stick derecho en la dirección hacia la que mira tu jugador, seguido de un toque en la dirección contraria.',
+      skill:'4',
+      notas:'La animación de salida puede dejarte directamente en mejor posición de tiro. Buena opción si tienes jugadores de 4 estrellas de regate pero todavía no de 5.',
+      videoId:'mOLGH3mvqKE',videoStart:390,source:'Deep Researcher FC'
+    }
+  ],
+  conduccion:[
+    {
+      name:'Knock-on (speed boost)',
+      buttons:['R2','R2','(doble toque)'],
+      cuando:'Tienes mucho espacio libre por delante, sin rival ocupando la zona que vas a atacar',
+      como:'Doble toque a R2 (sprint). El jugador empuja el balón varios pasos hacia delante y arranca detrás con un burst de aceleración.',
+      notas:'Distinto al speed boost de años anteriores. Ideal para irte al espacio a la espalda de la defensa y generar una ocasión clara.',
+      no:'Usarlo con un rival ocupando el espacio que vas a atacar → pierdes el balón contra él',
+      videoId:'mOLGH3mvqKE',videoStart:30,source:'Deep Researcher FC'
+    },
+    {
+      name:'Sprint analógico (toques cortos)',
+      buttons:['R2 (presión leve)'],
+      cuando:'El rival no cambia al defensor correcto — puedes intentar superar a ese defensor controlado por la IA',
+      como:'Aplica una presión ligera sobre R2 en vez de pulsarlo a fondo. El jugador da toques cortos y rápidos mientras conduce, más rápido que un regate normal pero manteniendo el control.',
+      notas:'Útil porque la defensa es mucho más manual en FC27: si el rival no cambia de jugador a tiempo, puedes superar al defensor IA con este movimiento.',
+      videoId:'mOLGH3mvqKE',videoStart:133,source:'Deep Researcher FC'
+    },
+    {
+      name:'Sprint controlado (R1)',
+      buttons:['R1 (mantener)'],
+      cuando:'Cerca del área, necesitas velocidad pero manteniendo el control para cambiar de dirección',
+      como:'Mantén pulsado R1 mientras conduces. Es un movimiento controlado, algo más lento que el sprint analógico, pero te deja crear ángulo de tiro o de pase con más precisión.',
+      videoId:'mOLGH3mvqKE',videoStart:145,source:'Deep Researcher FC'
+    }
+  ],
+  pelota:[
+    {
+      name:'Falta directa: apuntar y dosificar potencia',
+      buttons:['L1','R1','(tiro potente)'],
+      cuando:'Falta directa a portería, dentro del alcance de tiro',
+      como:'Apunta hacia el borde de la barrera, ligeramente por fuera de esa línea, y orienta el ángulo de tiro para que la rosca vuelva hacia el objetivo. Al tirar, usa la combinación de tiro potente (L1+R1) y carga la potencia según la distancia.',
+      no:'Usar siempre la misma cantidad de potencia sin mirar la distancia real a portería',
+      videoId:'mOLGH3mvqKE',videoStart:304,source:'Deep Researcher FC'
+    }
+  ]
 };
 
 const SECTION_IDS = Object.keys(DATA);
