@@ -7,14 +7,27 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 4322;
 const AUTH_TOKEN = process.env.FC_GUIDE_TOKEN || 'cambia-esto-por-algo-tuyo';
-const MAX_BODY_BYTES = 2 * 1024 * 1024; // 2MB, de sobra para este uso
+const MAX_BODY_BYTES = 2 * 1024 * 1024; // 2MB, de sobra para las tiendas de JSON
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8MB, de sobra para una captura de pantalla
 
 const STORES = {
   '/api/objetivos': path.join(__dirname, 'objetivos-data.json'),
   '/api/tacticas': path.join(__dirname, 'tacticas-data.json'),
+  '/api/recomendaciones': path.join(__dirname, 'recomendaciones-data.json'),
+};
+
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+
+const UPLOAD_MIME_EXT = {
+  'image/png': '.png',
+  'image/jpeg': '.jpg',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
 };
 
 const green = s => `\x1b[32m${s}\x1b[0m`;
@@ -25,7 +38,61 @@ function send(res, status, body){
   res.end(body);
 }
 
+// Servir una imagen ya subida (GET /api/uploads/<archivo>)
+function serveUpload(req, res){
+  const name = decodeURIComponent(req.url.slice('/api/uploads/'.length));
+  if (!name || name.includes('/') || name.includes('..')) {
+    return send(res, 400, JSON.stringify({ error: 'invalid filename' }));
+  }
+  const filePath = path.join(UPLOADS_DIR, name);
+  const ext = path.extname(name).toLowerCase();
+  const contentType = Object.entries(UPLOAD_MIME_EXT).find(([, e]) => e === ext);
+  fs.readFile(filePath, (err, data) => {
+    if (err) return send(res, 404, JSON.stringify({ error: 'not found' }));
+    res.writeHead(200, {
+      'Content-Type': contentType ? contentType[0] : 'application/octet-stream',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    });
+    res.end(data);
+  });
+}
+
+// Recibir una imagen pegada/subida (POST /api/uploads)
+function receiveUpload(req, res){
+  if (req.headers['x-auth'] !== AUTH_TOKEN) {
+    console.log(red('POST rechazado en /api/uploads: token inválido'));
+    return send(res, 401, JSON.stringify({ error: 'unauthorized' }));
+  }
+  const ext = UPLOAD_MIME_EXT[(req.headers['content-type'] || '').split(';')[0].trim()];
+  if (!ext) {
+    return send(res, 400, JSON.stringify({ error: 'unsupported content-type' }));
+  }
+  const chunks = [];
+  let bytes = 0;
+  let tooBig = false;
+  req.on('data', chunk => {
+    bytes += chunk.length;
+    if (bytes > MAX_UPLOAD_BYTES) { tooBig = true; req.destroy(); return; }
+    chunks.push(chunk);
+  });
+  req.on('end', () => {
+    if (tooBig) return send(res, 413, JSON.stringify({ error: 'file too large' }));
+    const filename = crypto.randomBytes(12).toString('hex') + ext;
+    fs.writeFile(path.join(UPLOADS_DIR, filename), Buffer.concat(chunks), err => {
+      if (err) {
+        console.log(red('Error al escribir la imagen ' + filename + ': ' + err.message));
+        return send(res, 500, JSON.stringify({ error: 'write failed' }));
+      }
+      console.log(green(`Imagen subida: ${filename} (${bytes} bytes)`));
+      send(res, 200, JSON.stringify({ ok: true, url: '/api/uploads/' + filename }));
+    });
+  });
+}
+
 const server = http.createServer((req, res) => {
+  if (req.url.startsWith('/api/uploads/') && req.method === 'GET') return serveUpload(req, res);
+  if (req.url === '/api/uploads' && req.method === 'POST') return receiveUpload(req, res);
+
   const dataFile = STORES[req.url];
   if (!dataFile) return send(res, 404, JSON.stringify({ error: 'not found' }));
 
