@@ -204,6 +204,7 @@ a{color:inherit;}
 .rec-card-caption-input:focus{border-color:var(--accent);}
 .rec-card-del{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;cursor:pointer;}
 .rec-card:hover .rec-card-del,.rec-card-del:focus-visible{opacity:1;}
+.rec-card-pending{position:absolute;top:6px;left:6px;background:var(--warn-tint);color:var(--warn);font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;}
 .rec-empty{font-size:12px;color:var(--text3);}
 
 /* ── MODAL ── */
@@ -1323,23 +1324,28 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
 });
 
 /* ── RECOMENDACIONES (MERCADO): feed de imágenes pegadas/subidas, con fecha
-   y nota opcional. A diferencia de Objetivos/Tácticas, cada entrada apunta
-   a un archivo servido por la API (/api/uploads/<id>), no a datos embebidos
-   — por eso, sin conexión con el servidor, no se puede añadir una imagen
-   nueva (solo se ve lo que ya se cargó). ── */
+   y nota opcional. Igual que Objetivos/Tácticas: si no hay conexión con el
+   servidor al pegar una imagen, se guarda igualmente en este navegador
+   (como data URL, marcada "pending") y se sube sola al servidor en cuanto
+   vuelva la conexión, sustituyendo la data URL por la URL real. ── */
 const REC_STORAGE_KEY='fcguide-recomendaciones';
-let recData=null; // {items:[{id,url,caption,date}]}
+let recData=null; // {items:[{id,url,caption,date,pending?}]}
 
 function recLoad(){
   fetch('/api/recomendaciones').then(r=>r.ok?r.json():null).then(data=>{
-    if(data&&Array.isArray(data.items)){ recData=data; renderRecomendaciones(); return; }
+    if(data&&Array.isArray(data.items)){
+      recData=data;
+      renderRecomendaciones();
+      recRetryPending();
+      return;
+    }
     throw new Error('empty');
   }).catch(()=>{
     let cached=null;
     try{ cached=JSON.parse(localStorage.getItem(REC_STORAGE_KEY)); }catch(e){}
     recData=(cached&&Array.isArray(cached.items))?cached:{items:[]};
     renderRecomendaciones();
-    document.getElementById('recSyncNote').textContent='Sin conexión con el servidor — solo se ve lo que ya está guardado en este navegador. No se pueden añadir imágenes nuevas sin conexión.';
+    document.getElementById('recSyncNote').textContent='Sin conexión con el servidor — viendo la copia guardada en este navegador. Lo que pegues ahora se sube solo en cuanto vuelva la conexión.';
   });
 }
 let recSaveTimer=null;
@@ -1355,26 +1361,65 @@ function recSave(){
   },400);
 }
 
-function recUploadAndAdd(blob){
-  const note=document.getElementById('recSyncNote');
-  note.textContent='Subiendo imagen…';
-  fetch('/api/uploads',{
+function recUploadBlob(blob){
+  return fetch('/api/uploads',{
     method:'POST',
     headers:{'Content-Type':blob.type,'X-Auth':OBJ_API_TOKEN},
     body:blob
   }).then(r=>{
     if(!r.ok) throw new Error('upload failed');
     return r.json();
-  }).then(data=>{
-    if(!recData) recData={items:[]};
-    recData.items.unshift({id:Date.now()+'-'+Math.random().toString(36).slice(2,8),url:data.url,caption:'',date:new Date().toISOString().slice(0,10)});
-    note.textContent='';
-    renderRecomendaciones();
-    recSave();
-  }).catch(()=>{
-    note.textContent='No se pudo subir la imagen — comprueba la conexión con el servidor e inténtalo de nuevo.';
   });
 }
+
+function recAddItem(url,pending){
+  if(!recData) recData={items:[]};
+  const item={id:Date.now()+'-'+Math.random().toString(36).slice(2,8),url,caption:'',date:new Date().toISOString().slice(0,10)};
+  if(pending) item.pending=true;
+  recData.items.unshift(item);
+  renderRecomendaciones();
+  recSave();
+}
+
+function recUploadAndAdd(blob){
+  const note=document.getElementById('recSyncNote');
+  note.textContent='Subiendo imagen…';
+  recUploadBlob(blob).then(data=>{
+    recAddItem(data.url,false);
+    note.textContent='';
+  }).catch(()=>{
+    // Sin conexión: se guarda igual en este navegador (como data URL) y se
+    // reintenta subir sola en segundo plano en cuanto haya conexión.
+    const reader=new FileReader();
+    reader.onload=()=>{
+      recAddItem(reader.result,true);
+      note.textContent='Sin conexión — guardada solo en este navegador. Se subirá sola en cuanto vuelva la conexión.';
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
+function recDataURLtoBlob(dataURL){
+  const [meta,b64]=dataURL.split(',');
+  const mime=meta.match(/:(.*?);/)[1];
+  const bin=atob(b64);
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return new Blob([bytes],{type:mime});
+}
+
+function recRetryPending(){
+  if(!recData||!recData.items.length) return;
+  recData.items.filter(it=>it.pending).forEach(item=>{
+    recUploadBlob(recDataURLtoBlob(item.url)).then(data=>{
+      item.url=data.url;
+      delete item.pending;
+      renderRecomendaciones();
+      recSave();
+    }).catch(()=>{}); // sigue pendiente — se reintenta en la próxima carga o al recuperar conexión
+  });
+}
+window.addEventListener('online',recRetryPending);
 
 function renderRecomendaciones(){
   const el=document.getElementById('recomendacionesList');
@@ -1382,6 +1427,7 @@ function renderRecomendaciones(){
   el.innerHTML=recData.items.map(it=>
     '<div class="rec-card" data-rec-id="'+escapeHtml(it.id)+'">'
     +'<img src="'+escapeHtml(it.url)+'" alt="Recomendación" loading="lazy">'
+    +(it.pending?'<div class="rec-card-pending">Sin subir — se sincroniza sola</div>':'')
     +'<button class="rec-card-del" data-rec-del="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>'
     +'<div class="rec-card-body">'
     +'<div class="rec-card-date">'+escapeHtml(it.date)+'</div>'
