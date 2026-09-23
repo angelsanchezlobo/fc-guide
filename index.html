@@ -54,12 +54,6 @@ a{color:inherit;}
 .main{max-width:var(--max-w);margin:0 auto;padding:32px 24px 80px;}
 .view[hidden]{display:none;}
 
-/* ── FILTER ROW ── */
-.filter-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;}
-.filter-btn{background:none;border:none;color:var(--text2);font-size:12px;padding:2px 0;cursor:pointer;transition:color 0.1s;}
-.filter-btn:hover{color:#fff;}
-.filter-btn.active{color:#fff;font-weight:600;}
-
 /* ── SECTIONS ── */
 .section-wrap{margin-bottom:4px;}
 .section-wrap.hidden{display:none;}
@@ -98,6 +92,40 @@ a{color:inherit;}
 .tag-skill{background:var(--warn-tint);color:var(--warn);}
 .tag-no-skill{background:var(--chip-bg);color:var(--chip-text);}
 .tag-video{background:var(--green-tint);color:var(--green);}
+
+/* ── GAMEPLAY LANDING ── */
+.gp-landing{margin-bottom:8px;}
+.gp-card{background:var(--surface);border-radius:14px;padding:22px;cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:background 0.15s;}
+.gp-card:hover{background:var(--surface2);}
+.gp-card-label{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;}
+.gp-card-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.gp-card-count{font-size:12px;color:var(--text3);margin-top:6px;}
+.gp-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;padding:0;margin-bottom:24px;}
+.gp-back:hover{color:#fff;}
+.gp-back[hidden]{display:none;}
+
+/* ── TÁCTICAS VIEW ── */
+.tac-list{display:flex;flex-direction:column;gap:6px;max-width:420px;}
+.tac-card{background:var(--surface);border-radius:12px;overflow:hidden;}
+.tac-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;color:#fff;font-size:13px;font-weight:700;padding:12px 14px;cursor:pointer;text-align:left;}
+.tac-head:hover{background:var(--surface2);}
+.tac-chevron{color:var(--text3);font-size:10px;transition:transform 0.15s;flex-shrink:0;}
+.tac-card.open .tac-chevron{transform:rotate(180deg);}
+.tac-body{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;}
+.tac-body[hidden]{display:none;}
+.tac-code-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.tac-code{flex:1;min-width:100px;background:var(--chip-bg);border-radius:6px;padding:6px 10px;font-family:'SF Mono','Consolas',monospace;font-size:12px;color:var(--chip-text);}
+.tac-btn{background:var(--chip-bg);border:none;border-radius:6px;color:var(--chip-text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;flex-shrink:0;}
+.tac-btn:hover{color:#fff;}
+.tac-options{display:flex;flex-direction:column;gap:10px;}
+.tac-option{position:relative;padding-right:24px;}
+.tac-opt-label{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px;}
+.tac-opt-empty{color:var(--text3);font-weight:600;}
+.tac-opt-desc{font-size:11px;color:var(--text2);margin-bottom:5px;line-height:1.4;}
+.tac-slider{width:100%;display:block;accent-color:var(--accent);height:14px;}
+.tac-slider:disabled{opacity:1;}
+.tac-opt-edit{position:absolute;top:0;right:0;background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:2px 4px;}
+.tac-opt-edit:hover{color:#fff;}
 
 /* ── GALERÍA VIEW ── */
 .gal-h{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
@@ -151,8 +179,8 @@ a{color:inherit;}
 .obj-add-group-btn{margin-top:8px;}
 
 .obj-form{background:var(--surface2);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin-top:10px;max-width:420px;}
-.obj-form input,.obj-form textarea{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;resize:vertical;}
-.obj-form input:focus,.obj-form textarea:focus{border-color:var(--accent);}
+.obj-form input,.obj-form textarea,.obj-form select{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;resize:vertical;}
+.obj-form input:focus,.obj-form textarea:focus,.obj-form select:focus{border-color:var(--accent);}
 .obj-form-row{display:flex;gap:8px;justify-content:flex-end;}
 .obj-form-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;}
 .obj-form-btn.secondary{background:var(--chip-bg);color:var(--chip-text);}
@@ -202,16 +230,10 @@ a{color:inherit;}
     </div>
   </div>
   <nav class="topbar-row2" id="tabs">
-    <button class="tab active" data-section-btn="all">Todo</button>
-    <button class="tab" data-section-btn="patrones">Patrones</button>
-    <button class="tab" data-section-btn="defensa">Defensa</button>
-    <button class="tab" data-section-btn="desmarques">Desmarques</button>
-    <button class="tab" data-section-btn="pases">Pases</button>
-    <button class="tab" data-section-btn="ataque">Ataque</button>
-    <button class="tab" data-section-btn="regates">Regates</button>
-    <button class="tab" data-section-btn="conduccion">Conducción</button>
-    <button class="tab" data-section-btn="pelota">Pelota parada</button>
-    <button class="tab tab-sep" data-view-btn="galeria">Galería</button>
+    <button class="tab active" data-view-btn="gameplay">Gameplay</button>
+    <button class="tab" data-view-btn="tacticas">Tácticas</button>
+    <button class="tab" data-view-btn="galeria">Galería</button>
+    <button class="tab" data-view-btn="mercado">Mercado</button>
     <button class="tab" data-view-btn="objetivos">Objetivos</button>
   </nav>
 </header>
@@ -235,15 +257,16 @@ a{color:inherit;}
 
 <main class="main">
 
-  <div class="view" id="view-mecanicas">
-    <div class="filter-row" id="filterRow">
-      <button class="filter-btn active" data-tag-btn="all">Todos</button>
-      <button class="filter-btn" data-tag-btn="cuando">Con cuándo NO</button>
-      <button class="filter-btn" data-tag-btn="skill">Requiere skill</button>
-      <button class="filter-btn" data-tag-btn="noskill">Sin skill</button>
+  <div class="view" id="view-gameplay">
+    <div class="gp-landing" id="gameplayLanding">
+      <div class="section-header"><span class="sec-label">Gameplay</span><span class="sec-title">Mecánicas por categoría</span></div>
+      <div class="items" id="gameplayCards"></div>
     </div>
+
+    <button class="gp-back" id="gameplayBack" hidden>&larr; Volver</button>
     <div id="noResults" class="no-results">No hay resultados.</div>
 
+    <div id="gameplaySections">
     <div class="section-wrap" data-section="patrones">
       <div class="section-header"><span class="sec-label">Táctica</span><span class="sec-title">Patrones de ataque</span></div>
       <div class="section-note">Situaciones recurrentes de partido. Reconocerlas antes que el rival es la diferencia entre reaccionar y anticipar.</div>
@@ -278,6 +301,13 @@ a{color:inherit;}
       <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
       <div class="items" id="items-pelota"></div>
     </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-tacticas" hidden>
+    <div class="section-header"><span class="sec-label">Estrategia</span><span class="sec-title">Tácticas</span></div>
+    <div class="section-note">Formaciones e instrucciones. Haz clic en una para ver el código y las opciones.</div>
+    <div id="tacticsList" class="tac-list"></div>
   </div>
 
   <div class="view" id="view-galeria" hidden>
@@ -311,6 +341,12 @@ a{color:inherit;}
     </div>
 
     <div class="gal-note"><strong>Truco de monedas:</strong> con una carta de más de 100k, compra y espera a que se venda antes de seguir — si no, te quedas sin monedas a medio camino. Con cartas baratas (bronce, pocas miles) sí puedes comprar y vender en cadena sin esperar.</div>
+  </div>
+
+  <div class="view" id="view-mercado" hidden>
+    <div class="section-header"><span class="sec-label">Economía</span><span class="sec-title">Mercado</span></div>
+    <div class="section-note">Compra-venta, trading y gestión de monedas.</div>
+    <div class="section-empty">Próximamente.</div>
   </div>
 
   <div class="view" id="view-objetivos" hidden>
@@ -694,7 +730,7 @@ const OBJ_SEED = [
 const OBJ_API_TOKEN = 'b5916835-0213-45bd-bd89-4c0268f353f9';
 
 const SECTION_IDS = Object.keys(DATA);
-let activeSection='all',activeTag='all',searchText='';
+let activeSection='all',searchText='';
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -734,10 +770,6 @@ function makeItem(item,section){
   const hasSkill=item.skill&&item.skill!=='—';
   const noSkill=item.skill==='—';
   const hasVideo=!!item.videoId;
-  const tags=[];
-  if(hasNo) tags.push('cuando');
-  if(hasSkill) tags.push('skill');
-  if(noSkill) tags.push('noskill');
   const searchable=escapeHtml([item.name,item.cuando||'',item.no||'',item.notas||'',item.situacion||'',item.como||'',item.skill||''].join(' ').toLowerCase());
   const fields=[];
   if(item.cuando) fields.push('<div class="item-field"><span class="field-label">Cuándo</span><span class="field-value">'+escapeHtml(item.cuando)+'</span></div>');
@@ -750,7 +782,7 @@ function makeItem(item,section){
   const videoAttrs=hasVideo
     ?' data-video-id="'+escapeHtml(item.videoId)+'" data-video-start="'+escapeHtml(item.videoStart)+'" data-video-title="'+escapeHtml(item.name)+'" data-video-source="'+escapeHtml(item.source||'')+'"'
     :'';
-  return '<div class="item'+(hasVideo?' has-video':'')+'" data-section="'+section+'" data-tags="'+tags.join(',')+'" data-search="'+searchable+'"'+videoAttrs
+  return '<div class="item'+(hasVideo?' has-video':'')+'" data-section="'+section+'" data-search="'+searchable+'"'+videoAttrs
     +(hasVideo?' role="button" tabindex="0"':'')+'>'
     +'<div class="item-head"><div class="item-name">'+escapeHtml(item.name)+'</div>'+(item.buttons&&item.buttons.length?'<div class="item-btns">'+cardBtns(item.buttons)+'</div>':'')+'</div>'
     +(fields.length?'<div class="item-body">'+fields.join('')+'</div>':'')
@@ -789,27 +821,58 @@ function doSearch(val){
 }
 document.getElementById('searchInput').addEventListener('input',e=>doSearch(e.target.value));
 
-function setActiveTag(tag){
-  activeTag=tag;
-  document.querySelectorAll('[data-tag-btn]').forEach(b=>b.classList.toggle('active',b.dataset.tagBtn===tag));
-  applyFilters();
+function renderGameplayLanding(){
+  const el=document.getElementById('gameplayCards');
+  el.innerHTML=SECTION_IDS.map(sec=>{
+    const wrap=document.querySelector('.section-wrap[data-section="'+sec+'"]');
+    const label=wrap.querySelector('.sec-label').textContent;
+    const title=wrap.querySelector('.sec-title').textContent;
+    const count=DATA[sec].length;
+    return '<div class="gp-card" role="button" tabindex="0" data-gp-open="'+sec+'">'
+      +'<span class="gp-card-label">'+escapeHtml(label)+'</span>'
+      +'<span class="gp-card-title">'+escapeHtml(title)+'</span>'
+      +'<span class="gp-card-count">'+(count?count+' mecánicas':'Próximamente')+'</span>'
+      +'</div>';
+  }).join('');
 }
-document.querySelectorAll('[data-tag-btn]').forEach(btn=>{
-  btn.addEventListener('click',()=>setActiveTag(btn.dataset.tagBtn));
+document.getElementById('gameplayCards').addEventListener('click',e=>{
+  const card=e.target.closest('[data-gp-open]');
+  if(card) location.hash='gameplay/'+card.dataset.gpOpen;
+});
+document.getElementById('gameplayCards').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const card=e.target.closest('[data-gp-open]');
+  if(!card) return;
+  e.preventDefault();
+  location.hash='gameplay/'+card.dataset.gpOpen;
+});
+document.getElementById('gameplayBack').addEventListener('click',()=>{
+  searchText='';
+  document.getElementById('searchInput').value='';
+  location.hash='gameplay';
 });
 
 function applyFilters(){
+  const isLanding=activeSection==='landing';
+  const searching=!!searchText;
+  const showLanding=isLanding&&!searching;
+  document.getElementById('gameplayLanding').hidden=!showLanding;
+  document.getElementById('gameplaySections').hidden=showLanding;
+  document.getElementById('gameplayBack').hidden=isLanding;
+  if(showLanding){
+    document.getElementById('noResults').classList.remove('visible');
+    return;
+  }
   let anyVisible=false;
-  document.querySelectorAll('.section-wrap').forEach(sw=>{
+  document.querySelectorAll('#gameplaySections .section-wrap').forEach(sw=>{
     const sec=sw.dataset.section;
-    const sectionMatch=activeSection==='all'||activeSection===sec;
+    const sectionMatch=isLanding||activeSection===sec;
     const cards=sw.querySelectorAll('.item');
     const placeholder=sw.querySelector('.section-empty');
     let sectionHasVisible=false;
     cards.forEach(card=>{
-      const tagMatch=activeTag==='all'||card.dataset.tags.includes(activeTag);
       const searchMatch=!searchText||card.dataset.search.includes(searchText);
-      const visible=sectionMatch&&tagMatch&&searchMatch;
+      const visible=sectionMatch&&searchMatch;
       card.style.display=visible?'':'none';
       if(visible) sectionHasVisible=true;
     });
@@ -1028,40 +1091,222 @@ document.getElementById('objetivosList').addEventListener('keydown',e=>{
   objToggle(+card.dataset.gi,+card.dataset.si,+card.dataset.ii);
 });
 
-/* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
-function showView(view){
-  document.getElementById('view-mecanicas').hidden = view!=='mecanicas';
-  document.getElementById('view-galeria').hidden = view!=='galeria';
-  document.getElementById('view-objetivos').hidden = view!=='objetivos';
+/* ── TÁCTICAS: editable formations, each with a copyable code and a list of
+   0-100 options (build-up style, defensive line height, etc). Same pattern
+   as Objetivos: tacData is the source of truth, persisted to localStorage
+   and best-effort synced to /api/tacticas. ── */
+const TAC_STORAGE_KEY='fcguide-tacticas';
+let tacData=null;
+let tacUi=null; // {type:'add-tactic'|'edit-tactic'|'edit-opt', ti, oi}
+let tacOpen=new Set();
+const TAC_OPT_COUNT=3; // slots fijos por táctica — no se añaden ni se quitan, solo se editan
+// slots 0 y 1: el texto 1 se elige de una lista fija (como en la imagen de referencia);
+// slot 2: texto libre. Los tres llevan siempre texto1 + texto2 + barra 0-100.
+const TAC_OPT_CHOICES=[
+  ['Balanced','Short Passing','Counter'],
+  ['Balanced','High','Aggressive','Deep'],
+  null
+];
+function emptyTacOptions(){
+  return Array.from({length:TAC_OPT_COUNT},()=>({label:'',desc:'',value:50}));
 }
-function updateTabsActive(view,section){
+const TAC_SEED=[
+  { name:'4-4-1-1', code:'', options:[
+    { label:'Balanced', desc:'Estilo de salida del equipo', value:60 },
+    { label:'Balanced', desc:'Altura de la línea defensiva', value:60 },
+    { label:'', desc:'', value:50 }
+  ]}
+];
+
+function tacLoad(){
+  fetch('/api/tacticas').then(r=>r.ok?r.json():null).then(data=>{
+    if(data&&Array.isArray(data.tactics)){ tacData=data; renderTacticas(); return; }
+    throw new Error('empty');
+  }).catch(()=>{
+    let cached=null;
+    try{ cached=JSON.parse(localStorage.getItem(TAC_STORAGE_KEY)); }catch(e){}
+    tacData=(cached&&Array.isArray(cached.tactics))?cached:{tactics:TAC_SEED};
+    renderTacticas();
+  });
+}
+let tacSaveTimer=null;
+function tacSave(){
+  try{ localStorage.setItem(TAC_STORAGE_KEY,JSON.stringify(tacData)); }catch(e){}
+  clearTimeout(tacSaveTimer);
+  tacSaveTimer=setTimeout(()=>{
+    fetch('/api/tacticas',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+      body:JSON.stringify(tacData)
+    }).catch(()=>{});
+  },400);
+}
+
+function tacFormHtml(){
+  if(!tacUi) return '';
+  if(tacUi.type==='add-tactic'||tacUi.type==='edit-tactic'){
+    const editing=tacUi.type==='edit-tactic';
+    const t=editing?tacData.tactics[tacUi.ti]:{name:'',code:''};
+    return '<div class="obj-form">'
+      +'<input type="text" id="tacFormName" placeholder="Nombre (p. ej. 4-4-1-1)" value="'+escapeHtml(t.name)+'">'
+      +'<input type="text" id="tacFormCode" placeholder="Código de la táctica" value="'+escapeHtml(t.code||'')+'">'
+      +'<div class="obj-form-row">'
+      +(editing?'<button class="obj-form-btn danger" data-tac-action="delete-tactic">Eliminar</button>':'')
+      +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
+      +'<button class="obj-form-btn" data-tac-action="save-tactic">Guardar</button>'
+      +'</div></div>';
+  }
+  if(tacUi.type==='edit-opt'){
+    const o=tacData.tactics[tacUi.ti].options[tacUi.oi];
+    const choices=TAC_OPT_CHOICES[tacUi.oi];
+    const labelField=choices
+      ?'<select id="tacFormLabel">'+choices.map(c=>'<option value="'+escapeHtml(c)+'"'+(c===o.label?' selected':'')+'>'+escapeHtml(c)+'</option>').join('')+'</select>'
+      :'<input type="text" id="tacFormLabel" placeholder="Texto 1" value="'+escapeHtml(o.label)+'">';
+    return '<div class="obj-form">'
+      +labelField
+      +'<textarea id="tacFormDesc" rows="2" placeholder="Texto 2 (descripción opcional)">'+escapeHtml(o.desc||'')+'</textarea>'
+      +'<input type="number" id="tacFormValue" min="0" max="100" placeholder="Valor (0-100)" value="'+o.value+'">'
+      +'<div class="obj-form-row">'
+      +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
+      +'<button class="obj-form-btn" data-tac-action="save-opt">Guardar</button>'
+      +'</div></div>';
+  }
+  return '';
+}
+
+function renderTacticas(){
+  const el=document.getElementById('tacticsList');
+  if(!tacData){ el.innerHTML=''; return; }
+  const list=tacData.tactics.map((t,ti)=>{
+    const open=tacOpen.has(ti);
+    const opts=t.options.map((o,oi)=>{
+      const optFormHere=(tacUi&&tacUi.type==='edit-opt'&&tacUi.ti===ti&&tacUi.oi===oi)?tacFormHtml():'';
+      if(optFormHere) return optFormHere;
+      return '<div class="tac-option">'
+        +'<div class="tac-opt-label">'+(o.label?escapeHtml(o.label):'<span class="tac-opt-empty">Sin definir</span>')+'</div>'
+        +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
+        +'<input type="range" class="tac-slider" min="0" max="100" value="'+o.value+'" disabled>'
+        +'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>'
+        +'</div>';
+    }).join('');
+    const tacFormHere=(tacUi&&tacUi.type==='edit-tactic'&&tacUi.ti===ti)?tacFormHtml():'';
+    return '<div class="tac-card'+(open?' open':'')+'">'
+      +'<button class="tac-head" data-tac-toggle="'+ti+'"><span>'+escapeHtml(t.name)+'</span><span class="tac-chevron">&#9662;</span></button>'
+      +'<div class="tac-body"'+(open?'':' hidden')+'>'
+      +(tacFormHere||(
+        '<div class="tac-code-row">'
+        +'<code class="tac-code">'+(t.code?escapeHtml(t.code):'Sin código todavía')+'</code>'
+        +(t.code?'<button class="tac-btn" data-tac-copy="'+ti+'">Copiar</button>':'')
+        +'<button class="tac-btn" data-tac-edit-tactic="'+ti+'">Editar</button>'
+        +'</div>'
+      ))
+      +'<div class="tac-options">'+opts+'</div>'
+      +'</div></div>';
+  }).join('');
+  el.innerHTML=list
+    +'<button class="obj-add-btn" id="tacAddBtn">+ Añadir táctica</button>'
+    +((tacUi&&tacUi.type==='add-tactic')?tacFormHtml():'');
+}
+
+document.getElementById('tacticsList').addEventListener('click',e=>{
+  const t=e.target;
+  let b;
+  if(t.id==='tacAddBtn'){ tacUi={type:'add-tactic'}; renderTacticas(); return; }
+  if(b=t.closest('[data-tac-edit-opt]')){
+    tacUi={type:'edit-opt',ti:+b.dataset.ti,oi:+b.dataset.oi};
+    renderTacticas();
+    return;
+  }
+  if(b=t.closest('[data-tac-edit-tactic]')){
+    tacUi={type:'edit-tactic',ti:+b.dataset.tacEditTactic};
+    renderTacticas();
+    return;
+  }
+  if(b=t.closest('[data-tac-copy]')){
+    const ti=+b.dataset.tacCopy;
+    const code=tacData.tactics[ti].code||'';
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(code).then(()=>{
+        const old=b.textContent; b.textContent='Copiado';
+        setTimeout(()=>{ b.textContent=old; },1200);
+      });
+    }
+    return;
+  }
+  if(t.dataset.tacAction==='cancel'){ tacUi=null; renderTacticas(); return; }
+  if(t.dataset.tacAction==='save-tactic'){
+    const name=document.getElementById('tacFormName').value.trim();
+    const code=document.getElementById('tacFormCode').value.trim();
+    if(!name) return;
+    if(tacUi.type==='edit-tactic'){
+      const tac=tacData.tactics[tacUi.ti]; tac.name=name; tac.code=code;
+    } else {
+      tacData.tactics.push({name,code,options:emptyTacOptions()});
+    }
+    tacUi=null; renderTacticas(); tacSave();
+    return;
+  }
+  if(t.dataset.tacAction==='delete-tactic'){
+    if(confirm('¿Eliminar esta táctica?')){
+      tacData.tactics.splice(tacUi.ti,1);
+      tacUi=null; tacOpen.clear(); renderTacticas(); tacSave();
+    }
+    return;
+  }
+  if(t.dataset.tacAction==='save-opt'){
+    const label=document.getElementById('tacFormLabel').value.trim();
+    const desc=document.getElementById('tacFormDesc').value.trim();
+    let value=parseInt(document.getElementById('tacFormValue').value,10);
+    if(isNaN(value)) value=50;
+    value=Math.max(0,Math.min(100,value));
+    const opt=tacData.tactics[tacUi.ti].options[tacUi.oi];
+    opt.label=label; opt.desc=desc; opt.value=value;
+    tacUi=null; renderTacticas(); tacSave();
+    return;
+  }
+  if(b=t.closest('[data-tac-toggle]')){
+    const ti=+b.dataset.tacToggle;
+    if(tacOpen.has(ti)) tacOpen.delete(ti); else tacOpen.add(ti);
+    renderTacticas();
+  }
+});
+
+/* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
+const TOP_VIEWS=['gameplay','tacticas','galeria','mercado','objetivos'];
+function showView(view){
+  TOP_VIEWS.forEach(v=>{
+    document.getElementById('view-'+v).hidden = v!==view;
+  });
+}
+function updateTabsActive(view){
   document.querySelectorAll('.tab').forEach(btn=>{
-    const active = btn.dataset.viewBtn ? btn.dataset.viewBtn===view : (view==='mecanicas'&&btn.dataset.sectionBtn===section);
-    btn.classList.toggle('active',active);
+    btn.classList.toggle('active',btn.dataset.viewBtn===view);
   });
 }
 function applyRoute(){
-  const hash=(location.hash||'').replace('#','');
-  if(hash==='galeria'||hash==='objetivos'){
-    showView(hash);
-    updateTabsActive(hash,activeSection);
-  } else {
-    activeSection=SECTION_IDS.includes(hash)?hash:'all';
-    showView('mecanicas');
-    updateTabsActive('mecanicas',activeSection);
+  const parts=(location.hash||'').replace('#','').split('/');
+  const view=TOP_VIEWS.includes(parts[0])?parts[0]:'gameplay';
+  showView(view);
+  updateTabsActive(view);
+  if(view==='gameplay'){
+    activeSection=SECTION_IDS.includes(parts[1])?parts[1]:'landing';
     applyFilters();
   }
 }
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    location.hash = btn.dataset.viewBtn ? btn.dataset.viewBtn : (btn.dataset.sectionBtn==='all' ? '' : btn.dataset.sectionBtn);
+    searchText='';
+    document.getElementById('searchInput').value='';
+    location.hash = btn.dataset.viewBtn;
   });
 });
 window.addEventListener('hashchange',applyRoute);
 
 render();
+renderGameplayLanding();
 applyRoute();
 objLoad();
+tacLoad();
 </script>
 </body>
 </html>
