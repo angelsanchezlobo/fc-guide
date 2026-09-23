@@ -16,3 +16,10 @@ jobs:
       - name: Deploy
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd /srv/fc && git pull"
+
+      - name: Set up / restart Objetivos API (non-blocking)
+        run: |
+          UNIT_B64="W1VuaXRdCkRlc2NyaXB0aW9uPUZDIEd1aWRlIC0gQVBJIGRlIG9iamV0aXZvcwpBZnRlcj1uZXR3b3JrLnRhcmdldAoKW1NlcnZpY2VdCldvcmtpbmdEaXJlY3Rvcnk9L3Nydi9mYwpFeGVjU3RhcnQ9L3Vzci9iaW4vbm9kZSBzZXJ2ZXIuanMKRW52aXJvbm1lbnQ9RkNfR1VJREVfVE9LRU49YjU5MTY4MzUtMDIxMy00NWJkLWJkODktNGMwMjY4ZjM1M2Y5CkVudmlyb25tZW50PVBPUlQ9NDMyMgpSZXN0YXJ0PWFsd2F5cwpVc2VyPXd3dy1kYXRhCgpbSW5zdGFsbF0KV2FudGVkQnk9bXVsdGktdXNlci50YXJnZXQK"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+            "echo $UNIT_B64 | base64 -d | sudo -n tee /etc/systemd/system/fc-guide-api.service > /dev/null && sudo -n systemctl daemon-reload && sudo -n systemctl enable --now fc-guide-api && sudo -n systemctl restart fc-guide-api" \
+            || echo "::warning::No se pudo (re)iniciar fc-guide-api — probablemente falta sudo sin contraseña para ${{ secrets.VPS_USER }}. El sitio estático se ha desplegado igual."
