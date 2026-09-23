@@ -115,6 +115,23 @@ a{color:inherit;}
 .gal-note{font-size:13px;color:var(--text2);padding:16px 20px;background:var(--surface);border-radius:12px;line-height:1.6;max-width:640px;}
 .gal-note strong{color:#fff;}
 
+/* ── OBJETIVOS VIEW ── */
+.obj-sync-note{font-size:11px;color:var(--text3);margin-bottom:20px;min-height:14px;}
+.obj-group{margin-top:40px;max-width:640px;}
+.obj-group:first-child{margin-top:0;}
+.obj-group-title{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);font-weight:700;margin-bottom:16px;}
+.obj-sub{margin-bottom:26px;}
+.obj-sub-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px;}
+.obj-sub-title{font-size:14px;font-weight:700;color:#fff;}
+.obj-sub-count{font-size:11px;font-weight:600;color:var(--chip-text);background:var(--chip-bg);border-radius:20px;padding:2px 9px;white-space:nowrap;flex-shrink:0;}
+.obj-sub-reward{font-size:12px;color:var(--warn);margin-bottom:2px;}
+.obj-sub-desc{font-size:12px;color:var(--text2);margin-bottom:6px;line-height:1.5;}
+.obj-items{display:flex;flex-direction:column;}
+.obj-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--hairline);cursor:pointer;}
+.obj-item input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;cursor:pointer;}
+.obj-item-label{font-size:13px;color:var(--text2);line-height:1.4;}
+.obj-item.done .obj-item-label{color:var(--text3);text-decoration:line-through;}
+
 /* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
@@ -169,6 +186,7 @@ a{color:inherit;}
     <button class="tab" data-section-btn="conduccion">Conducción</button>
     <button class="tab" data-section-btn="pelota">Pelota parada</button>
     <button class="tab tab-sep" data-view-btn="galeria">Galería</button>
+    <button class="tab" data-view-btn="objetivos">Objetivos</button>
   </nav>
 </header>
 
@@ -267,6 +285,13 @@ a{color:inherit;}
     </div>
 
     <div class="gal-note"><strong>Truco de monedas:</strong> con una carta de más de 100k, compra y espera a que se venda antes de seguir — si no, te quedas sin monedas a medio camino. Con cartas baratas (bronce, pocas miles) sí puedes comprar y vender en cadena sin esperar.</div>
+  </div>
+
+  <div class="view" id="view-objetivos" hidden>
+    <div class="section-header"><span class="sec-label">Progreso</span><span class="sec-title">Objetivos</span></div>
+    <div class="section-note">Marca lo que ya has completado. Se guarda en el servidor si la API está desplegada — si no, el cambio se queda solo en este navegador.</div>
+    <div class="obj-sync-note" id="objSyncNote"></div>
+    <div id="objetivosList"></div>
   </div>
 
 </main>
@@ -528,6 +553,117 @@ const DATA = {
   ]
 };
 
+const OBJETIVOS = [
+  { group:'Fundamentos', subs:[
+    { title:'Inicio del camino', items:[
+      {label:'Gana partido — mínima Aficionado',done:true},
+      {label:'20 goles — 6/20',done:true},
+      {label:'7 partidos — 3/7',done:true}
+    ]},
+    { title:'Sueños del primer equipo', items:[
+      {label:'Upgrade Bronce',done:true},
+      {label:'Intro to streamlined SBCs',done:true}
+    ]},
+    { title:'Subiendo puestos', items:[
+      {label:'Cambia formación',done:true},
+      {label:'Cambia nombre del club',done:true},
+      {label:'Introducción a Evos',done:false}
+    ]}
+  ]},
+  { group:'Hitos', subs:[
+    { title:'Hito mercado de transferencias', items:[
+      {label:'50 ventas — 18/25',done:false},
+      {label:'25 compras rápidas',done:false},
+      {label:'50 compras rápidas',done:false},
+      {label:'25 ventas — 18/25',done:true}
+    ]},
+    { title:'Hito Rivals', items:[
+      {label:'3 objetivos: juega 15 — 3/15',done:false}
+    ]},
+    { title:'Hito Co-op', items:[
+      {label:'3 objetivos: juega 50 — 3/50',done:false}
+    ]},
+    { title:'Hito Squad Battles', items:[
+      {label:'3 objetivos: juega 15',done:false}
+    ]},
+    { title:'Hito eventos en directo', items:[
+      {label:'3 objetivos: juega 20',done:false}
+    ]},
+    { title:'Hito Draft', items:[
+      {label:'3 objetivos: juega 15',done:false}
+    ]},
+    { title:'Hito Rush', items:[
+      {label:'3 objetivos: juega 15',done:false},
+      {label:'2 objetivos: completa 20 bonificaciones',done:false},
+      {label:'20 goles como equipo',done:false}
+    ]},
+    { title:'Hito Momentos', items:[
+      {label:'60 estrellas',done:false}
+    ]}
+  ]},
+  { group:'De temporada', subs:[
+    { title:'Objetivos semanales', items:[
+      {label:'Vende 10',done:false},
+      {label:'Compra 10',done:false},
+      {label:'Juega 10 — 3/10',done:false},
+      {label:'Gana 10 — 1/10',done:false},
+      {label:'Marca 10',done:false}
+    ]},
+    { title:'Rush semanales', items:[
+      {label:'35 puntos Rush',done:false}
+    ]},
+    { title:'Completista: Juego Semanal', items:[
+      {label:'Completa Juego Semanal 4 veces',done:false}
+    ]},
+    { title:'Juego Semanal T1', items:[
+      {label:'Marca en 9 partidos del modo exhibición de Promesas',done:false}
+    ]},
+    { title:'T1: exhibición de Promesas', items:[
+      {label:'Juega 15',done:false},
+      {label:'Asiste en 20 partidos distintos',done:false},
+      {label:'Marca en 30 partidos distintos',done:false}
+    ]},
+    { title:'Completista: desafío Promesas pasadas', items:[
+      {label:'Objetivo desafío Promesas pasadas: Aficionado',done:true},
+      {label:'Objetivo desafío Promesas pasadas: Profesional',done:true},
+      {label:'Objetivo desafío Promesas pasadas: Clase mundial',done:true},
+      {label:'Objetivo desafío Promesas pasadas: Leyenda',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: partido rápido', items:[
+      {label:'Marca 1',done:false},
+      {label:'Juega 2',done:false},
+      {label:'Asiste en 3',done:false},
+      {label:'Gana 1',done:false}
+    ]},
+    { title:'Desafío Promesas pasadas: Aficionado', items:[
+      {label:'Marca 1',done:true},
+      {label:'Juega 2 — 1 español',done:false},
+      {label:'Asiste en 3',done:true},
+      {label:'Gana 1',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: Profesional', items:[
+      {label:'Marca en 5 distintos con un futbolista de la Serie A',done:true},
+      {label:'Juega 1',done:true},
+      {label:'Asiste en 2 en 1 partido',done:true},
+      {label:'Gana 1',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: Clase mundial', items:[
+      {label:'Marca 1 con futbolista de la Premier League',done:true},
+      {label:'Marca 2 tiros de calidad en 3 partidos distintos',done:true},
+      {label:'Asiste 1 gol con futbolista de España',done:true},
+      {label:'Gana 1',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: Leyenda', items:[
+      {label:'Juega 1',done:true},
+      {label:'Marca 5',done:true},
+      {label:'Gana 4',done:true},
+      {label:'Gana 1',done:true}
+    ]}
+  ]}
+];
+// Debe coincidir EXACTO con FC_GUIDE_TOKEN en server.js
+const OBJ_API_TOKEN = 'b5916835-0213-45bd-bd89-4c0268f353f9';
+
 const SECTION_IDS = Object.keys(DATA);
 let activeSection='all',activeTag='all',searchText='';
 
@@ -658,23 +794,88 @@ function applyFilters(){
   document.getElementById('noResults').classList.toggle('visible',!anyVisible);
 }
 
+/* ── OBJETIVOS: checklist with server persistence (falls back to in-memory only) ── */
+let objState={};
+function objItemId(gi,si,ii){ return gi+'-'+si+'-'+ii; }
+function objIsDone(gi,si,ii,item){
+  const id=objItemId(gi,si,ii);
+  return id in objState ? objState[id] : !!item.done;
+}
+function renderObjetivos(){
+  const el=document.getElementById('objetivosList');
+  el.innerHTML=OBJETIVOS.map((g,gi)=>{
+    const subs=g.subs.map((sub,si)=>{
+      const items=sub.items.map((item,ii)=>{
+        const done=objIsDone(gi,si,ii,item);
+        return '<label class="obj-item'+(done?' done':'')+'">'
+          +'<input type="checkbox" data-obj-toggle="'+objItemId(gi,si,ii)+'"'+(done?' checked':'')+'>'
+          +'<span class="obj-item-label">'+escapeHtml(item.label)+'</span>'
+          +'</label>';
+      }).join('');
+      const total=sub.items.length;
+      const doneCount=sub.items.filter((item,ii)=>objIsDone(gi,si,ii,item)).length;
+      return '<div class="obj-sub">'
+        +'<div class="obj-sub-head"><span class="obj-sub-title">'+escapeHtml(sub.title)+'</span><span class="obj-sub-count">'+doneCount+'/'+total+'</span></div>'
+        +(sub.reward?'<div class="obj-sub-reward">'+escapeHtml(sub.reward)+'</div>':'')
+        +(sub.desc?'<div class="obj-sub-desc">'+escapeHtml(sub.desc)+'</div>':'')
+        +'<div class="obj-items">'+items+'</div>'
+        +'</div>';
+    }).join('');
+    return '<div class="obj-group"><div class="obj-group-title">'+escapeHtml(g.group)+'</div>'+subs+'</div>';
+  }).join('');
+}
+document.getElementById('objetivosList').addEventListener('change',e=>{
+  const id=e.target.dataset.objToggle;
+  if(!id) return;
+  objState[id]=e.target.checked;
+  renderObjetivos();
+  saveObjState();
+});
+let objSaveTimer=null;
+function saveObjState(){
+  const note=document.getElementById('objSyncNote');
+  note.textContent='Guardando…';
+  clearTimeout(objSaveTimer);
+  objSaveTimer=setTimeout(()=>{
+    fetch('/api/objetivos',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+      body:JSON.stringify(objState)
+    }).then(r=>{
+      if(!r.ok) throw new Error('bad status');
+      note.textContent='Guardado';
+    }).catch(()=>{
+      note.textContent='Sin conexión con el servidor — este cambio solo se ha guardado en este navegador.';
+    });
+  },400);
+}
+function loadObjState(){
+  fetch('/api/objetivos').then(r=>r.ok?r.json():{}).then(data=>{
+    objState=data||{};
+    renderObjetivos();
+  }).catch(()=>{
+    renderObjetivos();
+    document.getElementById('objSyncNote').textContent='Sin conexión con el servidor — los cambios no se guardarán entre sesiones todavía.';
+  });
+}
+
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
 function showView(view){
   document.getElementById('view-mecanicas').hidden = view!=='mecanicas';
   document.getElementById('view-galeria').hidden = view!=='galeria';
+  document.getElementById('view-objetivos').hidden = view!=='objetivos';
 }
 function updateTabsActive(view,section){
   document.querySelectorAll('.tab').forEach(btn=>{
-    const isGaleria=btn.dataset.viewBtn==='galeria';
-    const active=isGaleria ? view==='galeria' : (view==='mecanicas'&&btn.dataset.sectionBtn===section);
+    const active = btn.dataset.viewBtn ? btn.dataset.viewBtn===view : (view==='mecanicas'&&btn.dataset.sectionBtn===section);
     btn.classList.toggle('active',active);
   });
 }
 function applyRoute(){
   const hash=(location.hash||'').replace('#','');
-  if(hash==='galeria'){
-    showView('galeria');
-    updateTabsActive('galeria',activeSection);
+  if(hash==='galeria'||hash==='objetivos'){
+    showView(hash);
+    updateTabsActive(hash,activeSection);
   } else {
     activeSection=SECTION_IDS.includes(hash)?hash:'all';
     showView('mecanicas');
@@ -684,13 +885,14 @@ function applyRoute(){
 }
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    location.hash = btn.dataset.viewBtn==='galeria' ? 'galeria' : (btn.dataset.sectionBtn==='all' ? '' : btn.dataset.sectionBtn);
+    location.hash = btn.dataset.viewBtn ? btn.dataset.viewBtn : (btn.dataset.sectionBtn==='all' ? '' : btn.dataset.sectionBtn);
   });
 });
 window.addEventListener('hashchange',applyRoute);
 
 render();
 applyRoute();
+loadObjState();
 </script>
 </body>
 </html>
