@@ -26,68 +26,39 @@
   --warn-tint: rgba(224,178,91,.12);
   --green: #7fd99a;
   --green-tint: rgba(127,217,154,.12);
-  --sidebar-w: 196px;
-  --sidebar-col-w: 44px;
-  --header-h: 50px;
+  --max-w: 1360px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
 a{color:inherit;}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 
-/* ── MOBILE HEADER ── */
-.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--hairline);z-index:200;align-items:center;padding:0 14px;gap:10px;}
-.mobile-logo{display:flex;align-items:baseline;gap:6px;font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
-.logo-badge{font-size:9px;font-weight:700;letter-spacing:0.04em;color:var(--text3);padding:1px 0;}
-.mobile-search{flex:1;background:transparent;border:none;border-bottom:1px solid var(--hairline);border-radius:0;color:#fff;font-size:13px;padding:6px 2px;outline:none;}
-.mobile-search::placeholder{color:var(--text3);}
-.mobile-search:focus{border-color:var(--accent);}
-.hamburger{background:none;border:none;color:var(--text2);font-size:16px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-
-/* ── MOBILE DRAWER ── */
-.drawer{display:none;position:fixed;inset:var(--header-h) 0 0 0;background:rgba(0,0,0,0.7);z-index:150;}
-.drawer.open{display:block;}
-.drawer-inner{background:var(--bg);width:210px;height:100%;overflow-y:auto;padding:12px 0 20px;}
-.drawer-sep{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);padding:16px 20px 6px;font-weight:600;}
-.drawer-btn{display:flex;align-items:center;width:100%;background:none;border:none;border-left:2px solid transparent;color:var(--text2);font-size:13px;padding:9px 18px;cursor:pointer;text-align:left;transition:color 0.1s;}
-.drawer-btn:hover{color:#fff;}
-.drawer-btn.active{color:#fff;font-weight:600;border-left-color:var(--accent);}
-
-/* ── DESKTOP LAYOUT ── */
-.layout{display:flex;min-height:100vh;}
-
-/* ── SIDEBAR ── */
-.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--bg);border-right:1px solid var(--hairline);position:sticky;top:0;height:100vh;overflow:hidden;flex-shrink:0;transition:width 0.2s ease,min-width 0.2s ease;}
-.sidebar.collapsed{width:var(--sidebar-col-w);min-width:var(--sidebar-col-w);}
-.sidebar-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--hairline);height:50px;}
-.sidebar-logo{display:flex;align-items:baseline;gap:6px;font-size:14px;font-weight:700;color:#fff;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;transition:opacity 0.15s,width 0.2s;}
-.sidebar.collapsed .sidebar-logo{opacity:0;width:0;pointer-events:none;}
-.collapse-btn{background:none;border:none;color:var(--text3);width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:color 0.1s;}
-.collapse-btn:hover{color:#fff;}
-.sidebar-scroll{overflow-y:auto;height:calc(100vh - 50px);padding:6px 4px 20px;}
-.nav-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--text3);padding:16px 16px 6px;white-space:nowrap;overflow:hidden;transition:opacity 0.15s;font-weight:600;}
-.sidebar.collapsed .nav-lbl{opacity:0;}
-.nav-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-left:2px solid transparent;color:var(--text2);font-size:13px;padding:6px 16px;cursor:pointer;text-align:left;white-space:nowrap;transition:color 0.1s;}
-.nav-btn:hover{color:#fff;}
-.nav-btn.active{color:#fff;font-weight:600;border-left-color:var(--accent);}
-.nav-icon{font-size:12px;flex-shrink:0;font-style:normal;font-weight:600;width:14px;text-align:center;color:var(--text3);}
-.nav-btn.active .nav-icon{color:var(--accent);}
-.nav-label{overflow:hidden;transition:opacity 0.15s;}
-.sidebar.collapsed .nav-label{opacity:0;}
-.sidebar-filters{padding:2px 16px 8px;display:flex;flex-direction:column;gap:2px;}
-.sidebar.collapsed .sidebar-filters{display:none;}
-.sf-btn{display:block;width:100%;background:none;border:none;color:var(--text2);font-size:12px;padding:4px 0;cursor:pointer;text-align:left;transition:color 0.1s;}
-.sf-btn:hover{color:#fff;}
-.sf-btn.active{color:#fff;font-weight:600;}
-
-/* ── MAIN ── */
-.main{flex:1;padding:36px 40px 80px;min-width:0;overflow-x:hidden;}
-.topbar{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
-.search-wrap{position:relative;flex:1;max-width:280px;}
-.search-wrap input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--hairline);border-radius:0;color:#fff;font-size:13px;padding:7px 4px 7px 22px;outline:none;transition:border-color 0.15s;}
+/* ── HEADER ── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--hairline);}
+.topbar-row1{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;max-width:var(--max-w);margin:0 auto;}
+.logo{display:flex;align-items:baseline;gap:6px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;letter-spacing:-0.02em;flex-shrink:0;}
+.logo-badge{font-size:9px;font-weight:700;letter-spacing:0.04em;color:var(--text3);}
+.search-wrap{position:relative;width:220px;flex-shrink:0;}
+.search-wrap input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--hairline);border-radius:0;color:#fff;font-size:13px;padding:6px 4px 6px 20px;outline:none;transition:border-color 0.15s;}
 .search-wrap input::placeholder{color:var(--text3);}
 .search-wrap input:focus{border-color:var(--accent);}
-.search-icon{position:absolute;left:2px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;}
+.search-icon{position:absolute;left:2px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none;}
+.topbar-row2{display:flex;gap:2px;overflow-x:auto;padding:0 24px 10px;max-width:var(--max-w);margin:0 auto;scrollbar-width:none;}
+.topbar-row2::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;border-radius:0;transition:color 0.1s;}
+.tab:hover{color:#fff;}
+.tab.active{color:#fff;font-weight:700;border-bottom-color:var(--accent);}
+.tab-sep{margin-left:10px;padding-left:18px;border-left:1px solid var(--hairline);}
+
+/* ── MAIN ── */
+.main{max-width:var(--max-w);margin:0 auto;padding:32px 24px 80px;}
+.view[hidden]{display:none;}
+
+/* ── FILTER ROW ── */
+.filter-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;}
+.filter-btn{background:none;border:none;color:var(--text2);font-size:12px;padding:2px 0;cursor:pointer;transition:color 0.1s;}
+.filter-btn:hover{color:#fff;}
+.filter-btn.active{color:#fff;font-weight:600;}
 
 /* ── SECTIONS ── */
 .section-wrap{margin-bottom:4px;}
@@ -128,6 +99,65 @@ a{color:inherit;}
 .tag-no-skill{background:var(--chip-bg);color:var(--chip-text);}
 .tag-video{background:var(--green-tint);color:var(--green);}
 
+/* ── GALERÍA VIEW ── */
+.gal-h{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
+.gal-method{margin-bottom:40px;}
+.gal-steps{list-style:none;counter-reset:step;display:flex;flex-direction:column;gap:14px;max-width:640px;}
+.gal-steps li{counter-increment:step;position:relative;padding-left:34px;font-size:13px;color:var(--text2);line-height:1.65;}
+.gal-steps li::before{content:counter(step);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--chip-bg);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.gal-steps strong{color:#fff;}
+.gal-tiers{display:flex;flex-direction:column;gap:1px;background:var(--hairline);border-radius:14px;overflow:hidden;margin-bottom:24px;}
+.gal-tier{background:var(--surface);padding:18px 22px;}
+.gal-tier-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;}
+.gal-tier-name{font-size:15px;font-weight:700;color:#fff;}
+.gal-tier-cost{font-size:12px;font-weight:600;color:var(--chip-text);background:var(--chip-bg);border-radius:20px;padding:3px 10px;white-space:nowrap;}
+.gal-tier-body{font-size:13px;color:var(--text2);line-height:1.6;}
+.gal-note{font-size:13px;color:var(--text2);padding:16px 20px;background:var(--surface);border-radius:12px;line-height:1.6;max-width:640px;}
+.gal-note strong{color:#fff;}
+
+/* ── OBJETIVOS VIEW ── */
+.obj-sync-note{font-size:11px;color:var(--text3);margin-bottom:24px;min-height:14px;}
+.obj-group{margin-top:52px;}
+.obj-group:first-child{margin-top:0;}
+.obj-sub{margin-bottom:28px;}
+.obj-sub-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.obj-sub-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.obj-sub-count{font-size:11px;font-weight:600;color:var(--chip-text);background:var(--chip-bg);border-radius:20px;padding:2px 9px;white-space:nowrap;flex-shrink:0;}
+.obj-sub-reward{font-size:12px;color:var(--warn);margin-bottom:8px;}
+.obj-sub-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
+.obj-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;}
+.obj-card{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:12px;padding:13px 16px;cursor:pointer;transition:background 0.15s;}
+.obj-card:hover{background:var(--surface2);}
+.obj-card.done{background:var(--green-tint);}
+.obj-check{flex-shrink:0;width:19px;height:19px;border-radius:50%;border:1.5px solid var(--hairline2);display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;color:transparent;}
+.obj-card.done .obj-check{background:var(--green);border-color:var(--green);color:var(--bg);}
+.obj-card-label{font-size:13px;color:var(--text2);line-height:1.4;}
+.obj-card.done .obj-card-label{color:#fff;}
+.obj-card-desc{font-size:11px;color:var(--text3);line-height:1.4;margin-top:2px;}
+
+.obj-card{position:relative;}
+.obj-card-edit-btn{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:6px;background:rgba(0,0,0,.35);border:none;color:var(--text3);font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;cursor:pointer;}
+.obj-card:hover .obj-card-edit-btn,.obj-card-edit-btn:focus-visible{opacity:1;}
+.obj-card-ghost{display:flex;align-items:center;justify-content:center;background:none;border:1px dashed var(--hairline2);border-radius:12px;padding:13px 16px;cursor:pointer;color:var(--text3);font-size:13px;font-weight:600;transition:color 0.15s,border-color 0.15s;}
+.obj-card-ghost:hover{color:#fff;border-color:var(--accent);}
+
+.obj-group-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--hairline);}
+.obj-group-title{font-size:12px;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);font-weight:700;}
+.obj-sub-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.obj-icon-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 4px;line-height:1;}
+.obj-icon-btn:hover{color:var(--red);}
+.obj-add-btn{display:inline-block;margin-top:10px;background:none;border:1px dashed var(--hairline2);color:var(--text3);font-size:12px;font-weight:600;padding:7px 14px;border-radius:10px;cursor:pointer;}
+.obj-add-btn:hover{color:#fff;border-color:var(--accent);}
+.obj-add-group-btn{margin-top:8px;}
+
+.obj-form{background:var(--surface2);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin-top:10px;max-width:420px;}
+.obj-form input,.obj-form textarea{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;resize:vertical;}
+.obj-form input:focus,.obj-form textarea:focus{border-color:var(--accent);}
+.obj-form-row{display:flex;gap:8px;justify-content:flex-end;}
+.obj-form-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;}
+.obj-form-btn.secondary{background:var(--chip-bg);color:var(--chip-text);}
+.obj-form-btn.danger{background:var(--red-tint);color:var(--red);margin-right:auto;}
+
 /* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
@@ -148,11 +178,10 @@ a{color:inherit;}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
-  .mobile-header{display:flex;}
-  .layout{flex-direction:column;margin-top:var(--header-h);}
-  .sidebar{display:none;}
+  .topbar-row1{padding:12px 16px;}
+  .search-wrap{width:120px;}
+  .topbar-row2{padding:0 16px 10px;}
   .main{padding:20px 16px 60px;}
-  .topbar{display:none;}
   .items{grid-template-columns:1fr;}
   .section-header{margin-top:32px;}
   .sec-title{font-size:19px;}
@@ -164,31 +193,28 @@ a{color:inherit;}
 </head>
 <body>
 
-<header class="mobile-header">
-  <span class="mobile-logo">FC Guide <span class="logo-badge">FC27</span></span>
-  <input class="mobile-search" type="text" placeholder="Buscar..." id="mobileSearchInput">
-  <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">&#9776;</button>
-</header>
-
-<div class="drawer" id="drawer">
-  <div class="drawer-inner" id="drawerInner">
-    <div class="drawer-sep">Secciones</div>
-    <button class="drawer-btn active" data-section-btn="all">Todo</button>
-    <button class="drawer-btn" data-section-btn="patrones">Patrones</button>
-    <button class="drawer-btn" data-section-btn="defensa">Defensa</button>
-    <button class="drawer-btn" data-section-btn="desmarques">Desmarques</button>
-    <button class="drawer-btn" data-section-btn="pases">Pases</button>
-    <button class="drawer-btn" data-section-btn="ataque">Ataque</button>
-    <button class="drawer-btn" data-section-btn="regates">Regates</button>
-    <button class="drawer-btn" data-section-btn="conduccion">Conducción</button>
-    <button class="drawer-btn" data-section-btn="pelota">Pelota parada</button>
-    <div class="drawer-sep">Filtros</div>
-    <button class="drawer-btn active" data-tag-btn="all">Todos</button>
-    <button class="drawer-btn" data-tag-btn="cuando">Con cuándo NO</button>
-    <button class="drawer-btn" data-tag-btn="skill">Requiere skill</button>
-    <button class="drawer-btn" data-tag-btn="noskill">Sin skill</button>
+<header class="topbar">
+  <div class="topbar-row1">
+    <a class="logo" href="#">FC Guide <span class="logo-badge">FC27</span></a>
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Buscar...">
+    </div>
   </div>
-</div>
+  <nav class="topbar-row2" id="tabs">
+    <button class="tab active" data-section-btn="all">Todo</button>
+    <button class="tab" data-section-btn="patrones">Patrones</button>
+    <button class="tab" data-section-btn="defensa">Defensa</button>
+    <button class="tab" data-section-btn="desmarques">Desmarques</button>
+    <button class="tab" data-section-btn="pases">Pases</button>
+    <button class="tab" data-section-btn="ataque">Ataque</button>
+    <button class="tab" data-section-btn="regates">Regates</button>
+    <button class="tab" data-section-btn="conduccion">Conducción</button>
+    <button class="tab" data-section-btn="pelota">Pelota parada</button>
+    <button class="tab tab-sep" data-view-btn="galeria">Galería</button>
+    <button class="tab" data-view-btn="objetivos">Objetivos</button>
+  </nav>
+</header>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
@@ -207,78 +233,94 @@ a{color:inherit;}
   </div>
 </div>
 
-<div class="layout">
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-top">
-    <span class="sidebar-logo">FC Guide <span class="logo-badge">FC27</span></span>
-    <button class="collapse-btn" id="collapseBtn" aria-label="Colapsar barra lateral">&#9664;</button>
-  </div>
-  <div class="sidebar-scroll">
-    <div class="nav-lbl">Secciones</div>
-    <button class="nav-btn active" data-section-btn="all"><span class="nav-icon">·</span><span class="nav-label">Todo</span></button>
-    <button class="nav-btn" data-section-btn="patrones"><span class="nav-icon">T</span><span class="nav-label">Patrones</span></button>
-    <button class="nav-btn" data-section-btn="defensa"><span class="nav-icon">D</span><span class="nav-label">Defensa</span></button>
-    <button class="nav-btn" data-section-btn="desmarques"><span class="nav-icon">R</span><span class="nav-label">Desmarques</span></button>
-    <button class="nav-btn" data-section-btn="pases"><span class="nav-icon">P</span><span class="nav-label">Pases</span></button>
-    <button class="nav-btn" data-section-btn="ataque"><span class="nav-icon">A</span><span class="nav-label">Ataque</span></button>
-    <button class="nav-btn" data-section-btn="regates"><span class="nav-icon">G</span><span class="nav-label">Regates</span></button>
-    <button class="nav-btn" data-section-btn="conduccion"><span class="nav-icon">C</span><span class="nav-label">Conducción</span></button>
-    <button class="nav-btn" data-section-btn="pelota"><span class="nav-icon">F</span><span class="nav-label">Pelota parada</span></button>
-    <div class="nav-lbl">Filtros</div>
-    <div class="sidebar-filters">
-      <button class="sf-btn active" data-tag-btn="all">Todos</button>
-      <button class="sf-btn" data-tag-btn="cuando">Con cuándo NO</button>
-      <button class="sf-btn" data-tag-btn="skill">Requiere skill</button>
-      <button class="sf-btn" data-tag-btn="noskill">Sin skill</button>
-    </div>
-  </div>
-</aside>
-
 <main class="main">
-  <div class="topbar">
-    <div class="search-wrap">
-      <span class="search-icon">&#128269;</span>
-      <input type="text" id="searchInput" placeholder="Buscar mecánica...">
+
+  <div class="view" id="view-mecanicas">
+    <div class="filter-row" id="filterRow">
+      <button class="filter-btn active" data-tag-btn="all">Todos</button>
+      <button class="filter-btn" data-tag-btn="cuando">Con cuándo NO</button>
+      <button class="filter-btn" data-tag-btn="skill">Requiere skill</button>
+      <button class="filter-btn" data-tag-btn="noskill">Sin skill</button>
+    </div>
+    <div id="noResults" class="no-results">No hay resultados.</div>
+
+    <div class="section-wrap" data-section="patrones">
+      <div class="section-header"><span class="sec-label">Táctica</span><span class="sec-title">Patrones de ataque</span></div>
+      <div class="section-note">Situaciones recurrentes de partido. Reconocerlas antes que el rival es la diferencia entre reaccionar y anticipar.</div>
+      <div class="items" id="items-patrones"></div>
+    </div>
+    <div class="section-wrap" data-section="defensa">
+      <div class="section-header"><span class="sec-label">Defensa</span><span class="sec-title">Mecánicas defensivas</span></div>
+      <div class="section-note">Errores de defensa detectados en FC27 y cómo corregirlos. Fuente: Deep Researcher FC.</div>
+      <div class="items" id="items-defensa"></div>
+    </div>
+    <div class="section-wrap" data-section="desmarques">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Desmarques</span></div>
+      <div class="items" id="items-desmarques"></div>
+    </div>
+    <div class="section-wrap" data-section="pases">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Pases</span></div>
+      <div class="items" id="items-pases"></div>
+    </div>
+    <div class="section-wrap" data-section="ataque">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Conceptos y tiros</span></div>
+      <div class="items" id="items-ataque"></div>
+    </div>
+    <div class="section-wrap" data-section="regates">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Regates</span></div>
+      <div class="items" id="items-regates"></div>
+    </div>
+    <div class="section-wrap" data-section="conduccion">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Movimiento y conducción</span></div>
+      <div class="items" id="items-conduccion"></div>
+    </div>
+    <div class="section-wrap" data-section="pelota">
+      <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
+      <div class="items" id="items-pelota"></div>
     </div>
   </div>
-  <div id="noResults" class="no-results">No hay resultados.</div>
 
-  <div class="section-wrap" data-section="patrones">
-    <div class="section-header"><span class="sec-label">Táctica</span><span class="sec-title">Patrones de ataque</span></div>
-    <div class="section-note">Situaciones recurrentes de partido. Reconocerlas antes que el rival es la diferencia entre reaccionar y anticipar.</div>
-    <div class="items" id="items-patrones"></div>
+  <div class="view" id="view-galeria" hidden>
+    <div class="section-header"><span class="sec-label">Economía</span><span class="sec-title">Galería (Gallery Tokens)</span></div>
+    <div class="section-note">Método general para acumular fichas de Galería — no una lista de qué comprar hoy. Los jugadores y precios concretos cambian cada semana: comprueba siempre el coste actual en fut.gg antes de comprar. Fuente: Clausiño.</div>
+
+    <div class="gal-method">
+      <div class="gal-h">El método, paso a paso</div>
+      <ol class="gal-steps">
+        <li>Entra en <strong>fut.gg → Gallery</strong> (menú de tres líneas del sitio → "Fut Gallery").</li>
+        <li>Busca por categoría: escribe el nombre de la liga o el club en el buscador de categorías.</li>
+        <li>Dentro de cada categoría, apunta al <strong>rango C</strong> como objetivo por defecto — suele ser el mejor equilibrio fichas/coste. La propia página te dice cuántas monedas necesitas para cada rango antes de empezar.</li>
+        <li>Compra la plantilla del rango, pero <strong>no compres todas las cartas caras a la vez</strong>: compra una, ponla a la venta, espera a que se venda y compra la siguiente. Así recuperas monedas en vez de tenerlas todas paradas en cartas al mismo tiempo.</li>
+        <li>Repite categoría por categoría — las ligas grandes primero (mejor ratio fichas/coste), luego plantillas de clubes pequeños para completar.</li>
+      </ol>
+    </div>
+
+    <div class="gal-tiers">
+      <div class="gal-tier">
+        <div class="gal-tier-head"><span class="gal-tier-name">Alto gasto</span><span class="gal-tier-cost">~1M+ monedas</span></div>
+        <div class="gal-tier-body">Set de héroes completo (rango A) + rango C de todas las ligas grandes + varias plantillas de clubes pequeños en rango A/S. Puedes llegar a las fichas objetivo en cuestión de horas.</div>
+      </div>
+      <div class="gal-tier">
+        <div class="gal-tier-head"><span class="gal-tier-name">Gasto medio</span><span class="gal-tier-cost">~500k monedas</span></div>
+        <div class="gal-tier-body">Set de héroes en rango A (no hace falta completarlo entero) + rango C de las ligas grandes + plantillas de clubes pequeños. Se tarda días en vez de horas.</div>
+      </div>
+      <div class="gal-tier">
+        <div class="gal-tier-head"><span class="gal-tier-name">Presupuesto ajustado</span><span class="gal-tier-cost">~50k monedas</span></div>
+        <div class="gal-tier-body">Salta el set de héroes — es lo más caro. Enfócate solo en plantillas de clubes pequeños al rango D/C mínimo: son muchas plantillas pero cada una cuesta poco. Se tarda semanas, no días.</div>
+      </div>
+    </div>
+
+    <div class="gal-note"><strong>Truco de monedas:</strong> con una carta de más de 100k, compra y espera a que se venda antes de seguir — si no, te quedas sin monedas a medio camino. Con cartas baratas (bronce, pocas miles) sí puedes comprar y vender en cadena sin esperar.</div>
   </div>
-  <div class="section-wrap" data-section="defensa">
-    <div class="section-header"><span class="sec-label">Defensa</span><span class="sec-title">Mecánicas defensivas</span></div>
-    <div class="section-note">Errores de defensa detectados en FC27 y cómo corregirlos. Fuente: Deep Researcher FC.</div>
-    <div class="items" id="items-defensa"></div>
+
+  <div class="view" id="view-objetivos" hidden>
+    <div class="section-header"><span class="sec-label">Progreso</span><span class="sec-title">Objetivos</span></div>
+    <div class="section-note">Marca lo que ya has completado. Se guarda en el servidor si la API está desplegada — si no, el cambio se queda solo en este navegador.</div>
+    <div class="obj-sync-note" id="objSyncNote"></div>
+    <div id="objetivosList"></div>
   </div>
-  <div class="section-wrap" data-section="desmarques">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Desmarques</span></div>
-    <div class="items" id="items-desmarques"></div>
-  </div>
-  <div class="section-wrap" data-section="pases">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Pases</span></div>
-    <div class="items" id="items-pases"></div>
-  </div>
-  <div class="section-wrap" data-section="ataque">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Conceptos y tiros</span></div>
-    <div class="items" id="items-ataque"></div>
-  </div>
-  <div class="section-wrap" data-section="regates">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Regates</span></div>
-    <div class="items" id="items-regates"></div>
-  </div>
-  <div class="section-wrap" data-section="conduccion">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Movimiento y conducción</span></div>
-    <div class="items" id="items-conduccion"></div>
-  </div>
-  <div class="section-wrap" data-section="pelota">
-    <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
-    <div class="items" id="items-pelota"></div>
-  </div>
+
 </main>
-</div>
 
 <script>
 const DATA = {
@@ -537,19 +579,126 @@ const DATA = {
   ]
 };
 
+// Semilla inicial: solo se usa la primera vez (si el servidor y localStorage
+// están vacíos). A partir de ahí, todo lo que ves en Objetivos viene de lo
+// que tú añadas/edites en la propia página — esto no hay que tocarlo más.
+const OBJ_SEED = [
+  { title:'Fundamentos', subs:[
+    { title:'Inicio del camino', items:[
+      {label:'Gana partido — mínima Aficionado',done:true},
+      {label:'20 goles — 6/20',done:true},
+      {label:'7 partidos — 3/7',done:true}
+    ]},
+    { title:'Sueños del primer equipo', items:[
+      {label:'Upgrade Bronce',done:true},
+      {label:'Intro to streamlined SBCs',done:true}
+    ]},
+    { title:'Subiendo puestos', items:[
+      {label:'Cambia formación',done:true},
+      {label:'Cambia nombre del club',done:true},
+      {label:'Introducción a Evos',done:false}
+    ]}
+  ]},
+  { title:'Hitos', subs:[
+    { title:'Hito mercado de transferencias', items:[
+      {label:'50 ventas — 18/25',done:false},
+      {label:'25 compras rápidas',done:false},
+      {label:'50 compras rápidas',done:false},
+      {label:'25 ventas — 18/25',done:true}
+    ]},
+    { title:'Hito Rivals', items:[
+      {label:'3 objetivos: juega 15 — 3/15',done:false}
+    ]},
+    { title:'Hito Co-op', items:[
+      {label:'3 objetivos: juega 50 — 3/50',done:false}
+    ]},
+    { title:'Hito Squad Battles', items:[
+      {label:'3 objetivos: juega 15',done:false}
+    ]},
+    { title:'Hito eventos en directo', items:[
+      {label:'3 objetivos: juega 20',done:false}
+    ]},
+    { title:'Hito Draft', items:[
+      {label:'3 objetivos: juega 15',done:false}
+    ]},
+    { title:'Hito Rush', items:[
+      {label:'3 objetivos: juega 15',done:false},
+      {label:'2 objetivos: completa 20 bonificaciones',done:false},
+      {label:'20 goles como equipo',done:false}
+    ]},
+    { title:'Hito Momentos', items:[
+      {label:'60 estrellas',done:false}
+    ]}
+  ]},
+  { title:'De temporada', subs:[
+    { title:'Objetivos semanales', items:[
+      {label:'Vende 10',done:false},
+      {label:'Compra 10',done:false},
+      {label:'Juega 10 — 3/10',done:false},
+      {label:'Gana 10 — 1/10',done:false},
+      {label:'Marca 10',done:false}
+    ]},
+    { title:'Rush semanales', items:[
+      {label:'35 puntos Rush',done:false}
+    ]},
+    { title:'Completista: Juego Semanal', items:[
+      {label:'Completa Juego Semanal 4 veces',done:false}
+    ]},
+    { title:'Juego Semanal T1', items:[
+      {label:'Marca en 9 partidos del modo exhibición de Promesas',done:false}
+    ]},
+    { title:'T1: exhibición de Promesas', items:[
+      {label:'Juega 15',done:false},
+      {label:'Asiste en 20 partidos distintos',done:false},
+      {label:'Marca en 30 partidos distintos',done:false}
+    ]},
+    { title:'Completista: desafío Promesas pasadas', items:[
+      {label:'Objetivo desafío Promesas pasadas: Aficionado',done:true},
+      {label:'Objetivo desafío Promesas pasadas: Profesional',done:true},
+      {label:'Objetivo desafío Promesas pasadas: Clase mundial',done:true},
+      {label:'Objetivo desafío Promesas pasadas: Leyenda',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: partido rápido', items:[
+      {label:'Marca 1',done:false},
+      {label:'Juega 2',done:false},
+      {label:'Asiste en 3',done:false},
+      {label:'Gana 1',done:false}
+    ]},
+    { title:'Desafío Promesas pasadas: Aficionado', items:[
+      {label:'Marca 1',done:true},
+      {label:'Juega 2 — 1 español',done:false},
+      {label:'Asiste en 3',done:true},
+      {label:'Gana 1',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: Profesional', items:[
+      {label:'Marca en 5 distintos con un futbolista de la Serie A',done:true},
+      {label:'Juega 1',done:true},
+      {label:'Asiste en 2 en 1 partido',done:true},
+      {label:'Gana 1',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: Clase mundial', items:[
+      {label:'Marca 1 con futbolista de la Premier League',done:true},
+      {label:'Marca 2 tiros de calidad en 3 partidos distintos',done:true},
+      {label:'Asiste 1 gol con futbolista de España',done:true},
+      {label:'Gana 1',done:true}
+    ]},
+    { title:'Desafío Promesas pasadas: Leyenda', items:[
+      {label:'Juega 1',done:true},
+      {label:'Marca 5',done:true},
+      {label:'Gana 4',done:true},
+      {label:'Gana 1',done:true}
+    ]}
+  ]}
+];
+// Debe coincidir EXACTO con FC_GUIDE_TOKEN en server.js
+const OBJ_API_TOKEN = 'b5916835-0213-45bd-bd89-4c0268f353f9';
+
 const SECTION_IDS = Object.keys(DATA);
-let activeSection='all',activeTag='all',searchText='',sidebarCollapsed=false;
+let activeSection='all',activeTag='all',searchText='';
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
-function toggleSidebar(){
-  sidebarCollapsed=!sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
-  document.getElementById('collapseBtn').innerHTML=sidebarCollapsed?'&#9654;':'&#9664;';
-}
-function toggleDrawer(){document.getElementById('drawer').classList.toggle('open');}
 
 function cardBtns(buttons){
   if(!buttons||!buttons.length) return '';
@@ -618,7 +767,6 @@ function render(){
       ? list.map(item=>makeItem(item,section)).join('')
       : '<div class="section-empty">Próximamente — pendiente de contenido FC27 para esta sección.</div>';
   });
-  applyFilters();
 }
 
 document.querySelectorAll('.items').forEach(el=>{
@@ -640,35 +788,14 @@ function doSearch(val){
   applyFilters();
 }
 document.getElementById('searchInput').addEventListener('input',e=>doSearch(e.target.value));
-document.getElementById('mobileSearchInput').addEventListener('input',e=>doSearch(e.target.value));
 
-function setActiveSection(section){
-  activeSection=section;
-  document.querySelectorAll('[data-section-btn]').forEach(b=>b.classList.toggle('active',b.dataset.sectionBtn===section));
-  applyFilters();
-}
 function setActiveTag(tag){
   activeTag=tag;
   document.querySelectorAll('[data-tag-btn]').forEach(b=>b.classList.toggle('active',b.dataset.tagBtn===tag));
   applyFilters();
 }
-document.querySelectorAll('[data-section-btn]').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    setActiveSection(btn.dataset.sectionBtn);
-    if(btn.closest('#drawer')) document.getElementById('drawer').classList.remove('open');
-  });
-});
 document.querySelectorAll('[data-tag-btn]').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    setActiveTag(btn.dataset.tagBtn);
-    if(btn.closest('#drawer')) document.getElementById('drawer').classList.remove('open');
-  });
-});
-
-document.getElementById('collapseBtn').addEventListener('click',toggleSidebar);
-document.getElementById('hamburgerBtn').addEventListener('click',toggleDrawer);
-document.getElementById('drawer').addEventListener('click',e=>{
-  if(e.target===document.getElementById('drawer')) document.getElementById('drawer').classList.remove('open');
+  btn.addEventListener('click',()=>setActiveTag(btn.dataset.tagBtn));
 });
 
 function applyFilters(){
@@ -695,7 +822,246 @@ function applyFilters(){
   });
   document.getElementById('noResults').classList.toggle('visible',!anyVisible);
 }
+
+/* ── OBJETIVOS: editable groups/sub-sections/items, not hardcoded.
+   objData is the single source of truth (structure + done flags together).
+   Persisted to localStorage on every change, and best-effort synced to the
+   server (/api/objetivos) if it's deployed — falls back to local-only otherwise. ── */
+const OBJ_STORAGE_KEY='fcguide-objetivos';
+let objData=null;
+let objUi=null; // {type:'add-item'|'edit-item'|'add-sub'|'add-group', gi, si, ii}
+
+function objLoad(){
+  fetch('/api/objetivos').then(r=>r.ok?r.json():null).then(data=>{
+    if(data&&Array.isArray(data.groups)){ objData=data; renderObjetivos(); return; }
+    throw new Error('empty');
+  }).catch(()=>{
+    let cached=null;
+    try{ cached=JSON.parse(localStorage.getItem(OBJ_STORAGE_KEY)); }catch(e){}
+    objData=(cached&&Array.isArray(cached.groups))?cached:{groups:OBJ_SEED};
+    renderObjetivos();
+    document.getElementById('objSyncNote').textContent='Sin conexión con el servidor — se está guardando solo en este navegador.';
+  });
+}
+let objSaveTimer=null;
+function objSave(){
+  try{ localStorage.setItem(OBJ_STORAGE_KEY,JSON.stringify(objData)); }catch(e){}
+  const note=document.getElementById('objSyncNote');
+  note.textContent='Guardando…';
+  clearTimeout(objSaveTimer);
+  objSaveTimer=setTimeout(()=>{
+    fetch('/api/objetivos',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+      body:JSON.stringify(objData)
+    }).then(r=>{
+      if(!r.ok) throw new Error('bad status');
+      note.textContent='Guardado';
+    }).catch(()=>{
+      note.textContent='Guardado solo en este navegador — sin conexión con el servidor.';
+    });
+  },400);
+}
+
+function objToggle(gi,si,ii){
+  const item=objData.groups[gi].subs[si].items[ii];
+  item.done=!item.done;
+  renderObjetivos();
+  objSave();
+}
+
+function objFormHtml(){
+  if(!objUi) return '';
+  if(objUi.type==='add-item'||objUi.type==='edit-item'){
+    const editing=objUi.type==='edit-item';
+    const item=editing?objData.groups[objUi.gi].subs[objUi.si].items[objUi.ii]:{label:'',desc:''};
+    return '<div class="obj-form">'
+      +'<input type="text" id="objFormLabel" placeholder="Objetivo (p. ej. Marca 10 goles)" value="'+escapeHtml(item.label)+'">'
+      +'<textarea id="objFormDesc" rows="2" placeholder="Descripción opcional">'+escapeHtml(item.desc||'')+'</textarea>'
+      +'<div class="obj-form-row">'
+      +(editing?'<button class="obj-form-btn danger" data-obj-action="delete-item">Eliminar</button>':'')
+      +'<button class="obj-form-btn secondary" data-obj-action="cancel">Cancelar</button>'
+      +'<button class="obj-form-btn" data-obj-action="save-item">Guardar</button>'
+      +'</div></div>';
+  }
+  if(objUi.type==='add-sub'){
+    return '<div class="obj-form">'
+      +'<input type="text" id="objFormTitle" placeholder="Nombre de la sección (p. ej. Objetivos semana 3)">'
+      +'<div class="obj-form-row"><button class="obj-form-btn secondary" data-obj-action="cancel">Cancelar</button><button class="obj-form-btn" data-obj-action="save-sub">Guardar</button></div>'
+      +'</div>';
+  }
+  if(objUi.type==='add-group'){
+    return '<div class="obj-form">'
+      +'<input type="text" id="objFormTitle" placeholder="Nombre del grupo (p. ej. Temporada 2)">'
+      +'<div class="obj-form-row"><button class="obj-form-btn secondary" data-obj-action="cancel">Cancelar</button><button class="obj-form-btn" data-obj-action="save-group">Guardar</button></div>'
+      +'</div>';
+  }
+  return '';
+}
+
+function renderObjetivos(){
+  const el=document.getElementById('objetivosList');
+  if(!objData){ el.innerHTML=''; return; }
+  const groupsHtml=objData.groups.map((g,gi)=>{
+    const subsHtml=g.subs.map((sub,si)=>{
+      const cards=sub.items.map((item,ii)=>{
+        const done=!!item.done;
+        return '<div class="obj-card'+(done?' done':'')+'" role="checkbox" aria-checked="'+done+'" tabindex="0" data-obj-toggle data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'">'
+          +'<span class="obj-check">&#10003;</span>'
+          +'<div><span class="obj-card-label">'+escapeHtml(item.label)+'</span>'
+          +(item.desc?'<div class="obj-card-desc">'+escapeHtml(item.desc)+'</div>':'')
+          +'</div>'
+          +'<button class="obj-card-edit-btn" data-obj-edit-item data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'" aria-label="Editar objetivo">&#9998;</button>'
+          +'</div>';
+      }).join('');
+      const ghost='<div class="obj-card-ghost" data-obj-add-item data-gi="'+gi+'" data-si="'+si+'">+ Añadir objetivo</div>';
+      const formHere=(objUi&&(objUi.type==='add-item'||objUi.type==='edit-item')&&objUi.gi===gi&&objUi.si===si)?objFormHtml():'';
+      const total=sub.items.length;
+      const doneCount=sub.items.filter(item=>item.done).length;
+      return '<div class="obj-sub">'
+        +'<div class="obj-sub-head"><span class="obj-sub-title">'+escapeHtml(sub.title)+'</span>'
+        +'<span class="obj-sub-actions"><span class="obj-sub-count">'+doneCount+'/'+total+'</span>'
+        +'<button class="obj-icon-btn" data-obj-del-sub data-gi="'+gi+'" data-si="'+si+'" aria-label="Eliminar sección">&#10005;</button></span></div>'
+        +'<div class="obj-cards">'+cards+ghost+'</div>'
+        +formHere
+        +'</div>';
+    }).join('');
+    const subFormHere=(objUi&&objUi.type==='add-sub'&&objUi.gi===gi)?objFormHtml():'';
+    return '<div class="obj-group">'
+      +'<div class="obj-group-head"><span class="obj-group-title">'+escapeHtml(g.title)+'</span>'
+      +'<button class="obj-icon-btn" data-obj-del-group data-gi="'+gi+'" aria-label="Eliminar grupo">&#10005;</button></div>'
+      +subsHtml
+      +'<button class="obj-add-btn" data-obj-add-sub data-gi="'+gi+'">+ Añadir sección</button>'
+      +subFormHere
+      +'</div>';
+  }).join('');
+  const groupFormHere=(objUi&&objUi.type==='add-group')?objFormHtml():'';
+  el.innerHTML=groupsHtml
+    +'<button class="obj-add-btn obj-add-group-btn" data-obj-add-group>+ Añadir grupo</button>'
+    +groupFormHere;
+}
+
+document.getElementById('objetivosList').addEventListener('click',e=>{
+  const t=e.target;
+  let b;
+  if(b=t.closest('[data-obj-edit-item]')){
+    objUi={type:'edit-item',gi:+b.dataset.gi,si:+b.dataset.si,ii:+b.dataset.ii};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-add-item]')){
+    objUi={type:'add-item',gi:+b.dataset.gi,si:+b.dataset.si};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-add-sub]')){
+    objUi={type:'add-sub',gi:+b.dataset.gi};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-add-group]')){
+    objUi={type:'add-group'};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-del-sub]')){
+    if(confirm('¿Eliminar esta sección y sus objetivos?')){
+      objData.groups[+b.dataset.gi].subs.splice(+b.dataset.si,1);
+      objUi=null; renderObjetivos(); objSave();
+    }
+    return;
+  }
+  if(b=t.closest('[data-obj-del-group]')){
+    if(confirm('¿Eliminar este grupo entero, con todas sus secciones?')){
+      objData.groups.splice(+b.dataset.gi,1);
+      objUi=null; renderObjetivos(); objSave();
+    }
+    return;
+  }
+  if(t.dataset.objAction==='cancel'){
+    objUi=null; renderObjetivos();
+    return;
+  }
+  if(t.dataset.objAction==='save-item'){
+    const label=document.getElementById('objFormLabel').value.trim();
+    const desc=document.getElementById('objFormDesc').value.trim();
+    if(!label) return;
+    if(objUi.type==='edit-item'){
+      const item=objData.groups[objUi.gi].subs[objUi.si].items[objUi.ii];
+      item.label=label; item.desc=desc;
+    } else {
+      objData.groups[objUi.gi].subs[objUi.si].items.push({label,desc,done:false});
+    }
+    objUi=null; renderObjetivos(); objSave();
+    return;
+  }
+  if(t.dataset.objAction==='delete-item'){
+    if(confirm('¿Eliminar este objetivo?')){
+      objData.groups[objUi.gi].subs[objUi.si].items.splice(objUi.ii,1);
+      objUi=null; renderObjetivos(); objSave();
+    }
+    return;
+  }
+  if(t.dataset.objAction==='save-sub'){
+    const title=document.getElementById('objFormTitle').value.trim();
+    if(!title) return;
+    objData.groups[objUi.gi].subs.push({title,items:[]});
+    objUi=null; renderObjetivos(); objSave();
+    return;
+  }
+  if(t.dataset.objAction==='save-group'){
+    const title=document.getElementById('objFormTitle').value.trim();
+    if(!title) return;
+    objData.groups.push({title,subs:[]});
+    objUi=null; renderObjetivos(); objSave();
+    return;
+  }
+  if(b=t.closest('[data-obj-toggle]')){
+    objToggle(+b.dataset.gi,+b.dataset.si,+b.dataset.ii);
+  }
+});
+document.getElementById('objetivosList').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const card=e.target.closest('[data-obj-toggle]');
+  if(!card) return;
+  e.preventDefault();
+  objToggle(+card.dataset.gi,+card.dataset.si,+card.dataset.ii);
+});
+
+/* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
+function showView(view){
+  document.getElementById('view-mecanicas').hidden = view!=='mecanicas';
+  document.getElementById('view-galeria').hidden = view!=='galeria';
+  document.getElementById('view-objetivos').hidden = view!=='objetivos';
+}
+function updateTabsActive(view,section){
+  document.querySelectorAll('.tab').forEach(btn=>{
+    const active = btn.dataset.viewBtn ? btn.dataset.viewBtn===view : (view==='mecanicas'&&btn.dataset.sectionBtn===section);
+    btn.classList.toggle('active',active);
+  });
+}
+function applyRoute(){
+  const hash=(location.hash||'').replace('#','');
+  if(hash==='galeria'||hash==='objetivos'){
+    showView(hash);
+    updateTabsActive(hash,activeSection);
+  } else {
+    activeSection=SECTION_IDS.includes(hash)?hash:'all';
+    showView('mecanicas');
+    updateTabsActive('mecanicas',activeSection);
+    applyFilters();
+  }
+}
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    location.hash = btn.dataset.viewBtn ? btn.dataset.viewBtn : (btn.dataset.sectionBtn==='all' ? '' : btn.dataset.sectionBtn);
+  });
+});
+window.addEventListener('hashchange',applyRoute);
+
 render();
+applyRoute();
+objLoad();
 </script>
 </body>
 </html>
