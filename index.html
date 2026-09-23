@@ -145,8 +145,16 @@ a{color:inherit;}
 .gal-note{font-size:13px;color:var(--text2);padding:16px 20px;background:var(--surface);border-radius:12px;line-height:1.6;max-width:640px;}
 .gal-note strong{color:#fff;}
 
+/* ── GUARDADO MANUAL (Objetivos/Tácticas/Recomendaciones) ── */
+.sync-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.save-now-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;}
+.save-now-btn:hover{opacity:0.9;}
+.sync-ok{color:var(--green)!important;}
+.sync-err{color:var(--red)!important;}
+.tac-sync-note{font-size:11px;color:var(--text3);min-height:14px;}
+
 /* ── OBJETIVOS VIEW ── */
-.obj-sync-note{font-size:11px;color:var(--text3);margin-bottom:24px;min-height:14px;}
+.obj-sync-note{font-size:11px;color:var(--text3);min-height:14px;}
 .obj-group{margin-top:52px;}
 .obj-group:first-child{margin-top:0;}
 .obj-sub{margin-bottom:28px;}
@@ -189,7 +197,7 @@ a{color:inherit;}
 .obj-form-btn.danger{background:var(--red-tint);color:var(--red);margin-right:auto;}
 
 /* ── RECOMENDACIONES (MERCADO) ── */
-.rec-sync-note{font-size:11px;color:var(--text3);margin-bottom:10px;min-height:14px;}
+.rec-sync-note{font-size:11px;color:var(--text3);min-height:14px;}
 .rec-paste-zone{border:1px dashed var(--hairline2);border-radius:12px;padding:22px;text-align:center;color:var(--text3);font-size:13px;cursor:text;margin-bottom:20px;transition:border-color 0.15s,color 0.15s;}
 .rec-paste-zone:focus{outline:none;border-color:var(--accent);color:#fff;}
 .rec-paste-zone.drag{border-color:var(--accent);color:#fff;}
@@ -328,6 +336,7 @@ a{color:inherit;}
   <div class="view" id="view-tacticas" hidden>
     <div class="section-header"><span class="sec-label">Estrategia</span><span class="sec-title">Tácticas</span></div>
     <div class="section-note">Formaciones e instrucciones. Haz clic en una para ver el código y las opciones.</div>
+    <div class="sync-row"><div class="sync-note" id="tacSyncNote"></div><button class="save-now-btn" id="tacSaveNowBtn">Guardar ahora</button></div>
     <div id="tacticsList" class="tac-list"></div>
   </div>
 
@@ -371,7 +380,7 @@ a{color:inherit;}
 
     <div class="section-header" style="margin-top:36px"><span class="sec-label">Economía</span><span class="sec-title">Recomendaciones</span></div>
     <div class="section-note">Capturas de cartas, plantillas o SBCs recomendados. Es contenido de la semana, no un método fijo — se queda aquí como feed con fecha.</div>
-    <div class="rec-sync-note" id="recSyncNote"></div>
+    <div class="sync-row"><div class="rec-sync-note" id="recSyncNote"></div><button class="save-now-btn" id="recSaveNowBtn">Guardar ahora</button></div>
     <div class="rec-paste-zone" id="recPasteZone" tabindex="0">Haz clic aquí y pega una imagen (Ctrl+V), o <label class="rec-file-label">elige un archivo<input type="file" id="recFileInput" accept="image/*" hidden></label></div>
     <div id="recomendacionesList" class="rec-list"></div>
   </div>
@@ -379,7 +388,7 @@ a{color:inherit;}
   <div class="view" id="view-objetivos" hidden>
     <div class="section-header"><span class="sec-label">Progreso</span><span class="sec-title">Objetivos</span></div>
     <div class="section-note">Marca lo que ya has completado. Se guarda en el servidor si la API está desplegada — si no, el cambio se queda solo en este navegador.</div>
-    <div class="obj-sync-note" id="objSyncNote"></div>
+    <div class="sync-row"><div class="obj-sync-note" id="objSyncNote"></div><button class="save-now-btn" id="objSaveNowBtn">Guardar ahora</button></div>
     <div id="objetivosList"></div>
   </div>
 
@@ -948,25 +957,43 @@ function objLoad(){
     document.getElementById('objSyncNote').textContent='Sin conexión con el servidor — se está guardando solo en este navegador.';
   });
 }
+function objPersist(){
+  const note=document.getElementById('objSyncNote');
+  note.classList.remove('sync-ok','sync-err');
+  note.textContent='Guardando…';
+  return fetch('/api/objetivos',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+    body:JSON.stringify(objData)
+  }).then(r=>{
+    if(!r.ok) throw new Error('bad status');
+    note.textContent='Guardado ✓';
+    note.classList.add('sync-ok');
+  }).catch(()=>{
+    note.textContent='No se pudo guardar en el servidor — sigue solo en este navegador.';
+    note.classList.add('sync-err');
+  });
+}
 let objSaveTimer=null;
 function objSave(){
   try{ localStorage.setItem(OBJ_STORAGE_KEY,JSON.stringify(objData)); }catch(e){}
-  const note=document.getElementById('objSyncNote');
-  note.textContent='Guardando…';
   clearTimeout(objSaveTimer);
-  objSaveTimer=setTimeout(()=>{
-    fetch('/api/objetivos',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
-      body:JSON.stringify(objData)
-    }).then(r=>{
-      if(!r.ok) throw new Error('bad status');
-      note.textContent='Guardado';
-    }).catch(()=>{
-      note.textContent='Guardado solo en este navegador — sin conexión con el servidor.';
-    });
-  },400);
+  objSaveTimer=setTimeout(objPersist,400);
 }
+function objSaveNow(){
+  try{ localStorage.setItem(OBJ_STORAGE_KEY,JSON.stringify(objData)); }catch(e){}
+  clearTimeout(objSaveTimer);
+  objPersist();
+}
+document.getElementById('objSaveNowBtn').addEventListener('click',objSaveNow);
+document.getElementById('objetivosList').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.shiftKey||e.target.tagName==='TEXTAREA') return;
+  const form=e.target.closest('.obj-form');
+  if(!form) return;
+  e.preventDefault();
+  const saveBtn=form.querySelector('[data-obj-action^="save-"]');
+  if(saveBtn) saveBtn.click();
+});
 
 function objToggle(gi,si,ii){
   const item=objData.groups[gi].subs[si].items[ii];
@@ -1171,18 +1198,35 @@ function tacLoad(){
     renderTacticas();
   });
 }
+function tacPersist(){
+  const note=document.getElementById('tacSyncNote');
+  note.classList.remove('sync-ok','sync-err');
+  note.textContent='Guardando…';
+  return fetch('/api/tacticas',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+    body:JSON.stringify(tacData)
+  }).then(r=>{
+    if(!r.ok) throw new Error('bad status');
+    note.textContent='Guardado ✓';
+    note.classList.add('sync-ok');
+  }).catch(()=>{
+    note.textContent='No se pudo guardar en el servidor — sigue solo en este navegador.';
+    note.classList.add('sync-err');
+  });
+}
 let tacSaveTimer=null;
 function tacSave(){
   try{ localStorage.setItem(TAC_STORAGE_KEY,JSON.stringify(tacData)); }catch(e){}
   clearTimeout(tacSaveTimer);
-  tacSaveTimer=setTimeout(()=>{
-    fetch('/api/tacticas',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
-      body:JSON.stringify(tacData)
-    }).catch(()=>{});
-  },400);
+  tacSaveTimer=setTimeout(tacPersist,400);
 }
+function tacSaveNow(){
+  try{ localStorage.setItem(TAC_STORAGE_KEY,JSON.stringify(tacData)); }catch(e){}
+  clearTimeout(tacSaveTimer);
+  tacPersist();
+}
+document.getElementById('tacSaveNowBtn').addEventListener('click',tacSaveNow);
 
 function tacFormHtml(){
   if(!tacUi) return '';
@@ -1322,6 +1366,14 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
     renderTacticas();
   }
 });
+document.getElementById('tacticsList').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.shiftKey||e.target.tagName==='TEXTAREA') return;
+  const form=e.target.closest('.obj-form');
+  if(!form) return;
+  e.preventDefault();
+  const saveBtn=form.querySelector('[data-tac-action^="save-"]');
+  if(saveBtn) saveBtn.click();
+});
 
 /* ── RECOMENDACIONES (MERCADO): feed de imágenes pegadas/subidas, con fecha
    y nota opcional. Igual que Objetivos/Tácticas: si no hay conexión con el
@@ -1348,18 +1400,40 @@ function recLoad(){
     document.getElementById('recSyncNote').textContent='Sin conexión con el servidor — viendo la copia guardada en este navegador. Lo que pegues ahora se sube solo en cuanto vuelva la conexión.';
   });
 }
+function recPersist(){
+  const note=document.getElementById('recSyncNote');
+  note.classList.remove('sync-ok','sync-err');
+  note.textContent='Guardando…';
+  // Los ítems "pending" (data URL local, aún sin subir de verdad) nunca se
+  // envían al servidor: son solo copia local hasta que la subida real
+  // termine — mandarlos aquí podría superar el límite de tamaño del
+  // endpoint y bloquear el guardado de TODO el listado, no solo de ese ítem.
+  const syncable={items:recData.items.filter(it=>!it.pending)};
+  return fetch('/api/recomendaciones',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+    body:JSON.stringify(syncable)
+  }).then(r=>{
+    if(!r.ok) throw new Error('bad status');
+    note.textContent='Guardado ✓';
+    note.classList.add('sync-ok');
+  }).catch(()=>{
+    note.textContent='No se pudo guardar en el servidor — sigue solo en este navegador.';
+    note.classList.add('sync-err');
+  });
+}
 let recSaveTimer=null;
 function recSave(){
   try{ localStorage.setItem(REC_STORAGE_KEY,JSON.stringify(recData)); }catch(e){}
   clearTimeout(recSaveTimer);
-  recSaveTimer=setTimeout(()=>{
-    fetch('/api/recomendaciones',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
-      body:JSON.stringify(recData)
-    }).catch(()=>{});
-  },400);
+  recSaveTimer=setTimeout(recPersist,400);
 }
+function recSaveNow(){
+  try{ localStorage.setItem(REC_STORAGE_KEY,JSON.stringify(recData)); }catch(e){}
+  clearTimeout(recSaveTimer);
+  recPersist();
+}
+document.getElementById('recSaveNowBtn').addEventListener('click',recSaveNow);
 
 function recUploadBlob(blob){
   return fetch('/api/uploads',{
@@ -1464,6 +1538,14 @@ document.getElementById('recomendacionesList').addEventListener('change',e=>{
 document.getElementById('recomendacionesList').addEventListener('input',e=>{
   const ta=e.target.closest('[data-rec-caption]');
   if(ta) recAutoResize(ta);
+});
+document.getElementById('recomendacionesList').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.shiftKey) return;
+  const ta=e.target.closest('[data-rec-caption]');
+  if(!ta) return;
+  e.preventDefault();
+  ta.blur(); // dispara 'change' -> guarda la nota en recData
+  recSaveNow();
 });
 
 function recHandleFiles(files){
