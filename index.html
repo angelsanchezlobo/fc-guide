@@ -122,8 +122,10 @@ a{color:inherit;}
 .tac-opt-label{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px;}
 .tac-opt-empty{color:var(--text3);font-weight:600;}
 .tac-opt-desc{font-size:11px;color:var(--text2);margin-bottom:5px;line-height:1.4;}
-.tac-slider{width:100%;display:block;accent-color:var(--accent);height:14px;}
+.tac-slider-row{display:flex;align-items:center;gap:8px;}
+.tac-slider{flex:1;display:block;accent-color:var(--accent);height:14px;}
 .tac-slider:disabled{opacity:1;}
+.tac-opt-value{font-size:11px;font-weight:700;color:var(--text2);flex-shrink:0;min-width:16px;text-align:right;}
 .tac-opt-edit{position:absolute;top:0;right:0;background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:2px 4px;}
 .tac-opt-edit:hover{color:#fff;}
 
@@ -1108,13 +1110,13 @@ const TAC_OPT_CHOICES=[
   null
 ];
 function emptyTacOptions(){
-  return Array.from({length:TAC_OPT_COUNT},()=>({label:'',desc:'',value:50}));
+  return Array.from({length:TAC_OPT_COUNT},()=>({label:'',desc:'',value:30}));
 }
 const TAC_SEED=[
   { name:'4-4-1-1', code:'', options:[
     { label:'Balanced', desc:'Estilo de salida del equipo', value:60 },
     { label:'Balanced', desc:'Altura de la línea defensiva', value:60 },
-    { label:'', desc:'', value:50 }
+    { label:'', desc:'', value:30 }
   ]}
 ];
 
@@ -1159,13 +1161,14 @@ function tacFormHtml(){
   if(tacUi.type==='edit-opt'){
     const o=tacData.tactics[tacUi.ti].options[tacUi.oi];
     const choices=TAC_OPT_CHOICES[tacUi.oi];
+    const hasSlider=tacUi.oi===TAC_OPT_COUNT-1;
     const labelField=choices
       ?'<select id="tacFormLabel">'+choices.map(c=>'<option value="'+escapeHtml(c)+'"'+(c===o.label?' selected':'')+'>'+escapeHtml(c)+'</option>').join('')+'</select>'
       :'<input type="text" id="tacFormLabel" placeholder="Texto 1" value="'+escapeHtml(o.label)+'">';
     return '<div class="obj-form">'
       +labelField
       +'<textarea id="tacFormDesc" rows="2" placeholder="Texto 2 (descripción opcional)">'+escapeHtml(o.desc||'')+'</textarea>'
-      +'<input type="number" id="tacFormValue" min="0" max="100" placeholder="Valor (0-100)" value="'+o.value+'">'
+      +(hasSlider?'<input type="number" id="tacFormValue" min="1" max="60" placeholder="Valor (1-60)" value="'+o.value+'">':'')
       +'<div class="obj-form-row">'
       +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
       +'<button class="obj-form-btn" data-tac-action="save-opt">Guardar</button>'
@@ -1182,10 +1185,16 @@ function renderTacticas(){
     const opts=t.options.map((o,oi)=>{
       const optFormHere=(tacUi&&tacUi.type==='edit-opt'&&tacUi.ti===ti&&tacUi.oi===oi)?tacFormHtml():'';
       if(optFormHere) return optFormHere;
+      const hasSlider=oi===TAC_OPT_COUNT-1;
       return '<div class="tac-option">'
         +'<div class="tac-opt-label">'+(o.label?escapeHtml(o.label):'<span class="tac-opt-empty">Sin definir</span>')+'</div>'
         +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
-        +'<input type="range" class="tac-slider" min="0" max="100" value="'+o.value+'" disabled>'
+        +(hasSlider?(
+          '<div class="tac-slider-row">'
+          +'<input type="range" class="tac-slider" min="1" max="60" value="'+o.value+'" disabled>'
+          +'<span class="tac-opt-value">'+o.value+'</span>'
+          +'</div>'
+        ):'')
         +'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>'
         +'</div>';
     }).join('');
@@ -1256,11 +1265,14 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
   if(t.dataset.tacAction==='save-opt'){
     const label=document.getElementById('tacFormLabel').value.trim();
     const desc=document.getElementById('tacFormDesc').value.trim();
-    let value=parseInt(document.getElementById('tacFormValue').value,10);
-    if(isNaN(value)) value=50;
-    value=Math.max(0,Math.min(100,value));
     const opt=tacData.tactics[tacUi.ti].options[tacUi.oi];
-    opt.label=label; opt.desc=desc; opt.value=value;
+    const valueEl=document.getElementById('tacFormValue');
+    if(valueEl){
+      let value=parseInt(valueEl.value,10);
+      if(isNaN(value)) value=30;
+      opt.value=Math.max(1,Math.min(60,value));
+    }
+    opt.label=label; opt.desc=desc;
     tacUi=null; renderTacticas(); tacSave();
     return;
   }
