@@ -54,13 +54,6 @@ a{color:inherit;}
 .main{max-width:var(--max-w);margin:0 auto;padding:32px 24px 80px;}
 .view[hidden]{display:none;}
 
-/* ── FILTER ROW ── */
-.filter-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;}
-.filter-row[hidden]{display:none;}
-.filter-btn{background:none;border:none;color:var(--text2);font-size:12px;padding:2px 0;cursor:pointer;transition:color 0.1s;}
-.filter-btn:hover{color:#fff;}
-.filter-btn.active{color:#fff;font-weight:600;}
-
 /* ── SECTIONS ── */
 .section-wrap{margin-bottom:4px;}
 .section-wrap.hidden{display:none;}
@@ -110,6 +103,28 @@ a{color:inherit;}
 .gp-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;padding:0;margin-bottom:24px;}
 .gp-back:hover{color:#fff;}
 .gp-back[hidden]{display:none;}
+
+/* ── TÁCTICAS VIEW ── */
+.tac-list{display:flex;flex-direction:column;gap:8px;max-width:640px;}
+.tac-card{background:var(--surface);border-radius:14px;overflow:hidden;}
+.tac-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;color:#fff;font-size:15px;font-weight:700;padding:18px 20px;cursor:pointer;text-align:left;}
+.tac-head:hover{background:var(--surface2);}
+.tac-chevron{color:var(--text3);font-size:11px;transition:transform 0.15s;flex-shrink:0;}
+.tac-card.open .tac-chevron{transform:rotate(180deg);}
+.tac-body{padding:0 20px 20px;display:flex;flex-direction:column;gap:16px;}
+.tac-body[hidden]{display:none;}
+.tac-code-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.tac-code{flex:1;min-width:120px;background:var(--chip-bg);border-radius:6px;padding:8px 12px;font-family:'SF Mono','Consolas',monospace;font-size:13px;color:var(--chip-text);}
+.tac-btn{background:var(--chip-bg);border:none;border-radius:6px;color:var(--chip-text);font-size:12px;font-weight:600;padding:7px 12px;cursor:pointer;flex-shrink:0;}
+.tac-btn:hover{color:#fff;}
+.tac-options{display:flex;flex-direction:column;gap:16px;}
+.tac-option{position:relative;padding-right:28px;}
+.tac-opt-label{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
+.tac-opt-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
+.tac-slider{width:100%;display:block;accent-color:var(--accent);}
+.tac-slider:disabled{opacity:1;}
+.tac-opt-edit{position:absolute;top:0;right:0;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 4px;}
+.tac-opt-edit:hover{color:#fff;}
 
 /* ── GALERÍA VIEW ── */
 .gal-h{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
@@ -248,12 +263,6 @@ a{color:inherit;}
     </div>
 
     <button class="gp-back" id="gameplayBack" hidden>&larr; Volver</button>
-    <div class="filter-row" id="filterRow" hidden>
-      <button class="filter-btn active" data-tag-btn="all">Todos</button>
-      <button class="filter-btn" data-tag-btn="cuando">Con cuándo NO</button>
-      <button class="filter-btn" data-tag-btn="skill">Requiere skill</button>
-      <button class="filter-btn" data-tag-btn="noskill">Sin skill</button>
-    </div>
     <div id="noResults" class="no-results">No hay resultados.</div>
 
     <div id="gameplaySections">
@@ -296,8 +305,8 @@ a{color:inherit;}
 
   <div class="view" id="view-tacticas" hidden>
     <div class="section-header"><span class="sec-label">Estrategia</span><span class="sec-title">Tácticas</span></div>
-    <div class="section-note">Formaciones, instrucciones de equipo y códigos de táctica para copiar.</div>
-    <div class="section-empty">Próximamente.</div>
+    <div class="section-note">Formaciones e instrucciones. Haz clic en una para ver el código y las opciones.</div>
+    <div id="tacticsList" class="tac-list"></div>
   </div>
 
   <div class="view" id="view-galeria" hidden>
@@ -720,7 +729,7 @@ const OBJ_SEED = [
 const OBJ_API_TOKEN = 'b5916835-0213-45bd-bd89-4c0268f353f9';
 
 const SECTION_IDS = Object.keys(DATA);
-let activeSection='all',activeTag='all',searchText='';
+let activeSection='all',searchText='';
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -760,10 +769,6 @@ function makeItem(item,section){
   const hasSkill=item.skill&&item.skill!=='—';
   const noSkill=item.skill==='—';
   const hasVideo=!!item.videoId;
-  const tags=[];
-  if(hasNo) tags.push('cuando');
-  if(hasSkill) tags.push('skill');
-  if(noSkill) tags.push('noskill');
   const searchable=escapeHtml([item.name,item.cuando||'',item.no||'',item.notas||'',item.situacion||'',item.como||'',item.skill||''].join(' ').toLowerCase());
   const fields=[];
   if(item.cuando) fields.push('<div class="item-field"><span class="field-label">Cuándo</span><span class="field-value">'+escapeHtml(item.cuando)+'</span></div>');
@@ -776,7 +781,7 @@ function makeItem(item,section){
   const videoAttrs=hasVideo
     ?' data-video-id="'+escapeHtml(item.videoId)+'" data-video-start="'+escapeHtml(item.videoStart)+'" data-video-title="'+escapeHtml(item.name)+'" data-video-source="'+escapeHtml(item.source||'')+'"'
     :'';
-  return '<div class="item'+(hasVideo?' has-video':'')+'" data-section="'+section+'" data-tags="'+tags.join(',')+'" data-search="'+searchable+'"'+videoAttrs
+  return '<div class="item'+(hasVideo?' has-video':'')+'" data-section="'+section+'" data-search="'+searchable+'"'+videoAttrs
     +(hasVideo?' role="button" tabindex="0"':'')+'>'
     +'<div class="item-head"><div class="item-name">'+escapeHtml(item.name)+'</div>'+(item.buttons&&item.buttons.length?'<div class="item-btns">'+cardBtns(item.buttons)+'</div>':'')+'</div>'
     +(fields.length?'<div class="item-body">'+fields.join('')+'</div>':'')
@@ -814,15 +819,6 @@ function doSearch(val){
   applyFilters();
 }
 document.getElementById('searchInput').addEventListener('input',e=>doSearch(e.target.value));
-
-function setActiveTag(tag){
-  activeTag=tag;
-  document.querySelectorAll('[data-tag-btn]').forEach(b=>b.classList.toggle('active',b.dataset.tagBtn===tag));
-  applyFilters();
-}
-document.querySelectorAll('[data-tag-btn]').forEach(btn=>{
-  btn.addEventListener('click',()=>setActiveTag(btn.dataset.tagBtn));
-});
 
 function renderGameplayLanding(){
   const el=document.getElementById('gameplayCards');
@@ -862,7 +858,6 @@ function applyFilters(){
   document.getElementById('gameplayLanding').hidden=!showLanding;
   document.getElementById('gameplaySections').hidden=showLanding;
   document.getElementById('gameplayBack').hidden=isLanding;
-  document.getElementById('filterRow').hidden=showLanding;
   if(showLanding){
     document.getElementById('noResults').classList.remove('visible');
     return;
@@ -875,9 +870,8 @@ function applyFilters(){
     const placeholder=sw.querySelector('.section-empty');
     let sectionHasVisible=false;
     cards.forEach(card=>{
-      const tagMatch=activeTag==='all'||card.dataset.tags.includes(activeTag);
       const searchMatch=!searchText||card.dataset.search.includes(searchText);
-      const visible=sectionMatch&&tagMatch&&searchMatch;
+      const visible=sectionMatch&&searchMatch;
       card.style.display=visible?'':'none';
       if(visible) sectionHasVisible=true;
     });
@@ -1096,6 +1090,189 @@ document.getElementById('objetivosList').addEventListener('keydown',e=>{
   objToggle(+card.dataset.gi,+card.dataset.si,+card.dataset.ii);
 });
 
+/* ── TÁCTICAS: editable formations, each with a copyable code and a list of
+   0-100 options (build-up style, defensive line height, etc). Same pattern
+   as Objetivos: tacData is the source of truth, persisted to localStorage
+   and best-effort synced to /api/tacticas. ── */
+const TAC_STORAGE_KEY='fcguide-tacticas';
+let tacData=null;
+let tacUi=null; // {type:'add-tactic'|'edit-tactic'|'add-opt'|'edit-opt', ti, oi}
+let tacOpen=new Set();
+const TAC_SEED=[
+  { name:'4-4-1-1', code:'', options:[
+    { label:'Opción 1: Balanced', desc:'Estilo de salida del equipo', value:60 }
+  ]}
+];
+
+function tacLoad(){
+  fetch('/api/tacticas').then(r=>r.ok?r.json():null).then(data=>{
+    if(data&&Array.isArray(data.tactics)){ tacData=data; renderTacticas(); return; }
+    throw new Error('empty');
+  }).catch(()=>{
+    let cached=null;
+    try{ cached=JSON.parse(localStorage.getItem(TAC_STORAGE_KEY)); }catch(e){}
+    tacData=(cached&&Array.isArray(cached.tactics))?cached:{tactics:TAC_SEED};
+    renderTacticas();
+  });
+}
+let tacSaveTimer=null;
+function tacSave(){
+  try{ localStorage.setItem(TAC_STORAGE_KEY,JSON.stringify(tacData)); }catch(e){}
+  clearTimeout(tacSaveTimer);
+  tacSaveTimer=setTimeout(()=>{
+    fetch('/api/tacticas',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+      body:JSON.stringify(tacData)
+    }).catch(()=>{});
+  },400);
+}
+
+function tacFormHtml(){
+  if(!tacUi) return '';
+  if(tacUi.type==='add-tactic'||tacUi.type==='edit-tactic'){
+    const editing=tacUi.type==='edit-tactic';
+    const t=editing?tacData.tactics[tacUi.ti]:{name:'',code:''};
+    return '<div class="obj-form">'
+      +'<input type="text" id="tacFormName" placeholder="Nombre (p. ej. 4-4-1-1)" value="'+escapeHtml(t.name)+'">'
+      +'<input type="text" id="tacFormCode" placeholder="Código de la táctica" value="'+escapeHtml(t.code||'')+'">'
+      +'<div class="obj-form-row">'
+      +(editing?'<button class="obj-form-btn danger" data-tac-action="delete-tactic">Eliminar</button>':'')
+      +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
+      +'<button class="obj-form-btn" data-tac-action="save-tactic">Guardar</button>'
+      +'</div></div>';
+  }
+  if(tacUi.type==='add-opt'||tacUi.type==='edit-opt'){
+    const editing=tacUi.type==='edit-opt';
+    const o=editing?tacData.tactics[tacUi.ti].options[tacUi.oi]:{label:'',desc:'',value:50};
+    return '<div class="obj-form">'
+      +'<input type="text" id="tacFormLabel" placeholder="Opción (p. ej. Estilo de salida: Equilibrado)" value="'+escapeHtml(o.label)+'">'
+      +'<textarea id="tacFormDesc" rows="2" placeholder="Descripción opcional">'+escapeHtml(o.desc||'')+'</textarea>'
+      +'<input type="number" id="tacFormValue" min="0" max="100" placeholder="Valor (0-100)" value="'+o.value+'">'
+      +'<div class="obj-form-row">'
+      +(editing?'<button class="obj-form-btn danger" data-tac-action="delete-opt">Eliminar</button>':'')
+      +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
+      +'<button class="obj-form-btn" data-tac-action="save-opt">Guardar</button>'
+      +'</div></div>';
+  }
+  return '';
+}
+
+function renderTacticas(){
+  const el=document.getElementById('tacticsList');
+  if(!tacData){ el.innerHTML=''; return; }
+  const list=tacData.tactics.map((t,ti)=>{
+    const open=tacOpen.has(ti);
+    const opts=t.options.map((o,oi)=>
+      '<div class="tac-option">'
+      +'<div class="tac-opt-label">'+escapeHtml(o.label)+'</div>'
+      +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
+      +'<input type="range" class="tac-slider" min="0" max="100" value="'+o.value+'" disabled>'
+      +'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>'
+      +'</div>'
+    ).join('');
+    const tacFormHere=(tacUi&&tacUi.type==='edit-tactic'&&tacUi.ti===ti)?tacFormHtml():'';
+    const optFormHere=(tacUi&&(tacUi.type==='add-opt'||tacUi.type==='edit-opt')&&tacUi.ti===ti)?tacFormHtml():'';
+    return '<div class="tac-card'+(open?' open':'')+'">'
+      +'<button class="tac-head" data-tac-toggle="'+ti+'"><span>'+escapeHtml(t.name)+'</span><span class="tac-chevron">&#9662;</span></button>'
+      +'<div class="tac-body"'+(open?'':' hidden')+'>'
+      +(tacFormHere||(
+        '<div class="tac-code-row">'
+        +'<code class="tac-code">'+(t.code?escapeHtml(t.code):'Sin código todavía')+'</code>'
+        +(t.code?'<button class="tac-btn" data-tac-copy="'+ti+'">Copiar</button>':'')
+        +'<button class="tac-btn" data-tac-edit-tactic="'+ti+'">Editar</button>'
+        +'</div>'
+      ))
+      +'<div class="tac-options">'+opts+'</div>'
+      +'<button class="obj-add-btn" data-tac-add-opt="'+ti+'">+ Añadir opción</button>'
+      +optFormHere
+      +'</div></div>';
+  }).join('');
+  el.innerHTML=list
+    +'<button class="obj-add-btn" id="tacAddBtn">+ Añadir táctica</button>'
+    +((tacUi&&tacUi.type==='add-tactic')?tacFormHtml():'');
+}
+
+document.getElementById('tacticsList').addEventListener('click',e=>{
+  const t=e.target;
+  let b;
+  if(t.id==='tacAddBtn'){ tacUi={type:'add-tactic'}; renderTacticas(); return; }
+  if(b=t.closest('[data-tac-edit-opt]')){
+    tacUi={type:'edit-opt',ti:+b.dataset.ti,oi:+b.dataset.oi};
+    renderTacticas();
+    return;
+  }
+  if(b=t.closest('[data-tac-add-opt]')){
+    tacUi={type:'add-opt',ti:+b.dataset.tacAddOpt};
+    renderTacticas();
+    return;
+  }
+  if(b=t.closest('[data-tac-edit-tactic]')){
+    tacUi={type:'edit-tactic',ti:+b.dataset.tacEditTactic};
+    renderTacticas();
+    return;
+  }
+  if(b=t.closest('[data-tac-copy]')){
+    const ti=+b.dataset.tacCopy;
+    const code=tacData.tactics[ti].code||'';
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(code).then(()=>{
+        const old=b.textContent; b.textContent='Copiado';
+        setTimeout(()=>{ b.textContent=old; },1200);
+      });
+    }
+    return;
+  }
+  if(t.dataset.tacAction==='cancel'){ tacUi=null; renderTacticas(); return; }
+  if(t.dataset.tacAction==='save-tactic'){
+    const name=document.getElementById('tacFormName').value.trim();
+    const code=document.getElementById('tacFormCode').value.trim();
+    if(!name) return;
+    if(tacUi.type==='edit-tactic'){
+      const tac=tacData.tactics[tacUi.ti]; tac.name=name; tac.code=code;
+    } else {
+      tacData.tactics.push({name,code,options:[]});
+    }
+    tacUi=null; renderTacticas(); tacSave();
+    return;
+  }
+  if(t.dataset.tacAction==='delete-tactic'){
+    if(confirm('¿Eliminar esta táctica?')){
+      tacData.tactics.splice(tacUi.ti,1);
+      tacUi=null; tacOpen.clear(); renderTacticas(); tacSave();
+    }
+    return;
+  }
+  if(t.dataset.tacAction==='save-opt'){
+    const label=document.getElementById('tacFormLabel').value.trim();
+    const desc=document.getElementById('tacFormDesc').value.trim();
+    let value=parseInt(document.getElementById('tacFormValue').value,10);
+    if(isNaN(value)) value=50;
+    value=Math.max(0,Math.min(100,value));
+    if(!label) return;
+    if(tacUi.type==='edit-opt'){
+      const opt=tacData.tactics[tacUi.ti].options[tacUi.oi];
+      opt.label=label; opt.desc=desc; opt.value=value;
+    } else {
+      tacData.tactics[tacUi.ti].options.push({label,desc,value});
+    }
+    tacUi=null; renderTacticas(); tacSave();
+    return;
+  }
+  if(t.dataset.tacAction==='delete-opt'){
+    if(confirm('¿Eliminar esta opción?')){
+      tacData.tactics[tacUi.ti].options.splice(tacUi.oi,1);
+      tacUi=null; renderTacticas(); tacSave();
+    }
+    return;
+  }
+  if(b=t.closest('[data-tac-toggle]')){
+    const ti=+b.dataset.tacToggle;
+    if(tacOpen.has(ti)) tacOpen.delete(ti); else tacOpen.add(ti);
+    renderTacticas();
+  }
+});
+
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
 const TOP_VIEWS=['gameplay','tacticas','galeria','mercado','objetivos'];
 function showView(view){
@@ -1131,6 +1308,7 @@ render();
 renderGameplayLanding();
 applyRoute();
 objLoad();
+tacLoad();
 </script>
 </body>
 </html>
