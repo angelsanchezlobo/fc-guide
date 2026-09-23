@@ -1168,7 +1168,7 @@ function tacFormHtml(){
     return '<div class="obj-form">'
       +labelField
       +'<textarea id="tacFormDesc" rows="2" placeholder="Texto 2 (descripción opcional)">'+escapeHtml(o.desc||'')+'</textarea>'
-      +(hasSlider?'<input type="number" id="tacFormValue" min="1" max="60" placeholder="Valor (1-60)" value="'+o.value+'">':'')
+      +(hasSlider?'<input type="number" id="tacFormValue" min="1" max="100" placeholder="Valor (1-100)" value="'+o.value+'">':'')
       +'<div class="obj-form-row">'
       +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
       +'<button class="obj-form-btn" data-tac-action="save-opt">Guardar</button>'
@@ -1191,7 +1191,7 @@ function renderTacticas(){
         +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
         +(hasSlider?(
           '<div class="tac-slider-row">'
-          +'<input type="range" class="tac-slider" min="1" max="60" value="'+o.value+'" disabled>'
+          +'<input type="range" class="tac-slider" min="1" max="100" value="'+o.value+'" disabled>'
           +'<span class="tac-opt-value">'+o.value+'</span>'
           +'</div>'
         ):'')
@@ -1270,7 +1270,7 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
     if(valueEl){
       let value=parseInt(valueEl.value,10);
       if(isNaN(value)) value=30;
-      opt.value=Math.max(1,Math.min(60,value));
+      opt.value=Math.max(1,Math.min(100,value));
     }
     opt.label=label; opt.desc=desc;
     tacUi=null; renderTacticas(); tacSave();
