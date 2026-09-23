@@ -105,25 +105,26 @@ a{color:inherit;}
 .gp-back[hidden]{display:none;}
 
 /* ── TÁCTICAS VIEW ── */
-.tac-list{display:flex;flex-direction:column;gap:8px;max-width:640px;}
-.tac-card{background:var(--surface);border-radius:14px;overflow:hidden;}
-.tac-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;color:#fff;font-size:15px;font-weight:700;padding:18px 20px;cursor:pointer;text-align:left;}
+.tac-list{display:flex;flex-direction:column;gap:6px;max-width:420px;}
+.tac-card{background:var(--surface);border-radius:12px;overflow:hidden;}
+.tac-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;color:#fff;font-size:13px;font-weight:700;padding:12px 14px;cursor:pointer;text-align:left;}
 .tac-head:hover{background:var(--surface2);}
-.tac-chevron{color:var(--text3);font-size:11px;transition:transform 0.15s;flex-shrink:0;}
+.tac-chevron{color:var(--text3);font-size:10px;transition:transform 0.15s;flex-shrink:0;}
 .tac-card.open .tac-chevron{transform:rotate(180deg);}
-.tac-body{padding:0 20px 20px;display:flex;flex-direction:column;gap:16px;}
+.tac-body{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;}
 .tac-body[hidden]{display:none;}
-.tac-code-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.tac-code{flex:1;min-width:120px;background:var(--chip-bg);border-radius:6px;padding:8px 12px;font-family:'SF Mono','Consolas',monospace;font-size:13px;color:var(--chip-text);}
-.tac-btn{background:var(--chip-bg);border:none;border-radius:6px;color:var(--chip-text);font-size:12px;font-weight:600;padding:7px 12px;cursor:pointer;flex-shrink:0;}
+.tac-code-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.tac-code{flex:1;min-width:100px;background:var(--chip-bg);border-radius:6px;padding:6px 10px;font-family:'SF Mono','Consolas',monospace;font-size:12px;color:var(--chip-text);}
+.tac-btn{background:var(--chip-bg);border:none;border-radius:6px;color:var(--chip-text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;flex-shrink:0;}
 .tac-btn:hover{color:#fff;}
-.tac-options{display:flex;flex-direction:column;gap:16px;}
-.tac-option{position:relative;padding-right:28px;}
-.tac-opt-label{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
-.tac-opt-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
-.tac-slider{width:100%;display:block;accent-color:var(--accent);}
+.tac-options{display:flex;flex-direction:column;gap:10px;}
+.tac-option{position:relative;padding-right:24px;}
+.tac-opt-label{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px;}
+.tac-opt-empty{color:var(--text3);font-weight:600;}
+.tac-opt-desc{font-size:11px;color:var(--text2);margin-bottom:5px;line-height:1.4;}
+.tac-slider{width:100%;display:block;accent-color:var(--accent);height:14px;}
 .tac-slider:disabled{opacity:1;}
-.tac-opt-edit{position:absolute;top:0;right:0;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 4px;}
+.tac-opt-edit{position:absolute;top:0;right:0;background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:2px 4px;}
 .tac-opt-edit:hover{color:#fff;}
 
 /* ── GALERÍA VIEW ── */
@@ -1096,11 +1097,17 @@ document.getElementById('objetivosList').addEventListener('keydown',e=>{
    and best-effort synced to /api/tacticas. ── */
 const TAC_STORAGE_KEY='fcguide-tacticas';
 let tacData=null;
-let tacUi=null; // {type:'add-tactic'|'edit-tactic'|'add-opt'|'edit-opt', ti, oi}
+let tacUi=null; // {type:'add-tactic'|'edit-tactic'|'edit-opt', ti, oi}
 let tacOpen=new Set();
+const TAC_OPT_COUNT=3; // slots fijos por táctica — no se añaden ni se quitan, solo se editan
+function emptyTacOptions(){
+  return Array.from({length:TAC_OPT_COUNT},()=>({label:'',desc:'',value:50}));
+}
 const TAC_SEED=[
   { name:'4-4-1-1', code:'', options:[
-    { label:'Opción 1: Balanced', desc:'Estilo de salida del equipo', value:60 }
+    { label:'Balanced', desc:'Estilo de salida del equipo', value:60 },
+    { label:'Balanced', desc:'Altura de la línea defensiva', value:60 },
+    { label:'', desc:'', value:50 }
   ]}
 ];
 
@@ -1142,15 +1149,13 @@ function tacFormHtml(){
       +'<button class="obj-form-btn" data-tac-action="save-tactic">Guardar</button>'
       +'</div></div>';
   }
-  if(tacUi.type==='add-opt'||tacUi.type==='edit-opt'){
-    const editing=tacUi.type==='edit-opt';
-    const o=editing?tacData.tactics[tacUi.ti].options[tacUi.oi]:{label:'',desc:'',value:50};
+  if(tacUi.type==='edit-opt'){
+    const o=tacData.tactics[tacUi.ti].options[tacUi.oi];
     return '<div class="obj-form">'
-      +'<input type="text" id="tacFormLabel" placeholder="Opción (p. ej. Estilo de salida: Equilibrado)" value="'+escapeHtml(o.label)+'">'
-      +'<textarea id="tacFormDesc" rows="2" placeholder="Descripción opcional">'+escapeHtml(o.desc||'')+'</textarea>'
+      +'<input type="text" id="tacFormLabel" placeholder="Texto 1 (p. ej. Balanced)" value="'+escapeHtml(o.label)+'">'
+      +'<textarea id="tacFormDesc" rows="2" placeholder="Texto 2 (descripción opcional)">'+escapeHtml(o.desc||'')+'</textarea>'
       +'<input type="number" id="tacFormValue" min="0" max="100" placeholder="Valor (0-100)" value="'+o.value+'">'
       +'<div class="obj-form-row">'
-      +(editing?'<button class="obj-form-btn danger" data-tac-action="delete-opt">Eliminar</button>':'')
       +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
       +'<button class="obj-form-btn" data-tac-action="save-opt">Guardar</button>'
       +'</div></div>';
@@ -1163,16 +1168,17 @@ function renderTacticas(){
   if(!tacData){ el.innerHTML=''; return; }
   const list=tacData.tactics.map((t,ti)=>{
     const open=tacOpen.has(ti);
-    const opts=t.options.map((o,oi)=>
-      '<div class="tac-option">'
-      +'<div class="tac-opt-label">'+escapeHtml(o.label)+'</div>'
-      +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
-      +'<input type="range" class="tac-slider" min="0" max="100" value="'+o.value+'" disabled>'
-      +'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>'
-      +'</div>'
-    ).join('');
+    const opts=t.options.map((o,oi)=>{
+      const optFormHere=(tacUi&&tacUi.type==='edit-opt'&&tacUi.ti===ti&&tacUi.oi===oi)?tacFormHtml():'';
+      if(optFormHere) return optFormHere;
+      return '<div class="tac-option">'
+        +'<div class="tac-opt-label">'+(o.label?escapeHtml(o.label):'<span class="tac-opt-empty">Sin definir</span>')+'</div>'
+        +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
+        +'<input type="range" class="tac-slider" min="0" max="100" value="'+o.value+'" disabled>'
+        +'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>'
+        +'</div>';
+    }).join('');
     const tacFormHere=(tacUi&&tacUi.type==='edit-tactic'&&tacUi.ti===ti)?tacFormHtml():'';
-    const optFormHere=(tacUi&&(tacUi.type==='add-opt'||tacUi.type==='edit-opt')&&tacUi.ti===ti)?tacFormHtml():'';
     return '<div class="tac-card'+(open?' open':'')+'">'
       +'<button class="tac-head" data-tac-toggle="'+ti+'"><span>'+escapeHtml(t.name)+'</span><span class="tac-chevron">&#9662;</span></button>'
       +'<div class="tac-body"'+(open?'':' hidden')+'>'
@@ -1184,8 +1190,6 @@ function renderTacticas(){
         +'</div>'
       ))
       +'<div class="tac-options">'+opts+'</div>'
-      +'<button class="obj-add-btn" data-tac-add-opt="'+ti+'">+ Añadir opción</button>'
-      +optFormHere
       +'</div></div>';
   }).join('');
   el.innerHTML=list
@@ -1199,11 +1203,6 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
   if(t.id==='tacAddBtn'){ tacUi={type:'add-tactic'}; renderTacticas(); return; }
   if(b=t.closest('[data-tac-edit-opt]')){
     tacUi={type:'edit-opt',ti:+b.dataset.ti,oi:+b.dataset.oi};
-    renderTacticas();
-    return;
-  }
-  if(b=t.closest('[data-tac-add-opt]')){
-    tacUi={type:'add-opt',ti:+b.dataset.tacAddOpt};
     renderTacticas();
     return;
   }
@@ -1231,7 +1230,7 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
     if(tacUi.type==='edit-tactic'){
       const tac=tacData.tactics[tacUi.ti]; tac.name=name; tac.code=code;
     } else {
-      tacData.tactics.push({name,code,options:[]});
+      tacData.tactics.push({name,code,options:emptyTacOptions()});
     }
     tacUi=null; renderTacticas(); tacSave();
     return;
@@ -1249,21 +1248,9 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
     let value=parseInt(document.getElementById('tacFormValue').value,10);
     if(isNaN(value)) value=50;
     value=Math.max(0,Math.min(100,value));
-    if(!label) return;
-    if(tacUi.type==='edit-opt'){
-      const opt=tacData.tactics[tacUi.ti].options[tacUi.oi];
-      opt.label=label; opt.desc=desc; opt.value=value;
-    } else {
-      tacData.tactics[tacUi.ti].options.push({label,desc,value});
-    }
+    const opt=tacData.tactics[tacUi.ti].options[tacUi.oi];
+    opt.label=label; opt.desc=desc; opt.value=value;
     tacUi=null; renderTacticas(); tacSave();
-    return;
-  }
-  if(t.dataset.tacAction==='delete-opt'){
-    if(confirm('¿Eliminar esta opción?')){
-      tacData.tactics[tacUi.ti].options.splice(tacUi.oi,1);
-      tacUi=null; renderTacticas(); tacSave();
-    }
     return;
   }
   if(b=t.closest('[data-tac-toggle]')){
