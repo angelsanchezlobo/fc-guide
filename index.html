@@ -179,8 +179,8 @@ a{color:inherit;}
 .obj-add-group-btn{margin-top:8px;}
 
 .obj-form{background:var(--surface2);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin-top:10px;max-width:420px;}
-.obj-form input,.obj-form textarea{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;resize:vertical;}
-.obj-form input:focus,.obj-form textarea:focus{border-color:var(--accent);}
+.obj-form input,.obj-form textarea,.obj-form select{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;resize:vertical;}
+.obj-form input:focus,.obj-form textarea:focus,.obj-form select:focus{border-color:var(--accent);}
 .obj-form-row{display:flex;gap:8px;justify-content:flex-end;}
 .obj-form-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;}
 .obj-form-btn.secondary{background:var(--chip-bg);color:var(--chip-text);}
@@ -1100,6 +1100,13 @@ let tacData=null;
 let tacUi=null; // {type:'add-tactic'|'edit-tactic'|'edit-opt', ti, oi}
 let tacOpen=new Set();
 const TAC_OPT_COUNT=3; // slots fijos por táctica — no se añaden ni se quitan, solo se editan
+// slots 0 y 1: el texto 1 se elige de una lista fija (como en la imagen de referencia);
+// slot 2: texto libre. Los tres llevan siempre texto1 + texto2 + barra 0-100.
+const TAC_OPT_CHOICES=[
+  ['Balanced','Short Passing','Counter'],
+  ['Balanced','High','Aggressive','Deep'],
+  null
+];
 function emptyTacOptions(){
   return Array.from({length:TAC_OPT_COUNT},()=>({label:'',desc:'',value:50}));
 }
@@ -1151,11 +1158,14 @@ function tacFormHtml(){
   }
   if(tacUi.type==='edit-opt'){
     const o=tacData.tactics[tacUi.ti].options[tacUi.oi];
-    const hasSlider=tacUi.oi===TAC_OPT_COUNT-1;
+    const choices=TAC_OPT_CHOICES[tacUi.oi];
+    const labelField=choices
+      ?'<select id="tacFormLabel">'+choices.map(c=>'<option value="'+escapeHtml(c)+'"'+(c===o.label?' selected':'')+'>'+escapeHtml(c)+'</option>').join('')+'</select>'
+      :'<input type="text" id="tacFormLabel" placeholder="Texto 1" value="'+escapeHtml(o.label)+'">';
     return '<div class="obj-form">'
-      +'<input type="text" id="tacFormLabel" placeholder="Texto 1 (p. ej. Balanced)" value="'+escapeHtml(o.label)+'">'
+      +labelField
       +'<textarea id="tacFormDesc" rows="2" placeholder="Texto 2 (descripción opcional)">'+escapeHtml(o.desc||'')+'</textarea>'
-      +(hasSlider?'<input type="number" id="tacFormValue" min="0" max="100" placeholder="Valor (0-100)" value="'+o.value+'">':'')
+      +'<input type="number" id="tacFormValue" min="0" max="100" placeholder="Valor (0-100)" value="'+o.value+'">'
       +'<div class="obj-form-row">'
       +'<button class="obj-form-btn secondary" data-tac-action="cancel">Cancelar</button>'
       +'<button class="obj-form-btn" data-tac-action="save-opt">Guardar</button>'
@@ -1172,11 +1182,10 @@ function renderTacticas(){
     const opts=t.options.map((o,oi)=>{
       const optFormHere=(tacUi&&tacUi.type==='edit-opt'&&tacUi.ti===ti&&tacUi.oi===oi)?tacFormHtml():'';
       if(optFormHere) return optFormHere;
-      const hasSlider=oi===TAC_OPT_COUNT-1;
       return '<div class="tac-option">'
         +'<div class="tac-opt-label">'+(o.label?escapeHtml(o.label):'<span class="tac-opt-empty">Sin definir</span>')+'</div>'
         +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
-        +(hasSlider?'<input type="range" class="tac-slider" min="0" max="100" value="'+o.value+'" disabled>':'')
+        +'<input type="range" class="tac-slider" min="0" max="100" value="'+o.value+'" disabled>'
         +'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>'
         +'</div>';
     }).join('');
@@ -1247,14 +1256,11 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
   if(t.dataset.tacAction==='save-opt'){
     const label=document.getElementById('tacFormLabel').value.trim();
     const desc=document.getElementById('tacFormDesc').value.trim();
+    let value=parseInt(document.getElementById('tacFormValue').value,10);
+    if(isNaN(value)) value=50;
+    value=Math.max(0,Math.min(100,value));
     const opt=tacData.tactics[tacUi.ti].options[tacUi.oi];
-    opt.label=label; opt.desc=desc;
-    const valueInput=document.getElementById('tacFormValue');
-    if(valueInput){
-      let value=parseInt(valueInput.value,10);
-      if(isNaN(value)) value=50;
-      opt.value=Math.max(0,Math.min(100,value));
-    }
+    opt.label=label; opt.desc=desc; opt.value=value;
     tacUi=null; renderTacticas(); tacSave();
     return;
   }
