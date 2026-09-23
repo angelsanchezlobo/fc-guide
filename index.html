@@ -200,7 +200,7 @@ a{color:inherit;}
 .rec-card-body{padding:10px 12px;}
 .rec-card-date{font-size:11px;color:var(--text3);margin-bottom:4px;}
 .rec-card-caption{font-size:12px;color:var(--text2);line-height:1.4;}
-.rec-card-caption-input{width:100%;background:var(--bg);border:1px solid var(--hairline2);border-radius:6px;color:#fff;font-size:12px;padding:6px 8px;font-family:inherit;outline:none;margin-top:6px;}
+.rec-card-caption-input{box-sizing:border-box;width:100%;background:var(--bg);border:1px solid var(--hairline2);border-radius:6px;color:#fff;font-size:12px;padding:6px 8px;font-family:inherit;outline:none;margin-top:6px;resize:none;overflow:hidden;line-height:1.4;display:block;}
 .rec-card-caption-input:focus{border-color:var(--accent);}
 .rec-card-del{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;cursor:pointer;}
 .rec-card:hover .rec-card-del,.rec-card-del:focus-visible{opacity:1;}
@@ -1421,6 +1421,13 @@ function recRetryPending(){
 }
 window.addEventListener('online',recRetryPending);
 
+function recAutoResize(el){
+  const cs=getComputedStyle(el);
+  const borderY=parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth);
+  el.style.height='auto';
+  el.style.height=(el.scrollHeight+borderY)+'px';
+}
+
 function renderRecomendaciones(){
   const el=document.getElementById('recomendacionesList');
   if(!recData||!recData.items.length){ el.innerHTML='<div class="rec-empty">Todavía no hay imágenes. Pega una arriba.</div>'; return; }
@@ -1431,9 +1438,10 @@ function renderRecomendaciones(){
     +'<button class="rec-card-del" data-rec-del="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>'
     +'<div class="rec-card-body">'
     +'<div class="rec-card-date">'+escapeHtml(it.date)+'</div>'
-    +'<input type="text" class="rec-card-caption-input" data-rec-caption="'+escapeHtml(it.id)+'" placeholder="Añadir nota (opcional)" value="'+escapeHtml(it.caption||'')+'">'
+    +'<textarea class="rec-card-caption-input" data-rec-caption="'+escapeHtml(it.id)+'" placeholder="Añadir nota (opcional)" rows="1">'+escapeHtml(it.caption||'')+'</textarea>'
     +'</div></div>'
   ).join('');
+  el.querySelectorAll('.rec-card-caption-input').forEach(recAutoResize);
 }
 
 document.getElementById('recomendacionesList').addEventListener('click',e=>{
@@ -1452,6 +1460,10 @@ document.getElementById('recomendacionesList').addEventListener('change',e=>{
     const item=recData.items.find(it=>it.id===id);
     if(item){ item.caption=input.value.trim(); recSave(); }
   }
+});
+document.getElementById('recomendacionesList').addEventListener('input',e=>{
+  const ta=e.target.closest('[data-rec-caption]');
+  if(ta) recAutoResize(ta);
 });
 
 function recHandleFiles(files){
