@@ -188,6 +188,24 @@ a{color:inherit;}
 .obj-form-btn.secondary{background:var(--chip-bg);color:var(--chip-text);}
 .obj-form-btn.danger{background:var(--red-tint);color:var(--red);margin-right:auto;}
 
+/* ── RECOMENDACIONES (MERCADO) ── */
+.rec-sync-note{font-size:11px;color:var(--text3);margin-bottom:10px;min-height:14px;}
+.rec-paste-zone{border:1px dashed var(--hairline2);border-radius:12px;padding:22px;text-align:center;color:var(--text3);font-size:13px;cursor:text;margin-bottom:20px;transition:border-color 0.15s,color 0.15s;}
+.rec-paste-zone:focus{outline:none;border-color:var(--accent);color:#fff;}
+.rec-paste-zone.drag{border-color:var(--accent);color:#fff;}
+.rec-file-label{color:var(--accent-text);cursor:pointer;text-decoration:underline;}
+.rec-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+.rec-card{background:var(--surface);border-radius:12px;overflow:hidden;position:relative;}
+.rec-card img{width:100%;display:block;background:var(--bg2);}
+.rec-card-body{padding:10px 12px;}
+.rec-card-date{font-size:11px;color:var(--text3);margin-bottom:4px;}
+.rec-card-caption{font-size:12px;color:var(--text2);line-height:1.4;}
+.rec-card-caption-input{width:100%;background:var(--bg);border:1px solid var(--hairline2);border-radius:6px;color:#fff;font-size:12px;padding:6px 8px;font-family:inherit;outline:none;margin-top:6px;}
+.rec-card-caption-input:focus{border-color:var(--accent);}
+.rec-card-del{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;cursor:pointer;}
+.rec-card:hover .rec-card-del,.rec-card-del:focus-visible{opacity:1;}
+.rec-empty{font-size:12px;color:var(--text3);}
+
 /* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
@@ -349,6 +367,12 @@ a{color:inherit;}
     <div class="section-header"><span class="sec-label">Economía</span><span class="sec-title">Mercado</span></div>
     <div class="section-note">Compra-venta, trading y gestión de monedas.</div>
     <div class="section-empty">Próximamente.</div>
+
+    <div class="section-header" style="margin-top:36px"><span class="sec-label">Economía</span><span class="sec-title">Recomendaciones</span></div>
+    <div class="section-note">Capturas de cartas, plantillas o SBCs recomendados. Es contenido de la semana, no un método fijo — se queda aquí como feed con fecha.</div>
+    <div class="rec-sync-note" id="recSyncNote"></div>
+    <div class="rec-paste-zone" id="recPasteZone" tabindex="0">Haz clic aquí y pega una imagen (Ctrl+V), o <label class="rec-file-label">elige un archivo<input type="file" id="recFileInput" accept="image/*" hidden></label></div>
+    <div id="recomendacionesList" class="rec-list"></div>
   </div>
 
   <div class="view" id="view-objetivos" hidden>
@@ -1298,6 +1322,115 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
   }
 });
 
+/* ── RECOMENDACIONES (MERCADO): feed de imágenes pegadas/subidas, con fecha
+   y nota opcional. A diferencia de Objetivos/Tácticas, cada entrada apunta
+   a un archivo servido por la API (/api/uploads/<id>), no a datos embebidos
+   — por eso, sin conexión con el servidor, no se puede añadir una imagen
+   nueva (solo se ve lo que ya se cargó). ── */
+const REC_STORAGE_KEY='fcguide-recomendaciones';
+let recData=null; // {items:[{id,url,caption,date}]}
+
+function recLoad(){
+  fetch('/api/recomendaciones').then(r=>r.ok?r.json():null).then(data=>{
+    if(data&&Array.isArray(data.items)){ recData=data; renderRecomendaciones(); return; }
+    throw new Error('empty');
+  }).catch(()=>{
+    let cached=null;
+    try{ cached=JSON.parse(localStorage.getItem(REC_STORAGE_KEY)); }catch(e){}
+    recData=(cached&&Array.isArray(cached.items))?cached:{items:[]};
+    renderRecomendaciones();
+    document.getElementById('recSyncNote').textContent='Sin conexión con el servidor — solo se ve lo que ya está guardado en este navegador. No se pueden añadir imágenes nuevas sin conexión.';
+  });
+}
+let recSaveTimer=null;
+function recSave(){
+  try{ localStorage.setItem(REC_STORAGE_KEY,JSON.stringify(recData)); }catch(e){}
+  clearTimeout(recSaveTimer);
+  recSaveTimer=setTimeout(()=>{
+    fetch('/api/recomendaciones',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+      body:JSON.stringify(recData)
+    }).catch(()=>{});
+  },400);
+}
+
+function recUploadAndAdd(blob){
+  const note=document.getElementById('recSyncNote');
+  note.textContent='Subiendo imagen…';
+  fetch('/api/uploads',{
+    method:'POST',
+    headers:{'Content-Type':blob.type,'X-Auth':OBJ_API_TOKEN},
+    body:blob
+  }).then(r=>{
+    if(!r.ok) throw new Error('upload failed');
+    return r.json();
+  }).then(data=>{
+    if(!recData) recData={items:[]};
+    recData.items.unshift({id:Date.now()+'-'+Math.random().toString(36).slice(2,8),url:data.url,caption:'',date:new Date().toISOString().slice(0,10)});
+    note.textContent='';
+    renderRecomendaciones();
+    recSave();
+  }).catch(()=>{
+    note.textContent='No se pudo subir la imagen — comprueba la conexión con el servidor e inténtalo de nuevo.';
+  });
+}
+
+function renderRecomendaciones(){
+  const el=document.getElementById('recomendacionesList');
+  if(!recData||!recData.items.length){ el.innerHTML='<div class="rec-empty">Todavía no hay imágenes. Pega una arriba.</div>'; return; }
+  el.innerHTML=recData.items.map(it=>
+    '<div class="rec-card" data-rec-id="'+escapeHtml(it.id)+'">'
+    +'<img src="'+escapeHtml(it.url)+'" alt="Recomendación" loading="lazy">'
+    +'<button class="rec-card-del" data-rec-del="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>'
+    +'<div class="rec-card-body">'
+    +'<div class="rec-card-date">'+escapeHtml(it.date)+'</div>'
+    +'<input type="text" class="rec-card-caption-input" data-rec-caption="'+escapeHtml(it.id)+'" placeholder="Añadir nota (opcional)" value="'+escapeHtml(it.caption||'')+'">'
+    +'</div></div>'
+  ).join('');
+}
+
+document.getElementById('recomendacionesList').addEventListener('click',e=>{
+  const delBtn=e.target.closest('[data-rec-del]');
+  if(delBtn){
+    const id=delBtn.dataset.recDel;
+    recData.items=recData.items.filter(it=>it.id!==id);
+    renderRecomendaciones();
+    recSave();
+  }
+});
+document.getElementById('recomendacionesList').addEventListener('change',e=>{
+  const input=e.target.closest('[data-rec-caption]');
+  if(input){
+    const id=input.dataset.recCaption;
+    const item=recData.items.find(it=>it.id===id);
+    if(item){ item.caption=input.value.trim(); recSave(); }
+  }
+});
+
+function recHandleFiles(files){
+  const file=[...files].find(f=>f.type&&f.type.startsWith('image/'));
+  if(!file) return;
+  recUploadAndAdd(file);
+}
+const recPasteZone=document.getElementById('recPasteZone');
+recPasteZone.addEventListener('paste',e=>{
+  const items=(e.clipboardData&&e.clipboardData.items)||[];
+  const imgItem=[...items].find(it=>it.type&&it.type.startsWith('image/'));
+  if(imgItem){ e.preventDefault(); recUploadAndAdd(imgItem.getAsFile()); }
+});
+recPasteZone.addEventListener('dragover',e=>{ e.preventDefault(); recPasteZone.classList.add('drag'); });
+recPasteZone.addEventListener('dragleave',()=>{ recPasteZone.classList.remove('drag'); });
+recPasteZone.addEventListener('drop',e=>{
+  e.preventDefault();
+  recPasteZone.classList.remove('drag');
+  if(e.dataTransfer&&e.dataTransfer.files.length) recHandleFiles(e.dataTransfer.files);
+});
+document.getElementById('recFileInput').addEventListener('change',e=>{
+  if(e.target.files.length) recHandleFiles(e.target.files);
+  e.target.value='';
+});
+
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
 const TOP_VIEWS=['gameplay','tacticas','galeria','mercado','objetivos'];
 function showView(view){
@@ -1334,6 +1467,7 @@ renderGameplayLanding();
 applyRoute();
 objLoad();
 tacLoad();
+recLoad();
 </script>
 </body>
 </html>
