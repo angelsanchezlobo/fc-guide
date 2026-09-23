@@ -56,6 +56,7 @@ a{color:inherit;}
 
 /* ── FILTER ROW ── */
 .filter-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;}
+.filter-row[hidden]{display:none;}
 .filter-btn{background:none;border:none;color:var(--text2);font-size:12px;padding:2px 0;cursor:pointer;transition:color 0.1s;}
 .filter-btn:hover{color:#fff;}
 .filter-btn.active{color:#fff;font-weight:600;}
@@ -98,6 +99,17 @@ a{color:inherit;}
 .tag-skill{background:var(--warn-tint);color:var(--warn);}
 .tag-no-skill{background:var(--chip-bg);color:var(--chip-text);}
 .tag-video{background:var(--green-tint);color:var(--green);}
+
+/* ── GAMEPLAY LANDING ── */
+.gp-landing{margin-bottom:8px;}
+.gp-card{background:var(--surface);border-radius:14px;padding:22px;cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:background 0.15s;}
+.gp-card:hover{background:var(--surface2);}
+.gp-card-label{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:700;}
+.gp-card-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.gp-card-count{font-size:12px;color:var(--text3);margin-top:6px;}
+.gp-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;padding:0;margin-bottom:24px;}
+.gp-back:hover{color:#fff;}
+.gp-back[hidden]{display:none;}
 
 /* ── GALERÍA VIEW ── */
 .gal-h{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
@@ -202,16 +214,10 @@ a{color:inherit;}
     </div>
   </div>
   <nav class="topbar-row2" id="tabs">
-    <button class="tab active" data-section-btn="all">Todo</button>
-    <button class="tab" data-section-btn="patrones">Patrones</button>
-    <button class="tab" data-section-btn="defensa">Defensa</button>
-    <button class="tab" data-section-btn="desmarques">Desmarques</button>
-    <button class="tab" data-section-btn="pases">Pases</button>
-    <button class="tab" data-section-btn="ataque">Ataque</button>
-    <button class="tab" data-section-btn="regates">Regates</button>
-    <button class="tab" data-section-btn="conduccion">Conducción</button>
-    <button class="tab" data-section-btn="pelota">Pelota parada</button>
-    <button class="tab tab-sep" data-view-btn="galeria">Galería</button>
+    <button class="tab active" data-view-btn="gameplay">Gameplay</button>
+    <button class="tab" data-view-btn="tacticas">Tácticas</button>
+    <button class="tab" data-view-btn="galeria">Galería</button>
+    <button class="tab" data-view-btn="mercado">Mercado</button>
     <button class="tab" data-view-btn="objetivos">Objetivos</button>
   </nav>
 </header>
@@ -235,8 +241,14 @@ a{color:inherit;}
 
 <main class="main">
 
-  <div class="view" id="view-mecanicas">
-    <div class="filter-row" id="filterRow">
+  <div class="view" id="view-gameplay">
+    <div class="gp-landing" id="gameplayLanding">
+      <div class="section-header"><span class="sec-label">Gameplay</span><span class="sec-title">Mecánicas por categoría</span></div>
+      <div class="items" id="gameplayCards"></div>
+    </div>
+
+    <button class="gp-back" id="gameplayBack" hidden>&larr; Volver</button>
+    <div class="filter-row" id="filterRow" hidden>
       <button class="filter-btn active" data-tag-btn="all">Todos</button>
       <button class="filter-btn" data-tag-btn="cuando">Con cuándo NO</button>
       <button class="filter-btn" data-tag-btn="skill">Requiere skill</button>
@@ -244,6 +256,7 @@ a{color:inherit;}
     </div>
     <div id="noResults" class="no-results">No hay resultados.</div>
 
+    <div id="gameplaySections">
     <div class="section-wrap" data-section="patrones">
       <div class="section-header"><span class="sec-label">Táctica</span><span class="sec-title">Patrones de ataque</span></div>
       <div class="section-note">Situaciones recurrentes de partido. Reconocerlas antes que el rival es la diferencia entre reaccionar y anticipar.</div>
@@ -278,6 +291,13 @@ a{color:inherit;}
       <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
       <div class="items" id="items-pelota"></div>
     </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-tacticas" hidden>
+    <div class="section-header"><span class="sec-label">Estrategia</span><span class="sec-title">Tácticas</span></div>
+    <div class="section-note">Formaciones, instrucciones de equipo y códigos de táctica para copiar.</div>
+    <div class="section-empty">Próximamente.</div>
   </div>
 
   <div class="view" id="view-galeria" hidden>
@@ -311,6 +331,12 @@ a{color:inherit;}
     </div>
 
     <div class="gal-note"><strong>Truco de monedas:</strong> con una carta de más de 100k, compra y espera a que se venda antes de seguir — si no, te quedas sin monedas a medio camino. Con cartas baratas (bronce, pocas miles) sí puedes comprar y vender en cadena sin esperar.</div>
+  </div>
+
+  <div class="view" id="view-mercado" hidden>
+    <div class="section-header"><span class="sec-label">Economía</span><span class="sec-title">Mercado</span></div>
+    <div class="section-note">Compra-venta, trading y gestión de monedas.</div>
+    <div class="section-empty">Próximamente.</div>
   </div>
 
   <div class="view" id="view-objetivos" hidden>
@@ -798,11 +824,53 @@ document.querySelectorAll('[data-tag-btn]').forEach(btn=>{
   btn.addEventListener('click',()=>setActiveTag(btn.dataset.tagBtn));
 });
 
+function renderGameplayLanding(){
+  const el=document.getElementById('gameplayCards');
+  el.innerHTML=SECTION_IDS.map(sec=>{
+    const wrap=document.querySelector('.section-wrap[data-section="'+sec+'"]');
+    const label=wrap.querySelector('.sec-label').textContent;
+    const title=wrap.querySelector('.sec-title').textContent;
+    const count=DATA[sec].length;
+    return '<div class="gp-card" role="button" tabindex="0" data-gp-open="'+sec+'">'
+      +'<span class="gp-card-label">'+escapeHtml(label)+'</span>'
+      +'<span class="gp-card-title">'+escapeHtml(title)+'</span>'
+      +'<span class="gp-card-count">'+(count?count+' mecánicas':'Próximamente')+'</span>'
+      +'</div>';
+  }).join('');
+}
+document.getElementById('gameplayCards').addEventListener('click',e=>{
+  const card=e.target.closest('[data-gp-open]');
+  if(card) location.hash='gameplay/'+card.dataset.gpOpen;
+});
+document.getElementById('gameplayCards').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const card=e.target.closest('[data-gp-open]');
+  if(!card) return;
+  e.preventDefault();
+  location.hash='gameplay/'+card.dataset.gpOpen;
+});
+document.getElementById('gameplayBack').addEventListener('click',()=>{
+  searchText='';
+  document.getElementById('searchInput').value='';
+  location.hash='gameplay';
+});
+
 function applyFilters(){
+  const isLanding=activeSection==='landing';
+  const searching=!!searchText;
+  const showLanding=isLanding&&!searching;
+  document.getElementById('gameplayLanding').hidden=!showLanding;
+  document.getElementById('gameplaySections').hidden=showLanding;
+  document.getElementById('gameplayBack').hidden=isLanding;
+  document.getElementById('filterRow').hidden=showLanding;
+  if(showLanding){
+    document.getElementById('noResults').classList.remove('visible');
+    return;
+  }
   let anyVisible=false;
-  document.querySelectorAll('.section-wrap').forEach(sw=>{
+  document.querySelectorAll('#gameplaySections .section-wrap').forEach(sw=>{
     const sec=sw.dataset.section;
-    const sectionMatch=activeSection==='all'||activeSection===sec;
+    const sectionMatch=isLanding||activeSection===sec;
     const cards=sw.querySelectorAll('.item');
     const placeholder=sw.querySelector('.section-empty');
     let sectionHasVisible=false;
@@ -1029,37 +1097,38 @@ document.getElementById('objetivosList').addEventListener('keydown',e=>{
 });
 
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
+const TOP_VIEWS=['gameplay','tacticas','galeria','mercado','objetivos'];
 function showView(view){
-  document.getElementById('view-mecanicas').hidden = view!=='mecanicas';
-  document.getElementById('view-galeria').hidden = view!=='galeria';
-  document.getElementById('view-objetivos').hidden = view!=='objetivos';
+  TOP_VIEWS.forEach(v=>{
+    document.getElementById('view-'+v).hidden = v!==view;
+  });
 }
-function updateTabsActive(view,section){
+function updateTabsActive(view){
   document.querySelectorAll('.tab').forEach(btn=>{
-    const active = btn.dataset.viewBtn ? btn.dataset.viewBtn===view : (view==='mecanicas'&&btn.dataset.sectionBtn===section);
-    btn.classList.toggle('active',active);
+    btn.classList.toggle('active',btn.dataset.viewBtn===view);
   });
 }
 function applyRoute(){
-  const hash=(location.hash||'').replace('#','');
-  if(hash==='galeria'||hash==='objetivos'){
-    showView(hash);
-    updateTabsActive(hash,activeSection);
-  } else {
-    activeSection=SECTION_IDS.includes(hash)?hash:'all';
-    showView('mecanicas');
-    updateTabsActive('mecanicas',activeSection);
+  const parts=(location.hash||'').replace('#','').split('/');
+  const view=TOP_VIEWS.includes(parts[0])?parts[0]:'gameplay';
+  showView(view);
+  updateTabsActive(view);
+  if(view==='gameplay'){
+    activeSection=SECTION_IDS.includes(parts[1])?parts[1]:'landing';
     applyFilters();
   }
 }
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    location.hash = btn.dataset.viewBtn ? btn.dataset.viewBtn : (btn.dataset.sectionBtn==='all' ? '' : btn.dataset.sectionBtn);
+    searchText='';
+    document.getElementById('searchInput').value='';
+    location.hash = btn.dataset.viewBtn;
   });
 });
 window.addEventListener('hashchange',applyRoute);
 
 render();
+renderGameplayLanding();
 applyRoute();
 objLoad();
 </script>
