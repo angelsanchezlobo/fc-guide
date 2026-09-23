@@ -119,7 +119,6 @@ a{color:inherit;}
 .obj-sync-note{font-size:11px;color:var(--text3);margin-bottom:24px;min-height:14px;}
 .obj-group{margin-top:52px;}
 .obj-group:first-child{margin-top:0;}
-.obj-group-title{font-size:12px;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);font-weight:700;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--hairline);}
 .obj-sub{margin-bottom:28px;}
 .obj-sub-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px;}
 .obj-sub-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
@@ -134,6 +133,30 @@ a{color:inherit;}
 .obj-card.done .obj-check{background:var(--green);border-color:var(--green);color:var(--bg);}
 .obj-card-label{font-size:13px;color:var(--text2);line-height:1.4;}
 .obj-card.done .obj-card-label{color:#fff;}
+.obj-card-desc{font-size:11px;color:var(--text3);line-height:1.4;margin-top:2px;}
+
+.obj-card{position:relative;}
+.obj-card-edit-btn{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:6px;background:rgba(0,0,0,.35);border:none;color:var(--text3);font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;cursor:pointer;}
+.obj-card:hover .obj-card-edit-btn,.obj-card-edit-btn:focus-visible{opacity:1;}
+.obj-card-ghost{display:flex;align-items:center;justify-content:center;background:none;border:1px dashed var(--hairline2);border-radius:12px;padding:13px 16px;cursor:pointer;color:var(--text3);font-size:13px;font-weight:600;transition:color 0.15s,border-color 0.15s;}
+.obj-card-ghost:hover{color:#fff;border-color:var(--accent);}
+
+.obj-group-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--hairline);}
+.obj-group-title{font-size:12px;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);font-weight:700;}
+.obj-sub-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.obj-icon-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 4px;line-height:1;}
+.obj-icon-btn:hover{color:var(--red);}
+.obj-add-btn{display:inline-block;margin-top:10px;background:none;border:1px dashed var(--hairline2);color:var(--text3);font-size:12px;font-weight:600;padding:7px 14px;border-radius:10px;cursor:pointer;}
+.obj-add-btn:hover{color:#fff;border-color:var(--accent);}
+.obj-add-group-btn{margin-top:8px;}
+
+.obj-form{background:var(--surface2);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin-top:10px;max-width:420px;}
+.obj-form input,.obj-form textarea{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;resize:vertical;}
+.obj-form input:focus,.obj-form textarea:focus{border-color:var(--accent);}
+.obj-form-row{display:flex;gap:8px;justify-content:flex-end;}
+.obj-form-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;}
+.obj-form-btn.secondary{background:var(--chip-bg);color:var(--chip-text);}
+.obj-form-btn.danger{background:var(--red-tint);color:var(--red);margin-right:auto;}
 
 /* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
@@ -556,8 +579,11 @@ const DATA = {
   ]
 };
 
-const OBJETIVOS = [
-  { group:'Fundamentos', subs:[
+// Semilla inicial: solo se usa la primera vez (si el servidor y localStorage
+// están vacíos). A partir de ahí, todo lo que ves en Objetivos viene de lo
+// que tú añadas/edites en la propia página — esto no hay que tocarlo más.
+const OBJ_SEED = [
+  { title:'Fundamentos', subs:[
     { title:'Inicio del camino', items:[
       {label:'Gana partido — mínima Aficionado',done:true},
       {label:'20 goles — 6/20',done:true},
@@ -573,7 +599,7 @@ const OBJETIVOS = [
       {label:'Introducción a Evos',done:false}
     ]}
   ]},
-  { group:'Hitos', subs:[
+  { title:'Hitos', subs:[
     { title:'Hito mercado de transferencias', items:[
       {label:'50 ventas — 18/25',done:false},
       {label:'25 compras rápidas',done:false},
@@ -604,7 +630,7 @@ const OBJETIVOS = [
       {label:'60 estrellas',done:false}
     ]}
   ]},
-  { group:'De temporada', subs:[
+  { title:'De temporada', subs:[
     { title:'Objetivos semanales', items:[
       {label:'Vende 10',done:false},
       {label:'Compra 10',done:false},
@@ -797,58 +823,29 @@ function applyFilters(){
   document.getElementById('noResults').classList.toggle('visible',!anyVisible);
 }
 
-/* ── OBJETIVOS: checklist with server persistence (falls back to in-memory only) ── */
-let objState={};
-function objItemId(gi,si,ii){ return gi+'-'+si+'-'+ii; }
-function objDefaultDone(id){
-  const [gi,si,ii]=id.split('-').map(Number);
-  return !!OBJETIVOS[gi].subs[si].items[ii].done;
+/* ── OBJETIVOS: editable groups/sub-sections/items, not hardcoded.
+   objData is the single source of truth (structure + done flags together).
+   Persisted to localStorage on every change, and best-effort synced to the
+   server (/api/objetivos) if it's deployed — falls back to local-only otherwise. ── */
+const OBJ_STORAGE_KEY='fcguide-objetivos';
+let objData=null;
+let objUi=null; // {type:'add-item'|'edit-item'|'add-sub'|'add-group', gi, si, ii}
+
+function objLoad(){
+  fetch('/api/objetivos').then(r=>r.ok?r.json():null).then(data=>{
+    if(data&&Array.isArray(data.groups)){ objData=data; renderObjetivos(); return; }
+    throw new Error('empty');
+  }).catch(()=>{
+    let cached=null;
+    try{ cached=JSON.parse(localStorage.getItem(OBJ_STORAGE_KEY)); }catch(e){}
+    objData=(cached&&Array.isArray(cached.groups))?cached:{groups:OBJ_SEED};
+    renderObjetivos();
+    document.getElementById('objSyncNote').textContent='Sin conexión con el servidor — se está guardando solo en este navegador.';
+  });
 }
-function objIsDoneById(id){
-  return id in objState ? objState[id] : objDefaultDone(id);
-}
-function toggleObj(id){
-  objState[id]=!objIsDoneById(id);
-  renderObjetivos();
-  saveObjState();
-}
-function renderObjetivos(){
-  const el=document.getElementById('objetivosList');
-  el.innerHTML=OBJETIVOS.map((g,gi)=>{
-    const subs=g.subs.map((sub,si)=>{
-      const cards=sub.items.map((item,ii)=>{
-        const id=objItemId(gi,si,ii);
-        const done=objIsDoneById(id);
-        return '<div class="obj-card'+(done?' done':'')+'" role="checkbox" aria-checked="'+done+'" tabindex="0" data-obj-toggle="'+id+'">'
-          +'<span class="obj-check">&#10003;</span>'
-          +'<span class="obj-card-label">'+escapeHtml(item.label)+'</span>'
-          +'</div>';
-      }).join('');
-      const total=sub.items.length;
-      const doneCount=sub.items.filter((item,ii)=>objIsDoneById(objItemId(gi,si,ii))).length;
-      return '<div class="obj-sub">'
-        +'<div class="obj-sub-head"><span class="obj-sub-title">'+escapeHtml(sub.title)+'</span><span class="obj-sub-count">'+doneCount+'/'+total+'</span></div>'
-        +(sub.reward?'<div class="obj-sub-reward">'+escapeHtml(sub.reward)+'</div>':'')
-        +(sub.desc?'<div class="obj-sub-desc">'+escapeHtml(sub.desc)+'</div>':'')
-        +'<div class="obj-cards">'+cards+'</div>'
-        +'</div>';
-    }).join('');
-    return '<div class="obj-group"><div class="obj-group-title">'+escapeHtml(g.group)+'</div>'+subs+'</div>';
-  }).join('');
-}
-document.getElementById('objetivosList').addEventListener('click',e=>{
-  const card=e.target.closest('[data-obj-toggle]');
-  if(card) toggleObj(card.dataset.objToggle);
-});
-document.getElementById('objetivosList').addEventListener('keydown',e=>{
-  if(e.key!=='Enter'&&e.key!==' ') return;
-  const card=e.target.closest('[data-obj-toggle]');
-  if(!card) return;
-  e.preventDefault();
-  toggleObj(card.dataset.objToggle);
-});
 let objSaveTimer=null;
-function saveObjState(){
+function objSave(){
+  try{ localStorage.setItem(OBJ_STORAGE_KEY,JSON.stringify(objData)); }catch(e){}
   const note=document.getElementById('objSyncNote');
   note.textContent='Guardando…';
   clearTimeout(objSaveTimer);
@@ -856,24 +853,180 @@ function saveObjState(){
     fetch('/api/objetivos',{
       method:'POST',
       headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
-      body:JSON.stringify(objState)
+      body:JSON.stringify(objData)
     }).then(r=>{
       if(!r.ok) throw new Error('bad status');
       note.textContent='Guardado';
     }).catch(()=>{
-      note.textContent='Sin conexión con el servidor — este cambio solo se ha guardado en este navegador.';
+      note.textContent='Guardado solo en este navegador — sin conexión con el servidor.';
     });
   },400);
 }
-function loadObjState(){
-  fetch('/api/objetivos').then(r=>r.ok?r.json():{}).then(data=>{
-    objState=data||{};
-    renderObjetivos();
-  }).catch(()=>{
-    renderObjetivos();
-    document.getElementById('objSyncNote').textContent='Sin conexión con el servidor — los cambios no se guardarán entre sesiones todavía.';
-  });
+
+function objToggle(gi,si,ii){
+  const item=objData.groups[gi].subs[si].items[ii];
+  item.done=!item.done;
+  renderObjetivos();
+  objSave();
 }
+
+function objFormHtml(){
+  if(!objUi) return '';
+  if(objUi.type==='add-item'||objUi.type==='edit-item'){
+    const editing=objUi.type==='edit-item';
+    const item=editing?objData.groups[objUi.gi].subs[objUi.si].items[objUi.ii]:{label:'',desc:''};
+    return '<div class="obj-form">'
+      +'<input type="text" id="objFormLabel" placeholder="Objetivo (p. ej. Marca 10 goles)" value="'+escapeHtml(item.label)+'">'
+      +'<textarea id="objFormDesc" rows="2" placeholder="Descripción opcional">'+escapeHtml(item.desc||'')+'</textarea>'
+      +'<div class="obj-form-row">'
+      +(editing?'<button class="obj-form-btn danger" data-obj-action="delete-item">Eliminar</button>':'')
+      +'<button class="obj-form-btn secondary" data-obj-action="cancel">Cancelar</button>'
+      +'<button class="obj-form-btn" data-obj-action="save-item">Guardar</button>'
+      +'</div></div>';
+  }
+  if(objUi.type==='add-sub'){
+    return '<div class="obj-form">'
+      +'<input type="text" id="objFormTitle" placeholder="Nombre de la sección (p. ej. Objetivos semana 3)">'
+      +'<div class="obj-form-row"><button class="obj-form-btn secondary" data-obj-action="cancel">Cancelar</button><button class="obj-form-btn" data-obj-action="save-sub">Guardar</button></div>'
+      +'</div>';
+  }
+  if(objUi.type==='add-group'){
+    return '<div class="obj-form">'
+      +'<input type="text" id="objFormTitle" placeholder="Nombre del grupo (p. ej. Temporada 2)">'
+      +'<div class="obj-form-row"><button class="obj-form-btn secondary" data-obj-action="cancel">Cancelar</button><button class="obj-form-btn" data-obj-action="save-group">Guardar</button></div>'
+      +'</div>';
+  }
+  return '';
+}
+
+function renderObjetivos(){
+  const el=document.getElementById('objetivosList');
+  if(!objData){ el.innerHTML=''; return; }
+  const groupsHtml=objData.groups.map((g,gi)=>{
+    const subsHtml=g.subs.map((sub,si)=>{
+      const cards=sub.items.map((item,ii)=>{
+        const done=!!item.done;
+        return '<div class="obj-card'+(done?' done':'')+'" role="checkbox" aria-checked="'+done+'" tabindex="0" data-obj-toggle data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'">'
+          +'<span class="obj-check">&#10003;</span>'
+          +'<div><span class="obj-card-label">'+escapeHtml(item.label)+'</span>'
+          +(item.desc?'<div class="obj-card-desc">'+escapeHtml(item.desc)+'</div>':'')
+          +'</div>'
+          +'<button class="obj-card-edit-btn" data-obj-edit-item data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'" aria-label="Editar objetivo">&#9998;</button>'
+          +'</div>';
+      }).join('');
+      const ghost='<div class="obj-card-ghost" data-obj-add-item data-gi="'+gi+'" data-si="'+si+'">+ Añadir objetivo</div>';
+      const formHere=(objUi&&(objUi.type==='add-item'||objUi.type==='edit-item')&&objUi.gi===gi&&objUi.si===si)?objFormHtml():'';
+      const total=sub.items.length;
+      const doneCount=sub.items.filter(item=>item.done).length;
+      return '<div class="obj-sub">'
+        +'<div class="obj-sub-head"><span class="obj-sub-title">'+escapeHtml(sub.title)+'</span>'
+        +'<span class="obj-sub-actions"><span class="obj-sub-count">'+doneCount+'/'+total+'</span>'
+        +'<button class="obj-icon-btn" data-obj-del-sub data-gi="'+gi+'" data-si="'+si+'" aria-label="Eliminar sección">&#10005;</button></span></div>'
+        +'<div class="obj-cards">'+cards+ghost+'</div>'
+        +formHere
+        +'</div>';
+    }).join('');
+    const subFormHere=(objUi&&objUi.type==='add-sub'&&objUi.gi===gi)?objFormHtml():'';
+    return '<div class="obj-group">'
+      +'<div class="obj-group-head"><span class="obj-group-title">'+escapeHtml(g.title)+'</span>'
+      +'<button class="obj-icon-btn" data-obj-del-group data-gi="'+gi+'" aria-label="Eliminar grupo">&#10005;</button></div>'
+      +subsHtml
+      +'<button class="obj-add-btn" data-obj-add-sub data-gi="'+gi+'">+ Añadir sección</button>'
+      +subFormHere
+      +'</div>';
+  }).join('');
+  const groupFormHere=(objUi&&objUi.type==='add-group')?objFormHtml():'';
+  el.innerHTML=groupsHtml
+    +'<button class="obj-add-btn obj-add-group-btn" data-obj-add-group>+ Añadir grupo</button>'
+    +groupFormHere;
+}
+
+document.getElementById('objetivosList').addEventListener('click',e=>{
+  const t=e.target;
+  let b;
+  if(b=t.closest('[data-obj-edit-item]')){
+    objUi={type:'edit-item',gi:+b.dataset.gi,si:+b.dataset.si,ii:+b.dataset.ii};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-add-item]')){
+    objUi={type:'add-item',gi:+b.dataset.gi,si:+b.dataset.si};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-add-sub]')){
+    objUi={type:'add-sub',gi:+b.dataset.gi};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-add-group]')){
+    objUi={type:'add-group'};
+    renderObjetivos();
+    return;
+  }
+  if(b=t.closest('[data-obj-del-sub]')){
+    if(confirm('¿Eliminar esta sección y sus objetivos?')){
+      objData.groups[+b.dataset.gi].subs.splice(+b.dataset.si,1);
+      objUi=null; renderObjetivos(); objSave();
+    }
+    return;
+  }
+  if(b=t.closest('[data-obj-del-group]')){
+    if(confirm('¿Eliminar este grupo entero, con todas sus secciones?')){
+      objData.groups.splice(+b.dataset.gi,1);
+      objUi=null; renderObjetivos(); objSave();
+    }
+    return;
+  }
+  if(t.dataset.objAction==='cancel'){
+    objUi=null; renderObjetivos();
+    return;
+  }
+  if(t.dataset.objAction==='save-item'){
+    const label=document.getElementById('objFormLabel').value.trim();
+    const desc=document.getElementById('objFormDesc').value.trim();
+    if(!label) return;
+    if(objUi.type==='edit-item'){
+      const item=objData.groups[objUi.gi].subs[objUi.si].items[objUi.ii];
+      item.label=label; item.desc=desc;
+    } else {
+      objData.groups[objUi.gi].subs[objUi.si].items.push({label,desc,done:false});
+    }
+    objUi=null; renderObjetivos(); objSave();
+    return;
+  }
+  if(t.dataset.objAction==='delete-item'){
+    if(confirm('¿Eliminar este objetivo?')){
+      objData.groups[objUi.gi].subs[objUi.si].items.splice(objUi.ii,1);
+      objUi=null; renderObjetivos(); objSave();
+    }
+    return;
+  }
+  if(t.dataset.objAction==='save-sub'){
+    const title=document.getElementById('objFormTitle').value.trim();
+    if(!title) return;
+    objData.groups[objUi.gi].subs.push({title,items:[]});
+    objUi=null; renderObjetivos(); objSave();
+    return;
+  }
+  if(t.dataset.objAction==='save-group'){
+    const title=document.getElementById('objFormTitle').value.trim();
+    if(!title) return;
+    objData.groups.push({title,subs:[]});
+    objUi=null; renderObjetivos(); objSave();
+    return;
+  }
+  if(b=t.closest('[data-obj-toggle]')){
+    objToggle(+b.dataset.gi,+b.dataset.si,+b.dataset.ii);
+  }
+});
+document.getElementById('objetivosList').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const card=e.target.closest('[data-obj-toggle]');
+  if(!card) return;
+  e.preventDefault();
+  objToggle(+card.dataset.gi,+card.dataset.si,+card.dataset.ii);
+});
 
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
 function showView(view){
@@ -908,7 +1061,7 @@ window.addEventListener('hashchange',applyRoute);
 
 render();
 applyRoute();
-loadObjState();
+objLoad();
 </script>
 </body>
 </html>
