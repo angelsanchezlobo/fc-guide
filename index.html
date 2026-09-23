@@ -26,68 +26,39 @@
   --warn-tint: rgba(224,178,91,.12);
   --green: #7fd99a;
   --green-tint: rgba(127,217,154,.12);
-  --sidebar-w: 196px;
-  --sidebar-col-w: 44px;
-  --header-h: 50px;
+  --max-w: 1360px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
 a{color:inherit;}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 
-/* ── MOBILE HEADER ── */
-.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--hairline);z-index:200;align-items:center;padding:0 14px;gap:10px;}
-.mobile-logo{display:flex;align-items:baseline;gap:6px;font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
-.logo-badge{font-size:9px;font-weight:700;letter-spacing:0.04em;color:var(--text3);padding:1px 0;}
-.mobile-search{flex:1;background:transparent;border:none;border-bottom:1px solid var(--hairline);border-radius:0;color:#fff;font-size:13px;padding:6px 2px;outline:none;}
-.mobile-search::placeholder{color:var(--text3);}
-.mobile-search:focus{border-color:var(--accent);}
-.hamburger{background:none;border:none;color:var(--text2);font-size:16px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-
-/* ── MOBILE DRAWER ── */
-.drawer{display:none;position:fixed;inset:var(--header-h) 0 0 0;background:rgba(0,0,0,0.7);z-index:150;}
-.drawer.open{display:block;}
-.drawer-inner{background:var(--bg);width:210px;height:100%;overflow-y:auto;padding:12px 0 20px;}
-.drawer-sep{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);padding:16px 20px 6px;font-weight:600;}
-.drawer-btn{display:flex;align-items:center;width:100%;background:none;border:none;border-left:2px solid transparent;color:var(--text2);font-size:13px;padding:9px 18px;cursor:pointer;text-align:left;transition:color 0.1s;}
-.drawer-btn:hover{color:#fff;}
-.drawer-btn.active{color:#fff;font-weight:600;border-left-color:var(--accent);}
-
-/* ── DESKTOP LAYOUT ── */
-.layout{display:flex;min-height:100vh;}
-
-/* ── SIDEBAR ── */
-.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--bg);border-right:1px solid var(--hairline);position:sticky;top:0;height:100vh;overflow:hidden;flex-shrink:0;transition:width 0.2s ease,min-width 0.2s ease;}
-.sidebar.collapsed{width:var(--sidebar-col-w);min-width:var(--sidebar-col-w);}
-.sidebar-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--hairline);height:50px;}
-.sidebar-logo{display:flex;align-items:baseline;gap:6px;font-size:14px;font-weight:700;color:#fff;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;transition:opacity 0.15s,width 0.2s;}
-.sidebar.collapsed .sidebar-logo{opacity:0;width:0;pointer-events:none;}
-.collapse-btn{background:none;border:none;color:var(--text3);width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:color 0.1s;}
-.collapse-btn:hover{color:#fff;}
-.sidebar-scroll{overflow-y:auto;height:calc(100vh - 50px);padding:6px 4px 20px;}
-.nav-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--text3);padding:16px 16px 6px;white-space:nowrap;overflow:hidden;transition:opacity 0.15s;font-weight:600;}
-.sidebar.collapsed .nav-lbl{opacity:0;}
-.nav-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-left:2px solid transparent;color:var(--text2);font-size:13px;padding:6px 16px;cursor:pointer;text-align:left;white-space:nowrap;transition:color 0.1s;}
-.nav-btn:hover{color:#fff;}
-.nav-btn.active{color:#fff;font-weight:600;border-left-color:var(--accent);}
-.nav-icon{font-size:12px;flex-shrink:0;font-style:normal;font-weight:600;width:14px;text-align:center;color:var(--text3);}
-.nav-btn.active .nav-icon{color:var(--accent);}
-.nav-label{overflow:hidden;transition:opacity 0.15s;}
-.sidebar.collapsed .nav-label{opacity:0;}
-.sidebar-filters{padding:2px 16px 8px;display:flex;flex-direction:column;gap:2px;}
-.sidebar.collapsed .sidebar-filters{display:none;}
-.sf-btn{display:block;width:100%;background:none;border:none;color:var(--text2);font-size:12px;padding:4px 0;cursor:pointer;text-align:left;transition:color 0.1s;}
-.sf-btn:hover{color:#fff;}
-.sf-btn.active{color:#fff;font-weight:600;}
-
-/* ── MAIN ── */
-.main{flex:1;padding:36px 40px 80px;min-width:0;overflow-x:hidden;}
-.topbar{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
-.search-wrap{position:relative;flex:1;max-width:280px;}
-.search-wrap input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--hairline);border-radius:0;color:#fff;font-size:13px;padding:7px 4px 7px 22px;outline:none;transition:border-color 0.15s;}
+/* ── HEADER ── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--hairline);}
+.topbar-row1{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;max-width:var(--max-w);margin:0 auto;}
+.logo{display:flex;align-items:baseline;gap:6px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;letter-spacing:-0.02em;flex-shrink:0;}
+.logo-badge{font-size:9px;font-weight:700;letter-spacing:0.04em;color:var(--text3);}
+.search-wrap{position:relative;width:220px;flex-shrink:0;}
+.search-wrap input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--hairline);border-radius:0;color:#fff;font-size:13px;padding:6px 4px 6px 20px;outline:none;transition:border-color 0.15s;}
 .search-wrap input::placeholder{color:var(--text3);}
 .search-wrap input:focus{border-color:var(--accent);}
-.search-icon{position:absolute;left:2px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;}
+.search-icon{position:absolute;left:2px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none;}
+.topbar-row2{display:flex;gap:2px;overflow-x:auto;padding:0 24px 10px;max-width:var(--max-w);margin:0 auto;scrollbar-width:none;}
+.topbar-row2::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;border-radius:0;transition:color 0.1s;}
+.tab:hover{color:#fff;}
+.tab.active{color:#fff;font-weight:700;border-bottom-color:var(--accent);}
+.tab-sep{margin-left:10px;padding-left:18px;border-left:1px solid var(--hairline);}
+
+/* ── MAIN ── */
+.main{max-width:var(--max-w);margin:0 auto;padding:32px 24px 80px;}
+.view[hidden]{display:none;}
+
+/* ── FILTER ROW ── */
+.filter-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;}
+.filter-btn{background:none;border:none;color:var(--text2);font-size:12px;padding:2px 0;cursor:pointer;transition:color 0.1s;}
+.filter-btn:hover{color:#fff;}
+.filter-btn.active{color:#fff;font-weight:600;}
 
 /* ── SECTIONS ── */
 .section-wrap{margin-bottom:4px;}
@@ -128,6 +99,22 @@ a{color:inherit;}
 .tag-no-skill{background:var(--chip-bg);color:var(--chip-text);}
 .tag-video{background:var(--green-tint);color:var(--green);}
 
+/* ── GALERÍA VIEW ── */
+.gal-h{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
+.gal-method{margin-bottom:40px;}
+.gal-steps{list-style:none;counter-reset:step;display:flex;flex-direction:column;gap:14px;max-width:640px;}
+.gal-steps li{counter-increment:step;position:relative;padding-left:34px;font-size:13px;color:var(--text2);line-height:1.65;}
+.gal-steps li::before{content:counter(step);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--chip-bg);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.gal-steps strong{color:#fff;}
+.gal-tiers{display:flex;flex-direction:column;gap:1px;background:var(--hairline);border-radius:14px;overflow:hidden;margin-bottom:24px;}
+.gal-tier{background:var(--surface);padding:18px 22px;}
+.gal-tier-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;}
+.gal-tier-name{font-size:15px;font-weight:700;color:#fff;}
+.gal-tier-cost{font-size:12px;font-weight:600;color:var(--chip-text);background:var(--chip-bg);border-radius:20px;padding:3px 10px;white-space:nowrap;}
+.gal-tier-body{font-size:13px;color:var(--text2);line-height:1.6;}
+.gal-note{font-size:13px;color:var(--text2);padding:16px 20px;background:var(--surface);border-radius:12px;line-height:1.6;max-width:640px;}
+.gal-note strong{color:#fff;}
+
 /* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
@@ -148,11 +135,10 @@ a{color:inherit;}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
-  .mobile-header{display:flex;}
-  .layout{flex-direction:column;margin-top:var(--header-h);}
-  .sidebar{display:none;}
+  .topbar-row1{padding:12px 16px;}
+  .search-wrap{width:120px;}
+  .topbar-row2{padding:0 16px 10px;}
   .main{padding:20px 16px 60px;}
-  .topbar{display:none;}
   .items{grid-template-columns:1fr;}
   .section-header{margin-top:32px;}
   .sec-title{font-size:19px;}
@@ -164,31 +150,27 @@ a{color:inherit;}
 </head>
 <body>
 
-<header class="mobile-header">
-  <span class="mobile-logo">FC Guide <span class="logo-badge">FC27</span></span>
-  <input class="mobile-search" type="text" placeholder="Buscar..." id="mobileSearchInput">
-  <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">&#9776;</button>
-</header>
-
-<div class="drawer" id="drawer">
-  <div class="drawer-inner" id="drawerInner">
-    <div class="drawer-sep">Secciones</div>
-    <button class="drawer-btn active" data-section-btn="all">Todo</button>
-    <button class="drawer-btn" data-section-btn="patrones">Patrones</button>
-    <button class="drawer-btn" data-section-btn="defensa">Defensa</button>
-    <button class="drawer-btn" data-section-btn="desmarques">Desmarques</button>
-    <button class="drawer-btn" data-section-btn="pases">Pases</button>
-    <button class="drawer-btn" data-section-btn="ataque">Ataque</button>
-    <button class="drawer-btn" data-section-btn="regates">Regates</button>
-    <button class="drawer-btn" data-section-btn="conduccion">Conducción</button>
-    <button class="drawer-btn" data-section-btn="pelota">Pelota parada</button>
-    <div class="drawer-sep">Filtros</div>
-    <button class="drawer-btn active" data-tag-btn="all">Todos</button>
-    <button class="drawer-btn" data-tag-btn="cuando">Con cuándo NO</button>
-    <button class="drawer-btn" data-tag-btn="skill">Requiere skill</button>
-    <button class="drawer-btn" data-tag-btn="noskill">Sin skill</button>
+<header class="topbar">
+  <div class="topbar-row1">
+    <a class="logo" href="#">FC Guide <span class="logo-badge">FC27</span></a>
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Buscar...">
+    </div>
   </div>
-</div>
+  <nav class="topbar-row2" id="tabs">
+    <button class="tab active" data-section-btn="all">Todo</button>
+    <button class="tab" data-section-btn="patrones">Patrones</button>
+    <button class="tab" data-section-btn="defensa">Defensa</button>
+    <button class="tab" data-section-btn="desmarques">Desmarques</button>
+    <button class="tab" data-section-btn="pases">Pases</button>
+    <button class="tab" data-section-btn="ataque">Ataque</button>
+    <button class="tab" data-section-btn="regates">Regates</button>
+    <button class="tab" data-section-btn="conduccion">Conducción</button>
+    <button class="tab" data-section-btn="pelota">Pelota parada</button>
+    <button class="tab tab-sep" data-view-btn="galeria">Galería</button>
+  </nav>
+</header>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
@@ -207,78 +189,87 @@ a{color:inherit;}
   </div>
 </div>
 
-<div class="layout">
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-top">
-    <span class="sidebar-logo">FC Guide <span class="logo-badge">FC27</span></span>
-    <button class="collapse-btn" id="collapseBtn" aria-label="Colapsar barra lateral">&#9664;</button>
-  </div>
-  <div class="sidebar-scroll">
-    <div class="nav-lbl">Secciones</div>
-    <button class="nav-btn active" data-section-btn="all"><span class="nav-icon">·</span><span class="nav-label">Todo</span></button>
-    <button class="nav-btn" data-section-btn="patrones"><span class="nav-icon">T</span><span class="nav-label">Patrones</span></button>
-    <button class="nav-btn" data-section-btn="defensa"><span class="nav-icon">D</span><span class="nav-label">Defensa</span></button>
-    <button class="nav-btn" data-section-btn="desmarques"><span class="nav-icon">R</span><span class="nav-label">Desmarques</span></button>
-    <button class="nav-btn" data-section-btn="pases"><span class="nav-icon">P</span><span class="nav-label">Pases</span></button>
-    <button class="nav-btn" data-section-btn="ataque"><span class="nav-icon">A</span><span class="nav-label">Ataque</span></button>
-    <button class="nav-btn" data-section-btn="regates"><span class="nav-icon">G</span><span class="nav-label">Regates</span></button>
-    <button class="nav-btn" data-section-btn="conduccion"><span class="nav-icon">C</span><span class="nav-label">Conducción</span></button>
-    <button class="nav-btn" data-section-btn="pelota"><span class="nav-icon">F</span><span class="nav-label">Pelota parada</span></button>
-    <div class="nav-lbl">Filtros</div>
-    <div class="sidebar-filters">
-      <button class="sf-btn active" data-tag-btn="all">Todos</button>
-      <button class="sf-btn" data-tag-btn="cuando">Con cuándo NO</button>
-      <button class="sf-btn" data-tag-btn="skill">Requiere skill</button>
-      <button class="sf-btn" data-tag-btn="noskill">Sin skill</button>
-    </div>
-  </div>
-</aside>
-
 <main class="main">
-  <div class="topbar">
-    <div class="search-wrap">
-      <span class="search-icon">&#128269;</span>
-      <input type="text" id="searchInput" placeholder="Buscar mecánica...">
+
+  <div class="view" id="view-mecanicas">
+    <div class="filter-row" id="filterRow">
+      <button class="filter-btn active" data-tag-btn="all">Todos</button>
+      <button class="filter-btn" data-tag-btn="cuando">Con cuándo NO</button>
+      <button class="filter-btn" data-tag-btn="skill">Requiere skill</button>
+      <button class="filter-btn" data-tag-btn="noskill">Sin skill</button>
+    </div>
+    <div id="noResults" class="no-results">No hay resultados.</div>
+
+    <div class="section-wrap" data-section="patrones">
+      <div class="section-header"><span class="sec-label">Táctica</span><span class="sec-title">Patrones de ataque</span></div>
+      <div class="section-note">Situaciones recurrentes de partido. Reconocerlas antes que el rival es la diferencia entre reaccionar y anticipar.</div>
+      <div class="items" id="items-patrones"></div>
+    </div>
+    <div class="section-wrap" data-section="defensa">
+      <div class="section-header"><span class="sec-label">Defensa</span><span class="sec-title">Mecánicas defensivas</span></div>
+      <div class="section-note">Errores de defensa detectados en FC27 y cómo corregirlos. Fuente: Deep Researcher FC.</div>
+      <div class="items" id="items-defensa"></div>
+    </div>
+    <div class="section-wrap" data-section="desmarques">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Desmarques</span></div>
+      <div class="items" id="items-desmarques"></div>
+    </div>
+    <div class="section-wrap" data-section="pases">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Pases</span></div>
+      <div class="items" id="items-pases"></div>
+    </div>
+    <div class="section-wrap" data-section="ataque">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Conceptos y tiros</span></div>
+      <div class="items" id="items-ataque"></div>
+    </div>
+    <div class="section-wrap" data-section="regates">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Regates</span></div>
+      <div class="items" id="items-regates"></div>
+    </div>
+    <div class="section-wrap" data-section="conduccion">
+      <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Movimiento y conducción</span></div>
+      <div class="items" id="items-conduccion"></div>
+    </div>
+    <div class="section-wrap" data-section="pelota">
+      <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
+      <div class="items" id="items-pelota"></div>
     </div>
   </div>
-  <div id="noResults" class="no-results">No hay resultados.</div>
 
-  <div class="section-wrap" data-section="patrones">
-    <div class="section-header"><span class="sec-label">Táctica</span><span class="sec-title">Patrones de ataque</span></div>
-    <div class="section-note">Situaciones recurrentes de partido. Reconocerlas antes que el rival es la diferencia entre reaccionar y anticipar.</div>
-    <div class="items" id="items-patrones"></div>
+  <div class="view" id="view-galeria" hidden>
+    <div class="section-header"><span class="sec-label">Economía</span><span class="sec-title">Galería (Gallery Tokens)</span></div>
+    <div class="section-note">Método general para acumular fichas de Galería — no una lista de qué comprar hoy. Los jugadores y precios concretos cambian cada semana: comprueba siempre el coste actual en fut.gg antes de comprar. Fuente: Clausiño.</div>
+
+    <div class="gal-method">
+      <div class="gal-h">El método, paso a paso</div>
+      <ol class="gal-steps">
+        <li>Entra en <strong>fut.gg → Gallery</strong> (menú de tres líneas del sitio → "Fut Gallery").</li>
+        <li>Busca por categoría: escribe el nombre de la liga o el club en el buscador de categorías.</li>
+        <li>Dentro de cada categoría, apunta al <strong>rango C</strong> como objetivo por defecto — suele ser el mejor equilibrio fichas/coste. La propia página te dice cuántas monedas necesitas para cada rango antes de empezar.</li>
+        <li>Compra la plantilla del rango, pero <strong>no compres todas las cartas caras a la vez</strong>: compra una, ponla a la venta, espera a que se venda y compra la siguiente. Así recuperas monedas en vez de tenerlas todas paradas en cartas al mismo tiempo.</li>
+        <li>Repite categoría por categoría — las ligas grandes primero (mejor ratio fichas/coste), luego plantillas de clubes pequeños para completar.</li>
+      </ol>
+    </div>
+
+    <div class="gal-tiers">
+      <div class="gal-tier">
+        <div class="gal-tier-head"><span class="gal-tier-name">Alto gasto</span><span class="gal-tier-cost">~1M+ monedas</span></div>
+        <div class="gal-tier-body">Set de héroes completo (rango A) + rango C de todas las ligas grandes + varias plantillas de clubes pequeños en rango A/S. Puedes llegar a las fichas objetivo en cuestión de horas.</div>
+      </div>
+      <div class="gal-tier">
+        <div class="gal-tier-head"><span class="gal-tier-name">Gasto medio</span><span class="gal-tier-cost">~500k monedas</span></div>
+        <div class="gal-tier-body">Set de héroes en rango A (no hace falta completarlo entero) + rango C de las ligas grandes + plantillas de clubes pequeños. Se tarda días en vez de horas.</div>
+      </div>
+      <div class="gal-tier">
+        <div class="gal-tier-head"><span class="gal-tier-name">Presupuesto ajustado</span><span class="gal-tier-cost">~50k monedas</span></div>
+        <div class="gal-tier-body">Salta el set de héroes — es lo más caro. Enfócate solo en plantillas de clubes pequeños al rango D/C mínimo: son muchas plantillas pero cada una cuesta poco. Se tarda semanas, no días.</div>
+      </div>
+    </div>
+
+    <div class="gal-note"><strong>Truco de monedas:</strong> con una carta de más de 100k, compra y espera a que se venda antes de seguir — si no, te quedas sin monedas a medio camino. Con cartas baratas (bronce, pocas miles) sí puedes comprar y vender en cadena sin esperar.</div>
   </div>
-  <div class="section-wrap" data-section="defensa">
-    <div class="section-header"><span class="sec-label">Defensa</span><span class="sec-title">Mecánicas defensivas</span></div>
-    <div class="section-note">Errores de defensa detectados en FC27 y cómo corregirlos. Fuente: Deep Researcher FC.</div>
-    <div class="items" id="items-defensa"></div>
-  </div>
-  <div class="section-wrap" data-section="desmarques">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Desmarques</span></div>
-    <div class="items" id="items-desmarques"></div>
-  </div>
-  <div class="section-wrap" data-section="pases">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Pases</span></div>
-    <div class="items" id="items-pases"></div>
-  </div>
-  <div class="section-wrap" data-section="ataque">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Conceptos y tiros</span></div>
-    <div class="items" id="items-ataque"></div>
-  </div>
-  <div class="section-wrap" data-section="regates">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Regates</span></div>
-    <div class="items" id="items-regates"></div>
-  </div>
-  <div class="section-wrap" data-section="conduccion">
-    <div class="section-header"><span class="sec-label">Ataque</span><span class="sec-title">Movimiento y conducción</span></div>
-    <div class="items" id="items-conduccion"></div>
-  </div>
-  <div class="section-wrap" data-section="pelota">
-    <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
-    <div class="items" id="items-pelota"></div>
-  </div>
+
 </main>
-</div>
 
 <script>
 const DATA = {
@@ -538,18 +529,11 @@ const DATA = {
 };
 
 const SECTION_IDS = Object.keys(DATA);
-let activeSection='all',activeTag='all',searchText='',sidebarCollapsed=false;
+let activeSection='all',activeTag='all',searchText='';
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
-function toggleSidebar(){
-  sidebarCollapsed=!sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
-  document.getElementById('collapseBtn').innerHTML=sidebarCollapsed?'&#9654;':'&#9664;';
-}
-function toggleDrawer(){document.getElementById('drawer').classList.toggle('open');}
 
 function cardBtns(buttons){
   if(!buttons||!buttons.length) return '';
@@ -618,7 +602,6 @@ function render(){
       ? list.map(item=>makeItem(item,section)).join('')
       : '<div class="section-empty">Próximamente — pendiente de contenido FC27 para esta sección.</div>';
   });
-  applyFilters();
 }
 
 document.querySelectorAll('.items').forEach(el=>{
@@ -640,35 +623,14 @@ function doSearch(val){
   applyFilters();
 }
 document.getElementById('searchInput').addEventListener('input',e=>doSearch(e.target.value));
-document.getElementById('mobileSearchInput').addEventListener('input',e=>doSearch(e.target.value));
 
-function setActiveSection(section){
-  activeSection=section;
-  document.querySelectorAll('[data-section-btn]').forEach(b=>b.classList.toggle('active',b.dataset.sectionBtn===section));
-  applyFilters();
-}
 function setActiveTag(tag){
   activeTag=tag;
   document.querySelectorAll('[data-tag-btn]').forEach(b=>b.classList.toggle('active',b.dataset.tagBtn===tag));
   applyFilters();
 }
-document.querySelectorAll('[data-section-btn]').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    setActiveSection(btn.dataset.sectionBtn);
-    if(btn.closest('#drawer')) document.getElementById('drawer').classList.remove('open');
-  });
-});
 document.querySelectorAll('[data-tag-btn]').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    setActiveTag(btn.dataset.tagBtn);
-    if(btn.closest('#drawer')) document.getElementById('drawer').classList.remove('open');
-  });
-});
-
-document.getElementById('collapseBtn').addEventListener('click',toggleSidebar);
-document.getElementById('hamburgerBtn').addEventListener('click',toggleDrawer);
-document.getElementById('drawer').addEventListener('click',e=>{
-  if(e.target===document.getElementById('drawer')) document.getElementById('drawer').classList.remove('open');
+  btn.addEventListener('click',()=>setActiveTag(btn.dataset.tagBtn));
 });
 
 function applyFilters(){
@@ -695,7 +657,40 @@ function applyFilters(){
   });
   document.getElementById('noResults').classList.toggle('visible',!anyVisible);
 }
+
+/* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
+function showView(view){
+  document.getElementById('view-mecanicas').hidden = view!=='mecanicas';
+  document.getElementById('view-galeria').hidden = view!=='galeria';
+}
+function updateTabsActive(view,section){
+  document.querySelectorAll('.tab').forEach(btn=>{
+    const isGaleria=btn.dataset.viewBtn==='galeria';
+    const active=isGaleria ? view==='galeria' : (view==='mecanicas'&&btn.dataset.sectionBtn===section);
+    btn.classList.toggle('active',active);
+  });
+}
+function applyRoute(){
+  const hash=(location.hash||'').replace('#','');
+  if(hash==='galeria'){
+    showView('galeria');
+    updateTabsActive('galeria',activeSection);
+  } else {
+    activeSection=SECTION_IDS.includes(hash)?hash:'all';
+    showView('mecanicas');
+    updateTabsActive('mecanicas',activeSection);
+    applyFilters();
+  }
+}
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    location.hash = btn.dataset.viewBtn==='galeria' ? 'galeria' : (btn.dataset.sectionBtn==='all' ? '' : btn.dataset.sectionBtn);
+  });
+});
+window.addEventListener('hashchange',applyRoute);
+
 render();
+applyRoute();
 </script>
 </body>
 </html>
