@@ -35,7 +35,30 @@ const UPLOAD_MIME_EXT = {
   'image/jpeg': '.jpg',
   'image/webp': '.webp',
   'image/gif': '.gif',
+  'image/heic': '.heic',
+  'image/heif': '.heif',
+  'image/avif': '.avif',
+  'image/bmp': '.bmp',
+  'image/svg+xml': '.svg',
 };
+
+// Cualquier imagen vale, no solo las de la lista de arriba: si el tipo MIME
+// no está en la lista, se deriva una extensión genérica de su subtipo en
+// vez de rechazarla — así un formato nuevo (p. ej. de un móvil concreto)
+// no bloquea la subida en silencio.
+function extForContentType(contentType){
+  const type = (contentType || '').split(';')[0].trim().toLowerCase();
+  if (!type.startsWith('image/')) return null;
+  if (UPLOAD_MIME_EXT[type]) return UPLOAD_MIME_EXT[type];
+  const subtype = type.slice('image/'.length).replace(/[^a-z0-9]/g, '');
+  return subtype ? '.' + subtype : '.img';
+}
+function contentTypeForExt(ext){
+  const known = Object.entries(UPLOAD_MIME_EXT).find(([, e]) => e === ext);
+  if (known) return known[0];
+  if (ext && ext !== '.img') return 'image/' + ext.slice(1);
+  return 'application/octet-stream';
+}
 
 const green = s => `\x1b[32m${s}\x1b[0m`;
 const red = s => `\x1b[31m${s}\x1b[0m`;
@@ -53,11 +76,10 @@ function serveUpload(req, res){
   }
   const filePath = path.join(UPLOADS_DIR, name);
   const ext = path.extname(name).toLowerCase();
-  const contentType = Object.entries(UPLOAD_MIME_EXT).find(([, e]) => e === ext);
   fs.readFile(filePath, (err, data) => {
     if (err) return send(res, 404, JSON.stringify({ error: 'not found' }));
     res.writeHead(200, {
-      'Content-Type': contentType ? contentType[0] : 'application/octet-stream',
+      'Content-Type': contentTypeForExt(ext),
       'Cache-Control': 'public, max-age=31536000, immutable',
     });
     res.end(data);
@@ -70,8 +92,9 @@ function receiveUpload(req, res){
     console.log(red('POST rechazado en /api/uploads: token inválido'));
     return send(res, 401, JSON.stringify({ error: 'unauthorized' }));
   }
-  const ext = UPLOAD_MIME_EXT[(req.headers['content-type'] || '').split(';')[0].trim()];
+  const ext = extForContentType(req.headers['content-type']);
   if (!ext) {
+    console.log(red('POST rechazado en /api/uploads: content-type no soportado (' + (req.headers['content-type'] || 'ninguno') + ')'));
     return send(res, 400, JSON.stringify({ error: 'unsupported content-type' }));
   }
   const chunks = [];
