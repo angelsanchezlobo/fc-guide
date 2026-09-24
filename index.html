@@ -233,6 +233,14 @@ a{color:inherit;}
   .modal{border-radius:10px;}
 }
 
+/* ── VISOR DE IMAGEN (Recomendaciones) ── */
+.img-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center;padding:20px;}
+.img-modal-overlay.open{display:flex;}
+.img-modal-overlay img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;}
+.img-modal-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.08);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+.img-modal-close:hover{background:rgba(255,255,255,.16);}
+.rec-card img{cursor:zoom-in;}
+
 /* ── MOBILE ── */
 @media(max-width:768px){
   .topbar-row1{padding:12px 16px;}
@@ -282,6 +290,11 @@ a{color:inherit;}
       <a class="modal-yt" id="modalYtLink" href="#" target="_blank" rel="noopener">Abrir en YouTube</a>
     </div>
   </div>
+</div>
+
+<div class="img-modal-overlay" id="imgModalOverlay">
+  <button class="img-modal-close" id="imgModalCloseBtn" aria-label="Cerrar">&#10005;</button>
+  <img id="imgModalImg" src="" alt="">
 </div>
 
 <main class="main">
@@ -378,11 +391,8 @@ a{color:inherit;}
     <div class="section-note">Compra-venta, trading y gestión de monedas.</div>
     <div class="section-empty">Próximamente.</div>
 
-    <div class="section-header" style="margin-top:36px"><span class="sec-label">Economía</span><span class="sec-title">Recomendaciones</span></div>
-    <div class="section-note">Capturas de cartas, plantillas o SBCs recomendados. Es contenido de la semana, no un método fijo — se queda aquí como feed con fecha.</div>
-    <div class="sync-row"><div class="rec-sync-note" id="recSyncNote"></div><button class="save-now-btn" id="recSaveNowBtn">Guardar ahora</button></div>
-    <div class="rec-paste-zone" id="recPasteZone" tabindex="0">Haz clic aquí y pega una imagen (Ctrl+V), o <label class="rec-file-label">elige un archivo<input type="file" id="recFileInput" accept="image/*" hidden></label></div>
-    <div id="recomendacionesList" class="rec-list"></div>
+    <div class="sync-row" style="margin-top:36px"><div class="rec-sync-note" id="recSyncNote"></div><button class="save-now-btn" id="recSaveNowBtn">Guardar ahora</button></div>
+    <div id="recSections"></div>
   </div>
 
   <div class="view" id="view-objetivos" hidden>
@@ -815,6 +825,24 @@ document.getElementById('modalOverlay').addEventListener('click',e=>{
   if(e.target===document.getElementById('modalOverlay')) closeModal();
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+function openImgModal(src,alt){
+  document.getElementById('imgModalImg').src=src;
+  document.getElementById('imgModalImg').alt=alt||'';
+  document.getElementById('imgModalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('imgModalCloseBtn').focus();
+}
+function closeImgModal(){
+  document.getElementById('imgModalOverlay').classList.remove('open');
+  document.getElementById('imgModalImg').src='';
+  document.body.style.overflow='';
+}
+document.getElementById('imgModalCloseBtn').addEventListener('click',closeImgModal);
+document.getElementById('imgModalOverlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('imgModalOverlay')) closeImgModal();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeImgModal(); });
 
 function makeItem(item,section){
   const hasNo=item.no&&item.no!=='';
@@ -1375,17 +1403,30 @@ document.getElementById('tacticsList').addEventListener('keydown',e=>{
   if(saveBtn) saveBtn.click();
 });
 
-/* ── RECOMENDACIONES (MERCADO): feed de imágenes pegadas/subidas, con fecha
-   y nota opcional. Igual que Objetivos/Tácticas: si no hay conexión con el
-   servidor al pegar una imagen, se guarda igualmente en este navegador
-   (como data URL, marcada "pending") y se sube sola al servidor en cuanto
-   vuelva la conexión, sustituyendo la data URL por la URL real. ── */
+/* ── MERCADO: 3 feeds independientes (Plantillas, Cartas, SBC's) de
+   imágenes pegadas/subidas, cada una con título+descripción por tarjeta.
+   Un único blob en el servidor (/api/recomendaciones) con las 3 listas.
+   Igual que Objetivos/Tácticas: si no hay conexión al pegar una imagen,
+   se guarda igual en este navegador (como data URL, marcada "pending")
+   y se sube sola al servidor en cuanto vuelva la conexión. ── */
+const REC_CATEGORIES=[
+  {key:'plantillas',label:'Plantillas',note:'Plantillas de equipo por rango de presupuesto.'},
+  {key:'cartas',label:'Cartas',note:'Cartas recomendadas: hidden gems, cheap beasts y similares.'},
+  {key:'sbcs',label:"SBC's",note:'SBCs que merece la pena hacer.'}
+];
 const REC_STORAGE_KEY='fcguide-recomendaciones';
-let recData=null; // {items:[{id,url,caption,date,pending?}]}
+let recData=null; // {plantillas:[{id,url,title,desc,date,pending?}], cartas:[...], sbcs:[...]}
+let recOpenZone=null; // categoría cuya zona de pegar está abierta, o null
+
+function recEmptyData(){
+  const d={};
+  REC_CATEGORIES.forEach(c=>{ d[c.key]=[]; });
+  return d;
+}
 
 function recLoad(){
   fetch('/api/recomendaciones').then(r=>r.ok?r.json():null).then(data=>{
-    if(data&&Array.isArray(data.items)){
+    if(data&&REC_CATEGORIES.every(c=>Array.isArray(data[c.key]))){
       recData=data;
       renderRecomendaciones();
       recRetryPending();
@@ -1395,7 +1436,7 @@ function recLoad(){
   }).catch(()=>{
     let cached=null;
     try{ cached=JSON.parse(localStorage.getItem(REC_STORAGE_KEY)); }catch(e){}
-    recData=(cached&&Array.isArray(cached.items))?cached:{items:[]};
+    recData=(cached&&REC_CATEGORIES.every(c=>Array.isArray(cached[c.key])))?cached:recEmptyData();
     renderRecomendaciones();
     document.getElementById('recSyncNote').textContent='Sin conexión con el servidor — viendo la copia guardada en este navegador. Lo que pegues ahora se sube solo en cuanto vuelva la conexión.';
   });
@@ -1408,7 +1449,8 @@ function recPersist(){
   // envían al servidor: son solo copia local hasta que la subida real
   // termine — mandarlos aquí podría superar el límite de tamaño del
   // endpoint y bloquear el guardado de TODO el listado, no solo de ese ítem.
-  const syncable={items:recData.items.filter(it=>!it.pending)};
+  const syncable={};
+  REC_CATEGORIES.forEach(c=>{ syncable[c.key]=recData[c.key].filter(it=>!it.pending); });
   return fetch('/api/recomendaciones',{
     method:'POST',
     headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
@@ -1446,27 +1488,27 @@ function recUploadBlob(blob){
   });
 }
 
-function recAddItem(url,pending){
-  if(!recData) recData={items:[]};
-  const item={id:Date.now()+'-'+Math.random().toString(36).slice(2,8),url,caption:'',date:new Date().toISOString().slice(0,10)};
+function recAddItem(cat,url,pending){
+  if(!recData) recData=recEmptyData();
+  const item={id:Date.now()+'-'+Math.random().toString(36).slice(2,8),url,title:'',desc:'',date:new Date().toISOString().slice(0,10)};
   if(pending) item.pending=true;
-  recData.items.unshift(item);
+  recData[cat].unshift(item);
   renderRecomendaciones();
   recSave();
 }
 
-function recUploadAndAdd(blob){
+function recUploadAndAdd(cat,blob){
   const note=document.getElementById('recSyncNote');
   note.textContent='Subiendo imagen…';
   recUploadBlob(blob).then(data=>{
-    recAddItem(data.url,false);
+    recAddItem(cat,data.url,false);
     note.textContent='';
   }).catch(()=>{
     // Sin conexión: se guarda igual en este navegador (como data URL) y se
     // reintenta subir sola en segundo plano en cuanto haya conexión.
     const reader=new FileReader();
     reader.onload=()=>{
-      recAddItem(reader.result,true);
+      recAddItem(cat,reader.result,true);
       note.textContent='Sin conexión — guardada solo en este navegador. Se subirá sola en cuanto vuelva la conexión.';
     };
     reader.readAsDataURL(blob);
@@ -1483,14 +1525,16 @@ function recDataURLtoBlob(dataURL){
 }
 
 function recRetryPending(){
-  if(!recData||!recData.items.length) return;
-  recData.items.filter(it=>it.pending).forEach(item=>{
-    recUploadBlob(recDataURLtoBlob(item.url)).then(data=>{
-      item.url=data.url;
-      delete item.pending;
-      renderRecomendaciones();
-      recSave();
-    }).catch(()=>{}); // sigue pendiente — se reintenta en la próxima carga o al recuperar conexión
+  if(!recData) return;
+  REC_CATEGORIES.forEach(c=>{
+    recData[c.key].filter(it=>it.pending).forEach(item=>{
+      recUploadBlob(recDataURLtoBlob(item.url)).then(data=>{
+        item.url=data.url;
+        delete item.pending;
+        renderRecomendaciones();
+        recSave();
+      }).catch(()=>{}); // sigue pendiente — se reintenta en la próxima carga o al recuperar conexión
+    });
   });
 }
 window.addEventListener('online',recRetryPending);
@@ -1502,73 +1546,111 @@ function recAutoResize(el){
   el.style.height=(el.scrollHeight+borderY)+'px';
 }
 
-function renderRecomendaciones(){
-  const el=document.getElementById('recomendacionesList');
-  if(!recData||!recData.items.length){ el.innerHTML='<div class="rec-empty">Todavía no hay imágenes. Pega una arriba.</div>'; return; }
-  el.innerHTML=recData.items.map(it=>
-    '<div class="rec-card" data-rec-id="'+escapeHtml(it.id)+'">'
-    +'<img src="'+escapeHtml(it.url)+'" alt="Recomendación" loading="lazy">'
+function recCardHtml(cat,it){
+  return '<div class="rec-card" data-rec-id="'+escapeHtml(it.id)+'">'
+    +'<img src="'+escapeHtml(it.url)+'" alt="'+escapeHtml(it.title||'Imagen')+'" loading="lazy">'
     +(it.pending?'<div class="rec-card-pending">Sin subir — se sincroniza sola</div>':'')
-    +'<button class="rec-card-del" data-rec-del="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>'
+    +'<button class="rec-card-del" data-rec-del data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>'
     +'<div class="rec-card-body">'
+    +'<input type="text" class="rec-card-title-input" data-rec-title data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" placeholder="Título" value="'+escapeHtml(it.title||'')+'">'
+    +'<textarea class="rec-card-caption-input" data-rec-desc data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" placeholder="Descripción (opcional)" rows="1">'+escapeHtml(it.desc||'')+'</textarea>'
     +'<div class="rec-card-date">'+escapeHtml(it.date)+'</div>'
-    +'<textarea class="rec-card-caption-input" data-rec-caption="'+escapeHtml(it.id)+'" placeholder="Añadir nota (opcional)" rows="1">'+escapeHtml(it.caption||'')+'</textarea>'
-    +'</div></div>'
-  ).join('');
+    +'</div></div>';
+}
+
+function renderRecomendaciones(){
+  const el=document.getElementById('recSections');
+  const data=recData||recEmptyData();
+  el.innerHTML=REC_CATEGORIES.map(c=>{
+    const items=data[c.key]||[];
+    const cards=items.length?items.map(it=>recCardHtml(c.key,it)).join(''):'<div class="rec-empty">Todavía no hay imágenes.</div>';
+    const zoneOpen=recOpenZone===c.key;
+    return '<div class="rec-section">'
+      +'<div class="section-header" style="margin-top:36px"><span class="sec-label">Economía</span><span class="sec-title">'+c.label+'</span></div>'
+      +'<div class="section-note">'+c.note+'</div>'
+      +'<button class="obj-add-btn" data-rec-toggle-zone="'+c.key+'">'+(zoneOpen?'Cancelar':'+ Nueva')+'</button>'
+      +(zoneOpen?(
+        '<div class="rec-paste-zone" data-rec-zone="'+c.key+'" tabindex="0">Haz clic aquí y pega una imagen (Ctrl+V), o <label class="rec-file-label">elige un archivo<input type="file" data-rec-file="'+c.key+'" accept="image/*" hidden></label></div>'
+      ):'')
+      +'<div class="rec-list">'+cards+'</div>'
+      +'</div>';
+  }).join('');
   el.querySelectorAll('.rec-card-caption-input').forEach(recAutoResize);
 }
 
-document.getElementById('recomendacionesList').addEventListener('click',e=>{
+const recSections=document.getElementById('recSections');
+recSections.addEventListener('click',e=>{
+  const toggleBtn=e.target.closest('[data-rec-toggle-zone]');
+  if(toggleBtn){
+    const cat=toggleBtn.dataset.recToggleZone;
+    recOpenZone=(recOpenZone===cat)?null:cat;
+    renderRecomendaciones();
+    return;
+  }
   const delBtn=e.target.closest('[data-rec-del]');
   if(delBtn){
-    const id=delBtn.dataset.recDel;
-    recData.items=recData.items.filter(it=>it.id!==id);
+    const cat=delBtn.dataset.cat, id=delBtn.dataset.id;
+    recData[cat]=recData[cat].filter(it=>it.id!==id);
     renderRecomendaciones();
+    recSave();
+    return;
+  }
+  if(e.target.matches('.rec-card img')){
+    openImgModal(e.target.src,e.target.alt);
+  }
+});
+recSections.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.matches('[data-rec-title]')||t.matches('[data-rec-desc]')){
+    const cat=t.dataset.cat, id=t.dataset.id;
+    const item=recData[cat].find(it=>it.id===id);
+    if(!item) return;
+    if(t.matches('[data-rec-title]')) item.title=t.value.trim();
+    else item.desc=t.value.trim();
     recSave();
   }
 });
-document.getElementById('recomendacionesList').addEventListener('change',e=>{
-  const input=e.target.closest('[data-rec-caption]');
-  if(input){
-    const id=input.dataset.recCaption;
-    const item=recData.items.find(it=>it.id===id);
-    if(item){ item.caption=input.value.trim(); recSave(); }
-  }
+recSections.addEventListener('input',e=>{
+  if(e.target.matches('[data-rec-desc]')) recAutoResize(e.target);
 });
-document.getElementById('recomendacionesList').addEventListener('input',e=>{
-  const ta=e.target.closest('[data-rec-caption]');
-  if(ta) recAutoResize(ta);
-});
-document.getElementById('recomendacionesList').addEventListener('keydown',e=>{
+recSections.addEventListener('keydown',e=>{
   if(e.key!=='Enter'||e.shiftKey) return;
-  const ta=e.target.closest('[data-rec-caption]');
-  if(!ta) return;
+  if(!e.target.matches('[data-rec-title]')&&!e.target.matches('[data-rec-desc]')) return;
   e.preventDefault();
-  ta.blur(); // dispara 'change' -> guarda la nota en recData
+  e.target.blur(); // dispara 'change' -> guarda título/descripción en recData
   recSaveNow();
 });
-
-function recHandleFiles(files){
-  const file=[...files].find(f=>f.type&&f.type.startsWith('image/'));
-  if(!file) return;
-  recUploadAndAdd(file);
-}
-const recPasteZone=document.getElementById('recPasteZone');
-recPasteZone.addEventListener('paste',e=>{
+recSections.addEventListener('paste',e=>{
+  const zone=e.target.closest('[data-rec-zone]');
+  if(!zone) return;
   const items=(e.clipboardData&&e.clipboardData.items)||[];
   const imgItem=[...items].find(it=>it.type&&it.type.startsWith('image/'));
-  if(imgItem){ e.preventDefault(); recUploadAndAdd(imgItem.getAsFile()); }
+  if(imgItem){ e.preventDefault(); recUploadAndAdd(zone.dataset.recZone,imgItem.getAsFile()); }
 });
-recPasteZone.addEventListener('dragover',e=>{ e.preventDefault(); recPasteZone.classList.add('drag'); });
-recPasteZone.addEventListener('dragleave',()=>{ recPasteZone.classList.remove('drag'); });
-recPasteZone.addEventListener('drop',e=>{
+recSections.addEventListener('dragover',e=>{
+  const zone=e.target.closest('[data-rec-zone]');
+  if(!zone) return;
   e.preventDefault();
-  recPasteZone.classList.remove('drag');
-  if(e.dataTransfer&&e.dataTransfer.files.length) recHandleFiles(e.dataTransfer.files);
+  zone.classList.add('drag');
 });
-document.getElementById('recFileInput').addEventListener('change',e=>{
-  if(e.target.files.length) recHandleFiles(e.target.files);
-  e.target.value='';
+recSections.addEventListener('dragleave',e=>{
+  const zone=e.target.closest('[data-rec-zone]');
+  if(zone) zone.classList.remove('drag');
+});
+recSections.addEventListener('drop',e=>{
+  const zone=e.target.closest('[data-rec-zone]');
+  if(!zone) return;
+  e.preventDefault();
+  zone.classList.remove('drag');
+  const file=e.dataTransfer&&[...e.dataTransfer.files].find(f=>f.type&&f.type.startsWith('image/'));
+  if(file) recUploadAndAdd(zone.dataset.recZone,file);
+});
+recSections.addEventListener('change',e=>{
+  const fileInput=e.target.closest('[data-rec-file]');
+  if(!fileInput) return;
+  const file=[...fileInput.files].find(f=>f.type&&f.type.startsWith('image/'));
+  if(file) recUploadAndAdd(fileInput.dataset.recFile,file);
+  fileInput.value='';
 });
 
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
