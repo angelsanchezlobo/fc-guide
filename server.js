@@ -21,7 +21,14 @@ const STORES = {
 };
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+// No debe poder tirar el proceso entero: si esto falla (p. ej. permisos), el
+// resto de la API (objetivos, tácticas...) tiene que seguir funcionando —
+// solo la subida de imágenes fallará, con un 500 claro por petición.
+try {
+  if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+} catch (e) {
+  console.log(`\x1b[31mNo se pudo crear ${UPLOADS_DIR}: ${e.message} — la subida de imágenes fallará hasta que se cree a mano.\x1b[0m`);
+}
 
 const UPLOAD_MIME_EXT = {
   'image/png': '.png',
@@ -77,6 +84,7 @@ function receiveUpload(req, res){
   });
   req.on('end', () => {
     if (tooBig) return send(res, 413, JSON.stringify({ error: 'file too large' }));
+    try { if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (e) {}
     const filename = crypto.randomBytes(12).toString('hex') + ext;
     fs.writeFile(path.join(UPLOADS_DIR, filename), Buffer.concat(chunks), err => {
       if (err) {
