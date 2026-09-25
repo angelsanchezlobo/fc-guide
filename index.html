@@ -1743,11 +1743,27 @@ function renderRecomendaciones(){
       +'<div class="rec-list">'+cards+'</div>'
       +'</div>';
   }).join('');
-  el.querySelectorAll('.rec-card-caption-input').forEach(autoResizeTextarea);
+  // Solo los <textarea> reales (modo edición) necesitan que fijemos su
+  // altura por JS. El <div> de solo lectura no lleva "rows" ni necesita
+  // ayuda: fluye solo con el texto. Si le impusiéramos una altura fija
+  // aquí, se quedaría obsoleta en cuanto las imágenes terminen de cargar
+  // y la tarjeta cambie de ancho (el bug de "a veces sale mal, si
+  // recargo se arregla").
+  el.querySelectorAll('textarea.rec-card-caption-input').forEach(autoResizeTextarea);
   document.getElementById('recSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
 }
 
 const recSections=document.getElementById('recSections');
+// 'load' no burbujea: hay que escucharlo en fase de captura. Cuando una
+// imagen termina de cargar, la tarjeta puede cambiar de ancho (el grid se
+// reajusta) — si hay un <textarea> de descripción en esa misma tarjeta,
+// hay que recalcular su altura o se queda con la medida antigua (obsoleta
+// en cuanto cambia el ancho) y el texto se corta.
+recSections.addEventListener('load',e=>{
+  if(!e.target.matches('.rec-card img')) return;
+  const ta=e.target.closest('.rec-card').querySelector('textarea.rec-card-caption-input');
+  if(ta) autoResizeTextarea(ta);
+},true);
 recSections.addEventListener('click',e=>{
   if(e.target.matches('.rec-card img')){
     openImgModal(e.target.src,e.target.alt);
