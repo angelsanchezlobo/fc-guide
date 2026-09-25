@@ -723,6 +723,33 @@ const DATA = {
       cuando:'Para girar muy rápido y abrirte espacio',
       como:'Mantén L1+R1 con el stick derecho hacia un lado, da un pase o un tiro antes de que acabe la animación, y cancela con R2+L2 (fíjate en el mando que aparece en pantalla).',
       notas:'Según Andoni (pro, Discord RTG FC Academy), es un regate rapidísimo, variante de la croqueta normal.'
+    },
+    {
+      name:'Elástico inverso (reverse elastico)',
+      buttons:['RS','(pie débil → pie fuerte)'],
+      cuando:'Dentro o cerca del área, rival defendiendo de forma manual',
+      como:'Gira el stick derecho desde el lado del pie más débil de tu jugador hacia el lado del pie fuerte. La lógica es la misma con zurdos y diestros — solo cambia el lado desde el que arrancas el giro.',
+      skill:'5',
+      notas:'El cambio de dirección brusco y la animación pillan a contrapié a la defensa manual. No hace falta un jugador top: cualquier 5 estrellas de regate barato sirve para probarlo y encontrar tus propios ángulos.',
+      videoId:'D3HPTvVUmjg',videoStart:50
+    },
+    {
+      name:'Fake shot stop (parada con amago de tiro)',
+      buttons:['R1 (mantener)','Tiro (amago)','Pase (cancelar, sin dirección)'],
+      cuando:'Dentro del área, tienes espacio y sin presión inmediata, quieres parar y leer la posición del rival',
+      como:'Mantén R1, amaga el tiro con el botón correspondiente y cancélalo con el botón de pase sin meter ninguna dirección. El jugador se detiene mirando a portería.',
+      skill:'2',
+      notas:'No es para regatear directamente a un rival, sino para parar, comprobar dónde está el defensor y el espacio libre, y encadenar después con otro regate o una conducción normal.',
+      videoId:'D3HPTvVUmjg',videoStart:103
+    },
+    {
+      name:'Ball roll scoop turn',
+      buttons:['RS 90°','(ball roll)','→ Tiro (amago, salida en dirección contraria)'],
+      cuando:'El defensor sigue tu movimiento de cerca y quieres salir hacia el lado contrario para ganar espacio',
+      como:'Haz el ball roll normal y añade el amago de tiro apuntando la salida hacia la dirección contraria a la del ball roll.',
+      skill:'5',
+      notas:'Funciona mejor cuando primero atraes al defensor hacia ti — si sigue tu movimiento, el cambio de dirección lo deja atrás. También sirve solo para ganar un poco de espacio si el rival anticipa tu recorrido y sigues en la misma dirección tras el amago.',
+      videoId:'D3HPTvVUmjg',videoStart:233
     }
   ],
   conduccion:[
@@ -750,6 +777,22 @@ const DATA = {
       como:'Mantén pulsado R1 mientras conduces. Es un movimiento controlado, algo más lento que el sprint analógico, pero te deja crear ángulo de tiro o de pase con más precisión.',
       notas:'Confirmado por Andoni (pro, Discord RTG FC Academy) como jugada meta: el regate hábil vuelve a ser importante en FC27, y este movimiento es clave para meterte entre el lateral y el central rival, o para romper líneas en conducción.',
       videoId:'mOLGH3mvqKE',videoStart:145,source:'Deep Researcher FC'
+    },
+    {
+      name:'L1 stop (parada orientada a portería)',
+      buttons:['L1'],
+      cuando:'Tienes algo de espacio sin presión inmediata, o estás en un ángulo incómodo para cambiar de dirección con el stick izquierdo',
+      como:'Pulsa L1 para que el jugador pare el balón de cara a la portería rival. Sirve para resetear la orientación del cuerpo, para cambiar de dirección o pasar justo después, o para ganar espacio de tiro dentro del área — la parada hace pensar al rival que vas a volver atrás, y esa duda abre el hueco.',
+      notas:'Combínalo siempre con una acción inmediata después de la parada (cambio de dirección, pase o tiro): no es un movimiento para quedarte parado.',
+      videoId:'SckWbBtJavk',videoStart:299
+    },
+    {
+      name:'Giros rápidos (quick turns)',
+      buttons:['RS','(cambio de dirección antes de que termine el giro)'],
+      cuando:'Regateando con el analógico izquierdo, quieres desestabilizar a un defensor que marca al hombre',
+      como:'Al meter un cambio de dirección con el stick izquierdo, no esperes a que el jugador termine de girar del todo hacia esa dirección — mete el siguiente cambio antes de que acabe la animación. Así encadenas giros rápidos difíciles de leer.',
+      notas:'Cuanto más tarde reacciona el rival, más fácil te resulta encontrar el hueco para tirar o escapar; pero si reacciona demasiado rápido, se arriesga a sobrecomprometerse y perder la posición — requiere un mando en buen estado para los inputs rápidos.',
+      videoId:'SckWbBtJavk',videoStart:227
     }
   ],
   pelota:[
