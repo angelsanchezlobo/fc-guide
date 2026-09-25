@@ -570,8 +570,15 @@ const DATA = {
       buttons:['L1 (mantener)','Triangulo'],
       cuando:'La IA rival hace buenas carreras en profundidad pero el rival no tiene al defensor correcto cubriendo ese espacio',
       como:'Mantén L1 y pulsa Triángulo apuntando bien. El balón pasa por encima de la línea defensiva hacia la carrera de tu atacante.',
-      notas:'Una de las mejores herramientas de pase en FC27 ahora mismo — el pase filtrado raso es más difícil de ejecutar de forma consistente, este es la alternativa. Combinación muy peligrosa con un jugador rápido haciendo la carrera. Confirmada como una de las jugadas más rotas por Andoni (pro, Discord RTG FC Academy): mejor con un jugador con playstyle de Pase Largo (nivel blanco), fíjate en el desmarque de la IA y llena unas 2 barras de potencia justo cuando el compañero va a coger la espalda del defensor.',
+      notas:'Una de las mejores herramientas de pase en FC27 ahora mismo — el pase filtrado raso es más difícil de ejecutar de forma consistente, este es la alternativa. Combinación muy peligrosa con un jugador rápido haciendo la carrera. Confirmada como una de las jugadas más rotas por Andoni (pro, Discord RTG FC Academy): mejor con un jugador con playstyle de Pase Largo (nivel blanco), fíjate en el desmarque de la IA y llena unas 2 barras de potencia justo cuando el compañero va a coger la espalda del defensor. También se puede hacer de primeras (sin control previo): activa el desmarque del delantero centro con L1 antes de que el pase llegue al mediocentro ofensivo, y dale bastante potencia.',
       videoId:'mOLGH3mvqKE',videoStart:250,source:'Deep Researcher FC'
+    },
+    {
+      name:'Pase al extremo (L1+Cruz)',
+      buttons:['L1','Cruz'],
+      cuando:'Los extremos con espacio en banda, y en general a partir de campo rival con mediocentro ofensivo o delantero centro (a veces también con el mediocentro)',
+      como:'Pasa con L1+Cruz. Úsalo muchas veces en campo rival para crear movimientos y acumular jugadores en ataque.',
+      notas:'Según Andoni (pro, Discord RTG FC Academy), los extremos siempre deberían recibir así.'
     }
   ],
   ataque:[
@@ -617,7 +624,7 @@ const DATA = {
       buttons:['L1','R1','Tiro'],
       cuando:'Escorado, para pegarle cruzado desde el borde del área o incluso algo más lejos',
       como:'Mantén L1+R1 y pulsa el botón de tiro cargando unas 3 barras de potencia. Con un jugador con mejor playstyle de tiro el efecto es aún mejor.',
-      notas:'Señalada por Andoni (pro, Discord RTG FC Academy) como una de las jugadas de ataque más rotas de FC27.'
+      notas:'Señalada por Andoni (pro, Discord RTG FC Academy) como una de las jugadas de ataque más rotas de FC27. También se puede tirar de primeras, sin controlar el balón antes.'
     }
   ],
   regates:[
@@ -627,7 +634,7 @@ const DATA = {
       cuando:'Cambiar el ángulo de conducción, abrir una línea de pase o de tiro cuando el ángulo es incómodo',
       como:'Mantén el stick derecho girado 90° respecto a la dirección hacia la que mira tu jugador. Sirve para regatear, para abrir un ángulo de pase cuando el defensor tapa la línea directa, o para abrir el ángulo de tiro antes de disparar.',
       skill:'—',
-      notas:'Casi cualquier jugador de tu plantilla puede hacerlo. Funciona bien en FC27 porque la defensa manual reacciona más lento si el rival no está atento.',
+      notas:'Casi cualquier jugador de tu plantilla puede hacerlo. Funciona bien en FC27 porque la defensa manual reacciona más lento si el rival no está atento. Según Andoni (pro, Discord RTG FC Academy): antes de centrar, haz siempre un ball roll primero — el centro sale teledirigido.',
       videoId:'mOLGH3mvqKE',videoStart:338,source:'Deep Researcher FC'
     },
     {
@@ -645,6 +652,20 @@ const DATA = {
       cuando:'Regate rápido para cambiar de dirección manteniendo el control',
       como:'Mantén L1+R1 y lleva el stick derecho hacia la dirección a la que quieres ir, manteniéndolo ahí.',
       notas:'Según Andoni (pro, Discord RTG FC Academy), es un regate muy sencillo y en FC27 lo han hecho más rápido que en FC26.'
+    },
+    {
+      name:'Ruleta diagonal',
+      buttons:[],
+      cuando:'Para dejarte perfecto un tiro de calidad desde el borde del área',
+      como:'Andoni (pro, Discord RTG FC Academy) la señala como el mejor regate, aunque no especifica el input exacto — en cuanto tenga el detalle del movimiento lo completo aquí.',
+      notas:'Combínalo con un tiro de calidad cargando unas 3 barras de potencia desde el borde del área.'
+    },
+    {
+      name:'Croqueta cancel',
+      buttons:['L1','R1','RS (mantener a un lado)','pase o tiro','R2+L2 (cancelar)'],
+      cuando:'Para girar muy rápido y abrirte espacio',
+      como:'Mantén L1+R1 con el stick derecho hacia un lado, da un pase o un tiro antes de que acabe la animación, y cancela con R2+L2 (fíjate en el mando que aparece en pantalla).',
+      notas:'Según Andoni (pro, Discord RTG FC Academy), es un regate rapidísimo, variante de la croqueta normal.'
     }
   ],
   conduccion:[
