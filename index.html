@@ -274,7 +274,7 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
       <span class="search-icon">&#128269;</span>
       <input type="text" id="searchInput" placeholder="Buscar...">
     </div>
-    <button class="admin-btn" id="adminBtn">&#128274; Editar</button>
+    <button class="admin-btn" id="adminBtn">Editar</button>
   </div>
   <nav class="topbar-row2" id="tabs">
     <button class="tab active" data-view-btn="gameplay">Gameplay</button>
@@ -326,7 +326,7 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
     </div>
     <div class="section-wrap" data-section="defensa">
       <div class="section-header"><span class="sec-label">Defensa</span><span class="sec-title">Mecánicas defensivas</span></div>
-      <div class="section-note">Errores de defensa detectados en FC27 y cómo corregirlos. Fuente: Deep Researcher FC.</div>
+      <div class="section-note">Errores de defensa detectados en FC27 y cómo corregirlos.</div>
       <div class="items" id="items-defensa"></div>
     </div>
     <div class="section-wrap" data-section="desmarques">
@@ -451,7 +451,7 @@ const DATA = {
       cuando:'Lateral rival con espacio en banda y un delantero libre en el centro (amenaza doble)',
       como:'Cambia al lateral y arrástralo hacia dentro (pin) para cubrir el carril interior, en vez de dejarlo defendiendo ancho. El central se encarga del pase al delantero mientras el lateral tapa el carril de conducción.',
       no:'Dejar al lateral defendiendo ancho por instinto → el rival conduce directo por el hueco interior. O ir directo a por el lateral sin protección → deja libre el pase al delantero del centro',
-      notas:'Cubres las dos opciones a la vez: ni conducción directa por dentro, ni pase fácil al delantero.',
+      notas:'Cubres las dos opciones a la vez: ni conducción directa por dentro, ni pase fácil al delantero. Según Andoni (Discord/YouTube RTG FC Academy): los laterales rivales tienden a abrirse solos y no defienden ese espacio — en cuanto ataquen por el costado (no hace falta que sea pegado a la banda, vale el pasillo entre central y lateral), cambia rápido con el stick derecho a tu lateral y cierra ese pasillo con el central. Es una de las causas más comunes de gol encajado.',
       videoId:'tRuPbAjcvuc',videoStart:326,source:'Deep Researcher FC'
     },
     {
@@ -459,7 +459,7 @@ const DATA = {
       buttons:['L1','RS → jugador'],
       cuando:'Elegir qué defensor controlar en cada momento — la base de defender bien en FC27',
       como:'L1 selecciona rápido al jugador más cercano al balón, útil cuando ese es el que necesitas. El stick derecho te deja elegir exactamente al defensor que quieres aunque no sea el más cercano al balón — por ejemplo, un central que debe seguir una carrera mientras un centrocampista está más cerca del balón.',
-      notas:'El stick derecho es una habilidad que hay que entrenar. Practícalo en Leyenda sin buscar ganar: cambia de jugador, jockea y usa la doble presión repetidamente; cuando robes el balón, devuélveselo a la IA y sigue practicando.',
+      notas:'El stick derecho es una habilidad que hay que entrenar. Practícalo en Leyenda sin buscar ganar: cambia de jugador, jockea y usa la doble presión repetidamente; cuando robes el balón, devuélveselo a la IA y sigue practicando. Según Andoni: úsalo sobre todo para seguir los desmarques del rival (por ejemplo cuando va a intentar un L1 triángulo) — selecciona al lateral o central donde está el peligro y corre hacia atrás a máxima velocidad con sprint para que no te cojan la espalda. Recomienda que un 80-85% de los cambios sean con el stick derecho; el L1 solo es útil cuando te pierdes o para presionar al poseedor del balón.',
       no:'Depender solo de L1 esperando que siempre seleccione al jugador correcto → normalmente coge al más cercano al balón, no al más útil para la jugada',
       videoId:'tRuPbAjcvuc',videoStart:496,source:'Deep Researcher FC'
     },
@@ -478,8 +478,65 @@ const DATA = {
       cuando:'Estás controlando manualmente a un defensor que marca una carrera peligrosa o tapa una línea de pase, mientras el balón lo tiene otro rival',
       como:'Activa second man press para que la IA presione al portador del balón mientras tú sigues controlando manualmente al defensor que atiende la amenaza real. La presión de la IA no siempre roba el balón, pero reduce el tiempo del rival para pensar el pase.',
       no:'Activar second man press y mantener R1 pulsado sin prestar atención a tu propio defensor → mientras la IA persigue el balón, dejas un hueco grande en otra zona. En FC27 la IA ya no se acerca tanto al portador, así que no puedes depender de ella para defender el balón por ti',
-      notas:'Es una herramienta de apoyo, no un sustituto: tú sigues siendo el defensor principal.',
+      notas:'Es una herramienta de apoyo, no un sustituto: tú sigues siendo el defensor principal. Según Andoni: al pulsar R1 el cursor se pone en verde sobre el jugador que se coloca delante del balón; con el jugador que sigues controlando puedes tapar un desmarque, una línea de pase, o ir a un 2 contra 1 sobre el poseedor. Truco: si pulsas L1 justo después de activar el R1, cambias directamente al jugador del cursor verde (el que está delante del balón) — útil para robar cuando el rival se le escapa el balón muy cerca.',
       videoId:'tRuPbAjcvuc',videoStart:688,source:'Deep Researcher FC'
+    },
+    {
+      name:'Ajustes de mando: Defensa avanzada',
+      buttons:[],
+      cuando:'Antes de jugar, en ajustes de mando',
+      como:'Activa "Defensa avanzada". Te permite meter el Bruiser con la Cruz y hacer entradas (Círculo, o Cuadrado si juegas con el esquema alternativo) para activar el placaje estándar.',
+      notas:'Fuente: Andoni (YouTube, vídeo de defensa FC27). Juega con sensibilidad de mando 3.',
+      videoId:'ao2LRn9YhF8',videoStart:39,source:'AndoniiPM'
+    },
+    {
+      name:'Prioriza las entradas sobre el Bruiser, con L2 para ir de cara',
+      buttons:['Círculo (entrada)','L2'],
+      cuando:'Al intentar robar el balón, en general — no hace falta esperar a estar cerca del área',
+      como:'Este año se premian mucho más las entradas que el Bruiser (al revés que en FC26): el alcance de la pierna es amplio y hay cierto imán al balón, así que no tengas miedo a tirarte. Al hacer la entrada, mantén L2 para ir "de cara" y que no se te escape el jugador.',
+      notas:'Según Andoni, la entrada da mejor porcentaje de éxito que el Bruiser este año.',
+      videoId:'ao2LRn9YhF8',videoStart:57,source:'AndoniiPM'
+    },
+    {
+      name:'Bruiser: solo cuerpo con cuerpo, una vez',
+      buttons:['Cruz (Bruiser)'],
+      cuando:'Contacto hombro con hombro con el rival, o muy cerca de él al lado',
+      como:'Dale al Bruiser una sola vez en el momento del contacto. La entrada la reservas para los centrales sin miedo cerca del área, cuando presionas con los mediocentros, o cuando el rival ataca de frente o se le ha escapado el balón claramente.',
+      no:'Repetir el Bruiser varias veces seguidas → el jugador se ralentiza',
+      videoId:'ao2LRn9YhF8',videoStart:126,source:'AndoniiPM'
+    },
+    {
+      name:'Fuera de juego: subir la línea con la flecha arriba',
+      buttons:['↑ (x2)'],
+      cuando:'El rival no tiene un pase peligroso hacia delante — está mirando a su propia portería, de espaldas, o da un pase hacia atrás',
+      como:'Pulsa dos veces la flecha hacia arriba para subir la línea. El objetivo real no es dejar al rival en fuera de juego, sino sacar a tu equipo lo más lejos posible de tu propia portería: si la defensa se mete en zona de punto de penalti, el rival puede entrar fácil al área.',
+      no:'Subir la línea cuando el rival sí tiene un pase hacia delante disponible → te arriesgas a un pase filtrado o un L1 triángulo que los deje solos',
+      notas:'Si ves que la defensa se hunde mucho, sube la línea sin miedo y de forma repetida.',
+      videoId:'ao2LRn9YhF8',videoStart:151,source:'AndoniiPM'
+    },
+    {
+      name:'Profundidad de línea defensiva: máximo 60',
+      buttons:[],
+      cuando:'Ajustes de instrucciones del equipo, antes de jugar',
+      como:'Pon la profundidad de la línea defensiva en 60 como máximo. A partir de 61 la línea se adelanta demasiado (casi como si fuera 90 de profundidad) y deja mucho espacio a la espalda para delanteros rápidos y pases en profundidad o L1 triángulo.',
+      notas:'Combínalo con fueras de juego frecuentes y con saber cambiar rápido al central para cubrir desmarques.',
+      videoId:'ao2LRn9YhF8',videoStart:229,source:'AndoniiPM'
+    },
+    {
+      name:'Bregar (L2+R2) para moverte rápido de cara',
+      buttons:['L2','R2','(a la vez)'],
+      cuando:'Necesitas moverte rápido manteniéndote siempre de cara al balón/rival, sobre todo defendiendo en el borde del área ante un recorte',
+      como:'Mantén L2+R2 a la vez. Te deja girar de un lado a otro sin perder velocidad, siempre de cara. En el borde del área es casi obligatorio: aguanta con L2+R2 mientras el rival gira, y mete la entrada justo cuando vaya a girar.',
+      no:'Usar bregar cuando el rival se va en velocidad en línea recta → vas más lento que sin él, mejor soltarlo y perseguir a máxima velocidad',
+      videoId:'ao2LRn9YhF8',videoStart:448,source:'AndoniiPM'
+    },
+    {
+      name:'No toques a los centrales — baja los mediocentros a mano',
+      buttons:[],
+      cuando:'Defendiendo con tu línea, en general',
+      como:'Los centrales son el último recurso: solo se usan cuando el rival ataca por el borde o dentro del área. Baja los mediocentros manualmente lo máximo posible — no bajan solos, y si no lo haces el atacante rival se queda libre entre tu medio campo y tu defensa. Mantén las líneas de medios y defensa muy juntas para no dejar espacio.',
+      no:'Sacar a los centrales a presionar fuera del área → fallas más entradas y dejas espacio libre detrás, justo lo que menos quieres',
+      videoId:'ao2LRn9YhF8',videoStart:498,source:'AndoniiPM'
     }
   ],
   desmarques:[
@@ -570,8 +627,15 @@ const DATA = {
       buttons:['L1 (mantener)','Triangulo'],
       cuando:'La IA rival hace buenas carreras en profundidad pero el rival no tiene al defensor correcto cubriendo ese espacio',
       como:'Mantén L1 y pulsa Triángulo apuntando bien. El balón pasa por encima de la línea defensiva hacia la carrera de tu atacante.',
-      notas:'Una de las mejores herramientas de pase en FC27 ahora mismo — el pase filtrado raso es más difícil de ejecutar de forma consistente, este es la alternativa. Combinación muy peligrosa con un jugador rápido haciendo la carrera. Confirmada como una de las jugadas más rotas por Andoni (pro, Discord RTG FC Academy): mejor con un jugador con playstyle de Pase Largo (nivel blanco), fíjate en el desmarque de la IA y llena unas 2 barras de potencia justo cuando el compañero va a coger la espalda del defensor.',
+      notas:'Una de las mejores herramientas de pase en FC27 ahora mismo — el pase filtrado raso es más difícil de ejecutar de forma consistente, este es la alternativa. Combinación muy peligrosa con un jugador rápido haciendo la carrera. Confirmada como una de las jugadas más rotas por Andoni (pro, Discord RTG FC Academy): mejor con un jugador con playstyle de Pase Largo (nivel blanco), fíjate en el desmarque de la IA y llena unas 2 barras de potencia justo cuando el compañero va a coger la espalda del defensor. También se puede hacer de primeras (sin control previo): activa el desmarque del delantero centro con L1 antes de que el pase llegue al mediocentro ofensivo, y dale bastante potencia.',
       videoId:'mOLGH3mvqKE',videoStart:250,source:'Deep Researcher FC'
+    },
+    {
+      name:'Pase al extremo (L1+Cruz)',
+      buttons:['L1','Cruz'],
+      cuando:'Los extremos con espacio en banda, y en general a partir de campo rival con mediocentro ofensivo o delantero centro (a veces también con el mediocentro)',
+      como:'Pasa con L1+Cruz. Úsalo muchas veces en campo rival para crear movimientos y acumular jugadores en ataque.',
+      notas:'Según Andoni (pro, Discord RTG FC Academy), los extremos siempre deberían recibir así.'
     }
   ],
   ataque:[
@@ -617,7 +681,7 @@ const DATA = {
       buttons:['L1','R1','Tiro'],
       cuando:'Escorado, para pegarle cruzado desde el borde del área o incluso algo más lejos',
       como:'Mantén L1+R1 y pulsa el botón de tiro cargando unas 3 barras de potencia. Con un jugador con mejor playstyle de tiro el efecto es aún mejor.',
-      notas:'Señalada por Andoni (pro, Discord RTG FC Academy) como una de las jugadas de ataque más rotas de FC27.'
+      notas:'Señalada por Andoni (pro, Discord RTG FC Academy) como una de las jugadas de ataque más rotas de FC27. También se puede tirar de primeras, sin controlar el balón antes.'
     }
   ],
   regates:[
@@ -627,7 +691,7 @@ const DATA = {
       cuando:'Cambiar el ángulo de conducción, abrir una línea de pase o de tiro cuando el ángulo es incómodo',
       como:'Mantén el stick derecho girado 90° respecto a la dirección hacia la que mira tu jugador. Sirve para regatear, para abrir un ángulo de pase cuando el defensor tapa la línea directa, o para abrir el ángulo de tiro antes de disparar.',
       skill:'—',
-      notas:'Casi cualquier jugador de tu plantilla puede hacerlo. Funciona bien en FC27 porque la defensa manual reacciona más lento si el rival no está atento.',
+      notas:'Casi cualquier jugador de tu plantilla puede hacerlo. Funciona bien en FC27 porque la defensa manual reacciona más lento si el rival no está atento. Según Andoni (pro, Discord RTG FC Academy): antes de centrar, haz siempre un ball roll primero — el centro sale teledirigido.',
       videoId:'mOLGH3mvqKE',videoStart:338,source:'Deep Researcher FC'
     },
     {
@@ -645,6 +709,20 @@ const DATA = {
       cuando:'Regate rápido para cambiar de dirección manteniendo el control',
       como:'Mantén L1+R1 y lleva el stick derecho hacia la dirección a la que quieres ir, manteniéndolo ahí.',
       notas:'Según Andoni (pro, Discord RTG FC Academy), es un regate muy sencillo y en FC27 lo han hecho más rápido que en FC26.'
+    },
+    {
+      name:'Ruleta diagonal',
+      buttons:[],
+      cuando:'Para dejarte perfecto un tiro de calidad desde el borde del área',
+      como:'Andoni (pro, Discord RTG FC Academy) la señala como el mejor regate, aunque no especifica el input exacto — en cuanto tenga el detalle del movimiento lo completo aquí.',
+      notas:'Combínalo con un tiro de calidad cargando unas 3 barras de potencia desde el borde del área.'
+    },
+    {
+      name:'Croqueta cancel',
+      buttons:['L1','R1','RS (mantener a un lado)','pase o tiro','R2+L2 (cancelar)'],
+      cuando:'Para girar muy rápido y abrirte espacio',
+      como:'Mantén L1+R1 con el stick derecho hacia un lado, da un pase o un tiro antes de que acabe la animación, y cancela con R2+L2 (fíjate en el mando que aparece en pantalla).',
+      notas:'Según Andoni (pro, Discord RTG FC Academy), es un regate rapidísimo, variante de la croqueta normal.'
     }
   ],
   conduccion:[
@@ -809,7 +887,7 @@ let isAdmin=!!OBJ_API_TOKEN;
 
 function updateAdminBtn(){
   const btn=document.getElementById('adminBtn');
-  btn.textContent=isAdmin?'\u{1F513} Modo edición (salir)':'\u{1F512} Editar';
+  btn.textContent=isAdmin?'Modo edición (salir)':'Editar';
   btn.classList.toggle('is-admin',isAdmin);
 }
 function refreshAllViews(){
