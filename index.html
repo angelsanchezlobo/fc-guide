@@ -146,6 +146,14 @@ a{color:inherit;}
 .gal-tier-body{font-size:13px;color:var(--text2);line-height:1.6;}
 .gal-note{font-size:13px;color:var(--text2);padding:16px 20px;background:var(--surface);border-radius:12px;line-height:1.6;max-width:640px;}
 .gal-note strong{color:#fff;}
+.gal-progress{margin-top:40px;}
+.gal-progress-groups{display:flex;flex-direction:column;gap:20px;max-width:640px;margin-bottom:16px;}
+.gal-progress-list{display:flex;flex-direction:column;gap:1px;background:var(--hairline);border-radius:14px;overflow:hidden;}
+.gal-progress-item{background:var(--surface);padding:10px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+.gal-progress-name{font-size:13px;color:var(--text2);}
+.gal-progress-points{font-size:12px;font-weight:700;color:var(--chip-text);background:var(--chip-bg);border-radius:20px;padding:3px 10px;white-space:nowrap;}
+.gal-progress-total-row{display:flex;align-items:baseline;justify-content:space-between;max-width:640px;padding:14px 22px;background:var(--surface);border-radius:12px;font-size:14px;font-weight:700;color:#fff;}
+.gal-progress-total-row span{font-size:18px;color:var(--chip-text);}
 
 /* ── GUARDADO MANUAL (Objetivos/Tácticas/Recomendaciones) ── */
 .sync-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
@@ -394,6 +402,12 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
     </div>
 
     <div class="gal-note"><strong>Truco de monedas:</strong> con una carta de más de 100k, compra y espera a que se venda antes de seguir — si no, te quedas sin monedas a medio camino. Con cartas baratas (bronce, pocas miles) sí puedes comprar y vender en cadena sin esperar.</div>
+
+    <div class="gal-progress">
+      <div class="gal-h">Progreso actual</div>
+      <div class="gal-progress-groups" id="galProgresoGroups"></div>
+      <div class="gal-progress-total-row">Total<span id="galProgresoTotal">0</span></div>
+    </div>
   </div>
 
   <div class="view" id="view-mercado" hidden>
@@ -723,6 +737,33 @@ const DATA = {
       cuando:'Para girar muy rápido y abrirte espacio',
       como:'Mantén L1+R1 con el stick derecho hacia un lado, da un pase o un tiro antes de que acabe la animación, y cancela con R2+L2 (fíjate en el mando que aparece en pantalla).',
       notas:'Según Andoni (pro, Discord RTG FC Academy), es un regate rapidísimo, variante de la croqueta normal.'
+    },
+    {
+      name:'Elástico inverso (reverse elastico)',
+      buttons:['RS','(pie débil → pie fuerte)'],
+      cuando:'Dentro o cerca del área, rival defendiendo de forma manual',
+      como:'Gira el stick derecho desde el lado del pie más débil de tu jugador hacia el lado del pie fuerte. La lógica es la misma con zurdos y diestros — solo cambia el lado desde el que arrancas el giro.',
+      skill:'5',
+      notas:'El cambio de dirección brusco y la animación pillan a contrapié a la defensa manual. No hace falta un jugador top: cualquier 5 estrellas de regate barato sirve para probarlo y encontrar tus propios ángulos.',
+      videoId:'D3HPTvVUmjg',videoStart:50
+    },
+    {
+      name:'Fake shot stop (parada con amago de tiro)',
+      buttons:['R1 (mantener)','Tiro (amago)','Pase (cancelar, sin dirección)'],
+      cuando:'Dentro del área, tienes espacio y sin presión inmediata, quieres parar y leer la posición del rival',
+      como:'Mantén R1, amaga el tiro con el botón correspondiente y cancélalo con el botón de pase sin meter ninguna dirección. El jugador se detiene mirando a portería.',
+      skill:'2',
+      notas:'No es para regatear directamente a un rival, sino para parar, comprobar dónde está el defensor y el espacio libre, y encadenar después con otro regate o una conducción normal.',
+      videoId:'D3HPTvVUmjg',videoStart:103
+    },
+    {
+      name:'Ball roll scoop turn',
+      buttons:['RS 90°','(ball roll)','→ Tiro (amago, salida en dirección contraria)'],
+      cuando:'El defensor sigue tu movimiento de cerca y quieres salir hacia el lado contrario para ganar espacio',
+      como:'Haz el ball roll normal y añade el amago de tiro apuntando la salida hacia la dirección contraria a la del ball roll.',
+      skill:'5',
+      notas:'Funciona mejor cuando primero atraes al defensor hacia ti — si sigue tu movimiento, el cambio de dirección lo deja atrás. También sirve solo para ganar un poco de espacio si el rival anticipa tu recorrido y sigues en la misma dirección tras el amago.',
+      videoId:'D3HPTvVUmjg',videoStart:233
     }
   ],
   conduccion:[
@@ -750,6 +791,22 @@ const DATA = {
       como:'Mantén pulsado R1 mientras conduces. Es un movimiento controlado, algo más lento que el sprint analógico, pero te deja crear ángulo de tiro o de pase con más precisión.',
       notas:'Confirmado por Andoni (pro, Discord RTG FC Academy) como jugada meta: el regate hábil vuelve a ser importante en FC27, y este movimiento es clave para meterte entre el lateral y el central rival, o para romper líneas en conducción.',
       videoId:'mOLGH3mvqKE',videoStart:145,source:'Deep Researcher FC'
+    },
+    {
+      name:'L1 stop (parada orientada a portería)',
+      buttons:['L1'],
+      cuando:'Tienes algo de espacio sin presión inmediata, o estás en un ángulo incómodo para cambiar de dirección con el stick izquierdo',
+      como:'Pulsa L1 para que el jugador pare el balón de cara a la portería rival. Sirve para resetear la orientación del cuerpo, para cambiar de dirección o pasar justo después, o para ganar espacio de tiro dentro del área — la parada hace pensar al rival que vas a volver atrás, y esa duda abre el hueco.',
+      notas:'Combínalo siempre con una acción inmediata después de la parada (cambio de dirección, pase o tiro): no es un movimiento para quedarte parado.',
+      videoId:'SckWbBtJavk',videoStart:299
+    },
+    {
+      name:'Giros rápidos (quick turns)',
+      buttons:['RS','(cambio de dirección antes de que termine el giro)'],
+      cuando:'Regateando con el analógico izquierdo, quieres desestabilizar a un defensor que marca al hombre',
+      como:'Al meter un cambio de dirección con el stick izquierdo, no esperes a que el jugador termine de girar del todo hacia esa dirección — mete el siguiente cambio antes de que acabe la animación. Así encadenas giros rápidos difíciles de leer.',
+      notas:'Cuanto más tarde reacciona el rival, más fácil te resulta encontrar el hueco para tirar o escapar; pero si reacciona demasiado rápido, se arriesga a sobrecomprometerse y perder la posición — requiere un mando en buen estado para los inputs rápidos.',
+      videoId:'SckWbBtJavk',videoStart:227
     }
   ],
   pelota:[
@@ -1743,11 +1800,27 @@ function renderRecomendaciones(){
       +'<div class="rec-list">'+cards+'</div>'
       +'</div>';
   }).join('');
-  el.querySelectorAll('.rec-card-caption-input').forEach(autoResizeTextarea);
+  // Solo los <textarea> reales (modo edición) necesitan que fijemos su
+  // altura por JS. El <div> de solo lectura no lleva "rows" ni necesita
+  // ayuda: fluye solo con el texto. Si le impusiéramos una altura fija
+  // aquí, se quedaría obsoleta en cuanto las imágenes terminen de cargar
+  // y la tarjeta cambie de ancho (el bug de "a veces sale mal, si
+  // recargo se arregla").
+  el.querySelectorAll('textarea.rec-card-caption-input').forEach(autoResizeTextarea);
   document.getElementById('recSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
 }
 
 const recSections=document.getElementById('recSections');
+// 'load' no burbujea: hay que escucharlo en fase de captura. Cuando una
+// imagen termina de cargar, la tarjeta puede cambiar de ancho (el grid se
+// reajusta) — si hay un <textarea> de descripción en esa misma tarjeta,
+// hay que recalcular su altura o se queda con la medida antigua (obsoleta
+// en cuanto cambia el ancho) y el texto se corta.
+recSections.addEventListener('load',e=>{
+  if(!e.target.matches('.rec-card img')) return;
+  const ta=e.target.closest('.rec-card').querySelector('textarea.rec-card-caption-input');
+  if(ta) autoResizeTextarea(ta);
+},true);
 recSections.addEventListener('click',e=>{
   if(e.target.matches('.rec-card img')){
     openImgModal(e.target.src,e.target.alt);
@@ -1827,6 +1900,61 @@ recSections.addEventListener('change',e=>{
   fileInput.value='';
 });
 
+/* ── Galería: progreso estático de fichas ya conseguidas (rango C salvo que se indique otro) ── */
+const GALERIA_PROGRESO=[
+  [
+    {name:'Birmingham City',points:28},
+    {name:'Hull City',points:18},
+    {name:'Charlton',points:13}
+  ],
+  [
+    {name:'Rayo Vallecano',points:38},
+    {name:'RC Deportivo',points:38},
+    {name:'Costa Adeje Tenerife',points:28},
+    {name:'Malaga CF',points:28},
+    {name:'Villarreal',points:18},
+    {name:'Deportivo Alaves',points:13},
+    {name:'FC Badalona Women',points:13},
+    {name:'Logroño United',points:13},
+    {name:'Real Racing Club',points:13}
+  ],
+  [
+    {name:'AJ Auxerre',points:13},
+    {name:'Le Mans FC',points:13},
+    {name:'Montpellier Herault SC',points:13},
+    {name:'Toulouse FC',points:13}
+  ],
+  [
+    {name:'Frosinone',points:28},
+    {name:'Bergamo Calcio',points:18},
+    {name:'Lecce',points:13},
+    {name:'Venezia',points:13}
+  ],
+  [
+    {name:'Serie A (C)',points:45},
+    {name:'Bundesliga (C)',points:45},
+    {name:'Frauen-Bundesliga (C)',points:45},
+    {name:'League 1 McDonald (C)',points:45},
+    {name:'Arkema',points:45}
+  ],
+  [
+    {name:'Heroes',points:100}
+  ]
+];
+function renderGaleriaProgreso(){
+  const groupsEl=document.getElementById('galProgresoGroups');
+  const totalEl=document.getElementById('galProgresoTotal');
+  if(!groupsEl||!totalEl) return;
+  let total=0;
+  groupsEl.innerHTML=GALERIA_PROGRESO.map(group=>{
+    return '<div class="gal-progress-list">'+group.map(it=>{
+      total+=it.points;
+      return '<div class="gal-progress-item"><span class="gal-progress-name">'+escapeHtml(it.name)+'</span><span class="gal-progress-points">'+it.points+'</span></div>';
+    }).join('')+'</div>';
+  }).join('');
+  totalEl.textContent=total;
+}
+
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
 const TOP_VIEWS=['gameplay','tacticas','galeria','mercado','objetivos'];
 function showView(view){
@@ -1860,6 +1988,7 @@ window.addEventListener('hashchange',applyRoute);
 
 render();
 renderGameplayLanding();
+renderGaleriaProgreso();
 applyRoute();
 objLoad();
 tacLoad();
