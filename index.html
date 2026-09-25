@@ -43,6 +43,9 @@ a{color:inherit;}
 .search-wrap input::placeholder{color:var(--text3);}
 .search-wrap input:focus{border-color:var(--accent);}
 .search-icon{position:absolute;left:2px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none;}
+.admin-btn{background:none;border:1px solid var(--hairline2);color:var(--text3);font-size:11px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer;flex-shrink:0;margin-left:auto;white-space:nowrap;}
+.admin-btn:hover{color:#fff;border-color:var(--accent);}
+.admin-btn.is-admin{color:var(--green);border-color:var(--green-tint);background:var(--green-tint);}
 .topbar-row2{display:flex;gap:2px;overflow-x:auto;padding:0 24px 10px;max-width:var(--max-w);margin:0 auto;scrollbar-width:none;}
 .topbar-row2::-webkit-scrollbar{display:none;}
 .tab{flex-shrink:0;background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;border-radius:0;transition:color 0.1s;}
@@ -147,6 +150,7 @@ a{color:inherit;}
 
 /* ── GUARDADO MANUAL (Objetivos/Tácticas/Recomendaciones) ── */
 .sync-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.sync-row[hidden]{display:none;}
 .save-now-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;}
 .save-now-btn:hover{opacity:0.9;}
 .sync-ok{color:var(--green)!important;}
@@ -214,6 +218,7 @@ a{color:inherit;}
 .rec-card-title-input:focus{border-bottom-color:var(--accent);}
 .rec-card-caption-input{box-sizing:border-box;width:100%;background:var(--bg);border:1px solid var(--hairline2);border-radius:6px;color:#fff;font-size:12px;padding:6px 8px;font-family:inherit;outline:none;margin-top:6px;resize:none;overflow:hidden;line-height:1.4;display:block;}
 .rec-card-caption-input:focus{border-color:var(--accent);}
+div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
 .rec-card-del{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;cursor:pointer;}
 .rec-card:hover .rec-card-del,.rec-card-del:focus-visible{opacity:1;}
 .rec-card-pending{position:absolute;top:6px;left:6px;background:var(--warn-tint);color:var(--warn);font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;}
@@ -269,6 +274,7 @@ a{color:inherit;}
       <span class="search-icon">&#128269;</span>
       <input type="text" id="searchInput" placeholder="Buscar...">
     </div>
+    <button class="admin-btn" id="adminBtn">&#128274; Editar</button>
   </div>
   <nav class="topbar-row2" id="tabs">
     <button class="tab active" data-view-btn="gameplay">Gameplay</button>
@@ -791,8 +797,57 @@ const OBJ_SEED = [
     ]}
   ]}
 ];
-// Debe coincidir EXACTO con FC_GUIDE_TOKEN en server.js
-const OBJ_API_TOKEN = 'b5916835-0213-45bd-bd89-4c0268f353f9';
+/* ── MODO EDICIÓN: la web es pública para ver, pero editar (objetivos,
+   tácticas, recomendaciones) requiere haber entrado con la contraseña de
+   admin. El token que hace falta para guardar ya no va escrito en este
+   archivo — el servidor solo lo entrega tras un login correcto contra
+   /api/login, y se guarda en este navegador para no tener que repetirlo. ── */
+const ADMIN_TOKEN_KEY='fcguide-admin-token';
+let OBJ_API_TOKEN=null;
+try{ OBJ_API_TOKEN=localStorage.getItem(ADMIN_TOKEN_KEY)||null; }catch(e){}
+let isAdmin=!!OBJ_API_TOKEN;
+
+function updateAdminBtn(){
+  const btn=document.getElementById('adminBtn');
+  btn.textContent=isAdmin?'\u{1F513} Modo edición (salir)':'\u{1F512} Editar';
+  btn.classList.toggle('is-admin',isAdmin);
+}
+function refreshAllViews(){
+  if(typeof renderObjetivos==='function') renderObjetivos();
+  if(typeof renderTacticas==='function') renderTacticas();
+  if(typeof renderRecomendaciones==='function') renderRecomendaciones();
+}
+async function adminLogin(){
+  const pw=prompt('Contraseña de administrador:');
+  if(!pw) return;
+  try{
+    const r=await fetch('/api/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pw})
+    });
+    if(!r.ok){ alert('Contraseña incorrecta.'); return; }
+    const data=await r.json();
+    OBJ_API_TOKEN=data.token;
+    isAdmin=true;
+    try{ localStorage.setItem(ADMIN_TOKEN_KEY,OBJ_API_TOKEN); }catch(e){}
+    updateAdminBtn();
+    refreshAllViews();
+  }catch(e){
+    alert('No se pudo conectar con el servidor.');
+  }
+}
+function adminLogout(){
+  OBJ_API_TOKEN=null;
+  isAdmin=false;
+  try{ localStorage.removeItem(ADMIN_TOKEN_KEY); }catch(e){}
+  updateAdminBtn();
+  refreshAllViews();
+}
+document.getElementById('adminBtn').addEventListener('click',()=>{
+  if(isAdmin) adminLogout(); else adminLogin();
+});
+updateAdminBtn();
 
 const SECTION_IDS = Object.keys(DATA);
 let activeSection='all',searchText='';
@@ -1070,42 +1125,44 @@ function renderObjetivos(){
     const subsHtml=g.subs.map((sub,si)=>{
       const cards=sub.items.map((item,ii)=>{
         const done=!!item.done;
-        return '<div class="obj-card'+(done?' done':'')+'" role="checkbox" aria-checked="'+done+'" tabindex="0" data-obj-toggle data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'">'
+        return '<div class="obj-card'+(done?' done':'')+'"'+(isAdmin?' role="checkbox" aria-checked="'+done+'" tabindex="0" data-obj-toggle':'')+' data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'">'
           +'<span class="obj-check">&#10003;</span>'
           +'<div><span class="obj-card-label">'+escapeHtml(item.label)+'</span>'
           +(item.desc?'<div class="obj-card-desc">'+escapeHtml(item.desc)+'</div>':'')
           +'</div>'
-          +'<button class="obj-card-edit-btn" data-obj-edit-item data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'" aria-label="Editar objetivo">&#9998;</button>'
+          +(isAdmin?'<button class="obj-card-edit-btn" data-obj-edit-item data-gi="'+gi+'" data-si="'+si+'" data-ii="'+ii+'" aria-label="Editar objetivo">&#9998;</button>':'')
           +'</div>';
       }).join('');
-      const ghost='<div class="obj-card-ghost" data-obj-add-item data-gi="'+gi+'" data-si="'+si+'">+ Añadir objetivo</div>';
-      const formHere=(objUi&&(objUi.type==='add-item'||objUi.type==='edit-item')&&objUi.gi===gi&&objUi.si===si)?objFormHtml():'';
+      const ghost=isAdmin?'<div class="obj-card-ghost" data-obj-add-item data-gi="'+gi+'" data-si="'+si+'">+ Añadir objetivo</div>':'';
+      const formHere=(isAdmin&&objUi&&(objUi.type==='add-item'||objUi.type==='edit-item')&&objUi.gi===gi&&objUi.si===si)?objFormHtml():'';
       const total=sub.items.length;
       const doneCount=sub.items.filter(item=>item.done).length;
       return '<div class="obj-sub">'
         +'<div class="obj-sub-head"><span class="obj-sub-title">'+escapeHtml(sub.title)+'</span>'
         +'<span class="obj-sub-actions"><span class="obj-sub-count">'+doneCount+'/'+total+'</span>'
-        +'<button class="obj-icon-btn" data-obj-del-sub data-gi="'+gi+'" data-si="'+si+'" aria-label="Eliminar sección">&#10005;</button></span></div>'
+        +(isAdmin?'<button class="obj-icon-btn" data-obj-del-sub data-gi="'+gi+'" data-si="'+si+'" aria-label="Eliminar sección">&#10005;</button>':'')+'</span></div>'
         +'<div class="obj-cards">'+cards+ghost+'</div>'
         +formHere
         +'</div>';
     }).join('');
-    const subFormHere=(objUi&&objUi.type==='add-sub'&&objUi.gi===gi)?objFormHtml():'';
+    const subFormHere=(isAdmin&&objUi&&objUi.type==='add-sub'&&objUi.gi===gi)?objFormHtml():'';
     return '<div class="obj-group">'
       +'<div class="obj-group-head"><span class="obj-group-title">'+escapeHtml(g.title)+'</span>'
-      +'<button class="obj-icon-btn" data-obj-del-group data-gi="'+gi+'" aria-label="Eliminar grupo">&#10005;</button></div>'
+      +(isAdmin?'<button class="obj-icon-btn" data-obj-del-group data-gi="'+gi+'" aria-label="Eliminar grupo">&#10005;</button>':'')+'</div>'
       +subsHtml
-      +'<button class="obj-add-btn" data-obj-add-sub data-gi="'+gi+'">+ Añadir sección</button>'
+      +(isAdmin?'<button class="obj-add-btn" data-obj-add-sub data-gi="'+gi+'">+ Añadir sección</button>':'')
       +subFormHere
       +'</div>';
   }).join('');
-  const groupFormHere=(objUi&&objUi.type==='add-group')?objFormHtml():'';
+  const groupFormHere=(isAdmin&&objUi&&objUi.type==='add-group')?objFormHtml():'';
   el.innerHTML=groupsHtml
-    +'<button class="obj-add-btn obj-add-group-btn" data-obj-add-group>+ Añadir grupo</button>'
+    +(isAdmin?'<button class="obj-add-btn obj-add-group-btn" data-obj-add-group>+ Añadir grupo</button>':'')
     +groupFormHere;
+  document.getElementById('objSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
 }
 
 document.getElementById('objetivosList').addEventListener('click',e=>{
+  if(!isAdmin) return;
   const t=e.target;
   let b;
   if(b=t.closest('[data-obj-edit-item]')){
@@ -1299,7 +1356,7 @@ function renderTacticas(){
   const list=tacData.tactics.map((t,ti)=>{
     const open=tacOpen.has(ti);
     const opts=t.options.map((o,oi)=>{
-      const optFormHere=(tacUi&&tacUi.type==='edit-opt'&&tacUi.ti===ti&&tacUi.oi===oi)?tacFormHtml():'';
+      const optFormHere=(isAdmin&&tacUi&&tacUi.type==='edit-opt'&&tacUi.ti===ti&&tacUi.oi===oi)?tacFormHtml():'';
       if(optFormHere) return optFormHere;
       const hasSlider=oi===TAC_OPT_COUNT-1;
       return '<div class="tac-option">'
@@ -1311,10 +1368,10 @@ function renderTacticas(){
           +'<span class="tac-opt-value">'+o.value+'</span>'
           +'</div>'
         ):'')
-        +'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>'
+        +(isAdmin?'<button class="tac-opt-edit" data-tac-edit-opt data-ti="'+ti+'" data-oi="'+oi+'" aria-label="Editar opción">&#9998;</button>':'')
         +'</div>';
     }).join('');
-    const tacFormHere=(tacUi&&tacUi.type==='edit-tactic'&&tacUi.ti===ti)?tacFormHtml():'';
+    const tacFormHere=(isAdmin&&tacUi&&tacUi.type==='edit-tactic'&&tacUi.ti===ti)?tacFormHtml():'';
     return '<div class="tac-card'+(open?' open':'')+'">'
       +'<button class="tac-head" data-tac-toggle="'+ti+'"><span>'+escapeHtml(t.name)+'</span><span class="tac-chevron">&#9662;</span></button>'
       +'<div class="tac-body"'+(open?'':' hidden')+'>'
@@ -1322,31 +1379,24 @@ function renderTacticas(){
         '<div class="tac-code-row">'
         +'<code class="tac-code">'+(t.code?escapeHtml(t.code):'Sin código todavía')+'</code>'
         +(t.code?'<button class="tac-btn" data-tac-copy="'+ti+'">Copiar</button>':'')
-        +'<button class="tac-btn" data-tac-edit-tactic="'+ti+'">Editar</button>'
+        +(isAdmin?'<button class="tac-btn" data-tac-edit-tactic="'+ti+'">Editar</button>':'')
         +'</div>'
       ))
       +'<div class="tac-options">'+opts+'</div>'
       +'</div></div>';
   }).join('');
   el.innerHTML=list
-    +'<button class="obj-add-btn" id="tacAddBtn">+ Añadir táctica</button>'
-    +((tacUi&&tacUi.type==='add-tactic')?tacFormHtml():'');
+    +(isAdmin?'<button class="obj-add-btn" id="tacAddBtn">+ Añadir táctica</button>':'')
+    +((isAdmin&&tacUi&&tacUi.type==='add-tactic')?tacFormHtml():'');
+  document.getElementById('tacSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
 }
 
 document.getElementById('tacticsList').addEventListener('click',e=>{
   const t=e.target;
   let b;
-  if(t.id==='tacAddBtn'){ tacUi={type:'add-tactic'}; renderTacticas(); return; }
-  if(b=t.closest('[data-tac-edit-opt]')){
-    tacUi={type:'edit-opt',ti:+b.dataset.ti,oi:+b.dataset.oi};
-    renderTacticas();
-    return;
-  }
-  if(b=t.closest('[data-tac-edit-tactic]')){
-    tacUi={type:'edit-tactic',ti:+b.dataset.tacEditTactic};
-    renderTacticas();
-    return;
-  }
+  if(t.id==='tacAddBtn'){ if(!isAdmin) return; tacUi={type:'add-tactic'}; renderTacticas(); return; }
+  // Copiar el código y plegar/desplegar la tarjeta funcionan para cualquiera
+  // (no son ediciones); el resto requiere haber entrado como admin.
   if(b=t.closest('[data-tac-copy]')){
     const ti=+b.dataset.tacCopy;
     const code=tacData.tactics[ti].code||'';
@@ -1356,6 +1406,23 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
         setTimeout(()=>{ b.textContent=old; },1200);
       });
     }
+    return;
+  }
+  if(b=t.closest('[data-tac-toggle]')){
+    const ti=+b.dataset.tacToggle;
+    if(tacOpen.has(ti)) tacOpen.delete(ti); else tacOpen.add(ti);
+    renderTacticas();
+    return;
+  }
+  if(!isAdmin) return;
+  if(b=t.closest('[data-tac-edit-opt]')){
+    tacUi={type:'edit-opt',ti:+b.dataset.ti,oi:+b.dataset.oi};
+    renderTacticas();
+    return;
+  }
+  if(b=t.closest('[data-tac-edit-tactic]')){
+    tacUi={type:'edit-tactic',ti:+b.dataset.tacEditTactic};
+    renderTacticas();
     return;
   }
   if(t.dataset.tacAction==='cancel'){ tacUi=null; renderTacticas(); return; }
@@ -1391,11 +1458,6 @@ document.getElementById('tacticsList').addEventListener('click',e=>{
     opt.label=label; opt.desc=desc;
     tacUi=null; renderTacticas(); tacSave();
     return;
-  }
-  if(b=t.closest('[data-tac-toggle]')){
-    const ti=+b.dataset.tacToggle;
-    if(tacOpen.has(ti)) tacOpen.delete(ti); else tacOpen.add(ti);
-    renderTacticas();
   }
 });
 document.getElementById('tacticsList').addEventListener('keydown',e=>{
@@ -1551,13 +1613,26 @@ function recAutoResize(el){
 }
 
 function recCardHtml(cat,it){
+  if(!isAdmin&&!it.title&&!it.desc){
+    // Vista de solo lectura sin nada que mostrar: ni título ni descripción,
+    // así que no tiene sentido pintar campos "editables" vacíos.
+    return '<div class="rec-card" data-rec-id="'+escapeHtml(it.id)+'">'
+      +'<img src="'+escapeHtml(it.url)+'" alt="Imagen" loading="lazy">'
+      +'<div class="rec-card-body"><div class="rec-card-date">'+escapeHtml(it.date)+'</div></div></div>';
+  }
+  const titleField=isAdmin
+    ?'<input type="text" class="rec-card-title-input" data-rec-title data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" placeholder="Título" value="'+escapeHtml(it.title||'')+'">'
+    :(it.title?'<div class="rec-card-title-input">'+escapeHtml(it.title)+'</div>':'');
+  const descField=isAdmin
+    ?'<textarea class="rec-card-caption-input" data-rec-desc data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" placeholder="Descripción (opcional)" rows="1">'+escapeHtml(it.desc||'')+'</textarea>'
+    :(it.desc?'<div class="rec-card-caption-input">'+escapeHtml(it.desc)+'</div>':'');
   return '<div class="rec-card" data-rec-id="'+escapeHtml(it.id)+'">'
     +'<img src="'+escapeHtml(it.url)+'" alt="'+escapeHtml(it.title||'Imagen')+'" loading="lazy">'
     +(it.pending?'<div class="rec-card-pending">Sin subir — se sincroniza sola</div>':'')
-    +'<button class="rec-card-del" data-rec-del data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>'
+    +(isAdmin?'<button class="rec-card-del" data-rec-del data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>':'')
     +'<div class="rec-card-body">'
-    +'<input type="text" class="rec-card-title-input" data-rec-title data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" placeholder="Título" value="'+escapeHtml(it.title||'')+'">'
-    +'<textarea class="rec-card-caption-input" data-rec-desc data-cat="'+cat+'" data-id="'+escapeHtml(it.id)+'" placeholder="Descripción (opcional)" rows="1">'+escapeHtml(it.desc||'')+'</textarea>'
+    +titleField
+    +descField
     +'<div class="rec-card-date">'+escapeHtml(it.date)+'</div>'
     +'</div></div>';
 }
@@ -1565,6 +1640,7 @@ function recCardHtml(cat,it){
 function renderRecomendaciones(){
   const el=document.getElementById('recSections');
   const data=recData||recEmptyData();
+  if(!isAdmin) recOpenZone=null;
   el.innerHTML=REC_CATEGORIES.map(c=>{
     const items=data[c.key]||[];
     const cards=items.length?items.map(it=>recCardHtml(c.key,it)).join(''):'<div class="rec-empty">Todavía no hay imágenes.</div>';
@@ -1572,7 +1648,7 @@ function renderRecomendaciones(){
     return '<div class="rec-section">'
       +'<div class="section-header" style="margin-top:36px"><span class="sec-label">Economía</span><span class="sec-title">'+c.label+'</span></div>'
       +'<div class="section-note">'+c.note+'</div>'
-      +'<button class="obj-add-btn" data-rec-toggle-zone="'+c.key+'">'+(zoneOpen?'Cancelar':'+ Nueva')+'</button>'
+      +(isAdmin?'<button class="obj-add-btn" data-rec-toggle-zone="'+c.key+'">'+(zoneOpen?'Cancelar':'+ Nueva')+'</button>':'')
       +(zoneOpen?(
         '<div class="rec-paste-zone" data-rec-zone="'+c.key+'" tabindex="0">Haz clic aquí y pega una imagen (Ctrl+V), o <label class="rec-file-label">elige un archivo<input type="file" data-rec-file="'+c.key+'" accept="image/*" hidden></label></div>'
       ):'')
@@ -1580,10 +1656,16 @@ function renderRecomendaciones(){
       +'</div>';
   }).join('');
   el.querySelectorAll('.rec-card-caption-input').forEach(recAutoResize);
+  document.getElementById('recSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
 }
 
 const recSections=document.getElementById('recSections');
 recSections.addEventListener('click',e=>{
+  if(e.target.matches('.rec-card img')){
+    openImgModal(e.target.src,e.target.alt);
+    return;
+  }
+  if(!isAdmin) return;
   const toggleBtn=e.target.closest('[data-rec-toggle-zone]');
   if(toggleBtn){
     const cat=toggleBtn.dataset.recToggleZone;
@@ -1599,11 +1681,9 @@ recSections.addEventListener('click',e=>{
     recSave();
     return;
   }
-  if(e.target.matches('.rec-card img')){
-    openImgModal(e.target.src,e.target.alt);
-  }
 });
 recSections.addEventListener('change',e=>{
+  if(!isAdmin) return;
   const t=e.target;
   if(t.matches('[data-rec-title]')||t.matches('[data-rec-desc]')){
     const cat=t.dataset.cat, id=t.dataset.id;
@@ -1618,6 +1698,7 @@ recSections.addEventListener('input',e=>{
   if(e.target.matches('[data-rec-desc]')) recAutoResize(e.target);
 });
 recSections.addEventListener('keydown',e=>{
+  if(!isAdmin) return;
   if(e.key!=='Enter'||e.shiftKey) return;
   if(!e.target.matches('[data-rec-title]')&&!e.target.matches('[data-rec-desc]')) return;
   e.preventDefault();
@@ -1625,6 +1706,7 @@ recSections.addEventListener('keydown',e=>{
   recSaveNow();
 });
 recSections.addEventListener('paste',e=>{
+  if(!isAdmin) return;
   const zone=e.target.closest('[data-rec-zone]');
   if(!zone) return;
   const items=(e.clipboardData&&e.clipboardData.items)||[];

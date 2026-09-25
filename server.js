@@ -2,7 +2,7 @@
 // Guarda cada sección editable (Objetivos, Tácticas...) en su propio archivo JSON.
 // Nginx sigue sirviendo el sitio estático tal cual; esto solo atiende /api/*.
 //
-// Uso: FC_GUIDE_TOKEN=algo-secreto PORT=4322 node server.js
+// Uso: FC_GUIDE_TOKEN=algo-secreto FC_GUIDE_ADMIN_PASSWORD=otro-secreto PORT=4322 node server.js
 
 const http = require('http');
 const fs = require('fs');
@@ -11,8 +11,10 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 4322;
 const AUTH_TOKEN = process.env.FC_GUIDE_TOKEN || 'cambia-esto-por-algo-tuyo';
+const ADMIN_PASSWORD = process.env.FC_GUIDE_ADMIN_PASSWORD || null;
 const MAX_BODY_BYTES = 2 * 1024 * 1024; // 2MB, de sobra para las tiendas de JSON
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8MB, de sobra para una captura de pantalla
+const MAX_LOGIN_BODY_BYTES = 1024; // una contraseña no necesita más
 
 const STORES = {
   '/api/objetivos': path.join(__dirname, 'objetivos-data.json'),
@@ -120,7 +122,47 @@ function receiveUpload(req, res){
   });
 }
 
+// Comprueba la contraseña de admin y, si es correcta, entrega el token que
+// hace falta para guardar (objetivos/tácticas/recomendaciones/imágenes). El
+// token ya no va escrito en el HTML público: solo lo obtiene quien conozca
+// la contraseña, a través de este endpoint.
+function timingSafeEqualStr(a, b){
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+function receiveLogin(req, res){
+  if (!ADMIN_PASSWORD) {
+    console.log(red('POST rechazado en /api/login: FC_GUIDE_ADMIN_PASSWORD no configurada en el servidor'));
+    return send(res, 500, JSON.stringify({ error: 'admin password not configured' }));
+  }
+  let body = '';
+  let tooBig = false;
+  req.on('data', chunk => {
+    body += chunk;
+    if (body.length > MAX_LOGIN_BODY_BYTES) { tooBig = true; req.destroy(); }
+  });
+  req.on('end', () => {
+    if (tooBig) return;
+    let password;
+    try {
+      password = JSON.parse(body).password;
+    } catch (e) {
+      return send(res, 400, JSON.stringify({ error: 'invalid json' }));
+    }
+    const ok = typeof password === 'string' && timingSafeEqualStr(password, ADMIN_PASSWORD);
+    if (!ok) {
+      console.log(red('Login de admin rechazado: contraseña incorrecta'));
+      return send(res, 401, JSON.stringify({ error: 'wrong password' }));
+    }
+    console.log(green('Login de admin correcto'));
+    send(res, 200, JSON.stringify({ ok: true, token: AUTH_TOKEN }));
+  });
+}
+
 const server = http.createServer((req, res) => {
+  if (req.url === '/api/login' && req.method === 'POST') return receiveLogin(req, res);
   if (req.url.startsWith('/api/uploads/') && req.method === 'GET') return serveUpload(req, res);
   if (req.url === '/api/uploads' && req.method === 'POST') return receiveUpload(req, res);
 
