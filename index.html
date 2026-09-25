@@ -123,7 +123,6 @@ a{color:inherit;}
 .tac-options{display:flex;flex-direction:column;gap:10px;}
 .tac-option{position:relative;padding-right:24px;}
 .tac-opt-label{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px;}
-.tac-opt-empty{color:var(--text3);font-weight:600;}
 .tac-opt-desc{font-size:11px;color:var(--text2);margin-bottom:5px;line-height:1.4;}
 .tac-slider-row{display:flex;align-items:center;gap:8px;}
 .tac-slider{flex:1;display:block;accent-color:var(--accent);height:14px;}
@@ -193,7 +192,8 @@ a{color:inherit;}
 .obj-add-group-btn{margin-top:8px;}
 
 .obj-form{background:var(--surface2);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;margin-top:10px;max-width:420px;}
-.obj-form input,.obj-form textarea,.obj-form select{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;resize:vertical;}
+.obj-form input,.obj-form textarea,.obj-form select{background:var(--bg);border:1px solid var(--hairline2);border-radius:8px;color:#fff;font-size:13px;padding:8px 10px;font-family:inherit;outline:none;}
+.obj-form textarea{resize:none;overflow:hidden;box-sizing:border-box;}
 .obj-form input:focus,.obj-form textarea:focus,.obj-form select:focus{border-color:var(--accent);}
 .obj-form-row{display:flex;gap:8px;justify-content:flex-end;}
 .obj-form-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;}
@@ -1237,8 +1237,13 @@ function renderObjetivos(){
     +(isAdmin?'<button class="obj-add-btn obj-add-group-btn" data-obj-add-group>+ Añadir grupo</button>':'')
     +groupFormHere;
   document.getElementById('objSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
+  const descEl=document.getElementById('objFormDesc');
+  if(descEl) autoResizeTextarea(descEl);
 }
 
+document.getElementById('objetivosList').addEventListener('input',e=>{
+  if(e.target.id==='objFormDesc') autoResizeTextarea(e.target);
+});
 document.getElementById('objetivosList').addEventListener('click',e=>{
   if(!isAdmin) return;
   const t=e.target;
@@ -1438,7 +1443,7 @@ function renderTacticas(){
       if(optFormHere) return optFormHere;
       const hasSlider=oi===TAC_OPT_COUNT-1;
       return '<div class="tac-option">'
-        +'<div class="tac-opt-label">'+(o.label?escapeHtml(o.label):'<span class="tac-opt-empty">Sin definir</span>')+'</div>'
+        +(o.label?'<div class="tac-opt-label">'+escapeHtml(o.label)+'</div>':'')
         +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
         +(hasSlider?(
           '<div class="tac-slider-row">'
@@ -1467,8 +1472,13 @@ function renderTacticas(){
     +(isAdmin?'<button class="obj-add-btn" id="tacAddBtn">+ Añadir táctica</button>':'')
     +((isAdmin&&tacUi&&tacUi.type==='add-tactic')?tacFormHtml():'');
   document.getElementById('tacSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
+  const descEl=document.getElementById('tacFormDesc');
+  if(descEl) autoResizeTextarea(descEl);
 }
 
+document.getElementById('tacticsList').addEventListener('input',e=>{
+  if(e.target.id==='tacFormDesc') autoResizeTextarea(e.target);
+});
 document.getElementById('tacticsList').addEventListener('click',e=>{
   const t=e.target;
   let b;
@@ -1683,7 +1693,7 @@ function recRetryPending(){
 }
 window.addEventListener('online',recRetryPending);
 
-function recAutoResize(el){
+function autoResizeTextarea(el){
   const cs=getComputedStyle(el);
   const borderY=parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth);
   el.style.height='auto';
@@ -1733,7 +1743,7 @@ function renderRecomendaciones(){
       +'<div class="rec-list">'+cards+'</div>'
       +'</div>';
   }).join('');
-  el.querySelectorAll('.rec-card-caption-input').forEach(recAutoResize);
+  el.querySelectorAll('.rec-card-caption-input').forEach(autoResizeTextarea);
   document.getElementById('recSaveNowBtn').closest('.sync-row').hidden=!isAdmin;
 }
 
@@ -1773,7 +1783,7 @@ recSections.addEventListener('change',e=>{
   }
 });
 recSections.addEventListener('input',e=>{
-  if(e.target.matches('[data-rec-desc]')) recAutoResize(e.target);
+  if(e.target.matches('[data-rec-desc]')) autoResizeTextarea(e.target);
 });
 recSections.addEventListener('keydown',e=>{
   if(!isAdmin) return;
