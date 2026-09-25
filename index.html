@@ -123,7 +123,6 @@ a{color:inherit;}
 .tac-options{display:flex;flex-direction:column;gap:10px;}
 .tac-option{position:relative;padding-right:24px;}
 .tac-opt-label{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px;}
-.tac-opt-empty{color:var(--text3);font-weight:600;}
 .tac-opt-desc{font-size:11px;color:var(--text2);margin-bottom:5px;line-height:1.4;}
 .tac-slider-row{display:flex;align-items:center;gap:8px;}
 .tac-slider{flex:1;display:block;accent-color:var(--accent);height:14px;}
@@ -1444,7 +1443,7 @@ function renderTacticas(){
       if(optFormHere) return optFormHere;
       const hasSlider=oi===TAC_OPT_COUNT-1;
       return '<div class="tac-option">'
-        +'<div class="tac-opt-label">'+(o.label?escapeHtml(o.label):'<span class="tac-opt-empty">Sin definir</span>')+'</div>'
+        +(o.label?'<div class="tac-opt-label">'+escapeHtml(o.label)+'</div>':'')
         +(o.desc?'<div class="tac-opt-desc">'+escapeHtml(o.desc)+'</div>':'')
         +(hasSlider?(
           '<div class="tac-slider-row">'
