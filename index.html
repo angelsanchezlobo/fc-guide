@@ -146,6 +146,14 @@ a{color:inherit;}
 .gal-tier-body{font-size:13px;color:var(--text2);line-height:1.6;}
 .gal-note{font-size:13px;color:var(--text2);padding:16px 20px;background:var(--surface);border-radius:12px;line-height:1.6;max-width:640px;}
 .gal-note strong{color:#fff;}
+.gal-progress{margin-top:40px;}
+.gal-progress-groups{display:flex;flex-direction:column;gap:20px;max-width:640px;margin-bottom:16px;}
+.gal-progress-list{display:flex;flex-direction:column;gap:1px;background:var(--hairline);border-radius:14px;overflow:hidden;}
+.gal-progress-item{background:var(--surface);padding:10px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+.gal-progress-name{font-size:13px;color:var(--text2);}
+.gal-progress-points{font-size:12px;font-weight:700;color:var(--chip-text);background:var(--chip-bg);border-radius:20px;padding:3px 10px;white-space:nowrap;}
+.gal-progress-total-row{display:flex;align-items:baseline;justify-content:space-between;max-width:640px;padding:14px 22px;background:var(--surface);border-radius:12px;font-size:14px;font-weight:700;color:#fff;}
+.gal-progress-total-row span{font-size:18px;color:var(--chip-text);}
 
 /* ── GUARDADO MANUAL (Objetivos/Tácticas/Recomendaciones) ── */
 .sync-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
@@ -394,6 +402,12 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
     </div>
 
     <div class="gal-note"><strong>Truco de monedas:</strong> con una carta de más de 100k, compra y espera a que se venda antes de seguir — si no, te quedas sin monedas a medio camino. Con cartas baratas (bronce, pocas miles) sí puedes comprar y vender en cadena sin esperar.</div>
+
+    <div class="gal-progress">
+      <div class="gal-h">Progreso actual</div>
+      <div class="gal-progress-groups" id="galProgresoGroups"></div>
+      <div class="gal-progress-total-row">Total<span id="galProgresoTotal">0</span></div>
+    </div>
   </div>
 
   <div class="view" id="view-mercado" hidden>
@@ -1886,6 +1900,61 @@ recSections.addEventListener('change',e=>{
   fileInput.value='';
 });
 
+/* ── Galería: progreso estático de fichas ya conseguidas (rango C salvo que se indique otro) ── */
+const GALERIA_PROGRESO=[
+  [
+    {name:'Birmingham City',points:28},
+    {name:'Hull City',points:18},
+    {name:'Charlton',points:13}
+  ],
+  [
+    {name:'Rayo Vallecano',points:38},
+    {name:'RC Deportivo',points:38},
+    {name:'Costa Adeje Tenerife',points:28},
+    {name:'Malaga CF',points:28},
+    {name:'Villarreal',points:18},
+    {name:'Deportivo Alaves',points:13},
+    {name:'FC Badalona Women',points:13},
+    {name:'Logroño United',points:13},
+    {name:'Real Racing Club',points:13}
+  ],
+  [
+    {name:'AJ Auxerre',points:13},
+    {name:'Le Mans FC',points:13},
+    {name:'Montpellier Herault SC',points:13},
+    {name:'Toulouse FC',points:13}
+  ],
+  [
+    {name:'Frosinone',points:28},
+    {name:'Bergamo Calcio',points:18},
+    {name:'Lecce',points:13},
+    {name:'Venezia',points:13}
+  ],
+  [
+    {name:'Serie A (C)',points:45},
+    {name:'Bundesliga (C)',points:45},
+    {name:'Frauen-Bundesliga (C)',points:45},
+    {name:'League 1 McDonald (C)',points:45},
+    {name:'Arkema',points:45}
+  ],
+  [
+    {name:'Heroes',points:100}
+  ]
+];
+function renderGaleriaProgreso(){
+  const groupsEl=document.getElementById('galProgresoGroups');
+  const totalEl=document.getElementById('galProgresoTotal');
+  if(!groupsEl||!totalEl) return;
+  let total=0;
+  groupsEl.innerHTML=GALERIA_PROGRESO.map(group=>{
+    return '<div class="gal-progress-list">'+group.map(it=>{
+      total+=it.points;
+      return '<div class="gal-progress-item"><span class="gal-progress-name">'+escapeHtml(it.name)+'</span><span class="gal-progress-points">'+it.points+'</span></div>';
+    }).join('')+'</div>';
+  }).join('');
+  totalEl.textContent=total;
+}
+
 /* ── ROUTER: simulated sub-pages via location.hash, single file, no build step ── */
 const TOP_VIEWS=['gameplay','tacticas','galeria','mercado','objetivos'];
 function showView(view){
@@ -1919,6 +1988,7 @@ window.addEventListener('hashchange',applyRoute);
 
 render();
 renderGameplayLanding();
+renderGaleriaProgreso();
 applyRoute();
 objLoad();
 tacLoad();
