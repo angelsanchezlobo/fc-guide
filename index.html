@@ -824,7 +824,31 @@ const DATA = {
 // Semilla inicial: solo se usa la primera vez (si el servidor y localStorage
 // están vacíos). A partir de ahí, todo lo que ves en Objetivos viene de lo
 // que tú añadas/edites en la propia página — esto no hay que tocarlo más.
+const OBJ_PASE_TEMPORADA = { title:'Pase de temporada', subs:[
+  { title:'Cómo funciona', items:[
+    {label:'Resumen',desc:'El pase tiene 30 niveles de 1.000 SP cada uno. Cinco modos lo alimentan y la SP de cualquiera de ellos suma al mismo pase: Ultimate Team, Manager Career, Manager Live, Player Career y The Grounds. Combinar modos es mucho más rápido que jugar solo UT — con todo combinado el nivel 15 puede llegar en ~8 días; solo con UT, en unas 2 semanas. Fuente: guías de comunidad (fut.gg y agregadores similares), no confirmado por jugadores pro — las cifras pueden variar algo entre guías, comprueba siempre la pestaña Objetivos del juego.',done:false}
+  ]},
+  { title:'Manager Live — semanal, ~1.000 SP', items:[
+    {label:'Semana 1: Transfer Savvy, Winning Start, Top at Christmas',desc:'Completar estos 3 desafíos da 1.000 SP en total — de lo más rápido de todo el pase, unos 25 minutos.',done:false},
+    {label:'Semana 2: Believe, Master Trader, Points Deduction',desc:'Unos 40 minutos con un equipo fuerte (Barcelona Femenino, PSG), dificultad Principiante, "No Sacking" activado y simulando temporadas donde se pueda.',done:false}
+  ]},
+  { title:'Player Career — semanal, 1.250 SP', items:[
+    {label:'Completa 10 objetivos de partido',desc:'Juega en resumen de goles (highlights) y revisa los 3 objetivos activos antes de cada partido. ~5 partidos, unos 25 minutos en total.',done:false}
+  ]},
+  { title:'Manager Career — semanal, ~1.200 SP', items:[
+    {label:'Juega 5 partidos completos en la misma partida',desc:'Dificultad Principiante y partes de 3 minutos. No simules estos partidos — tienen que jugarse para contar. ~30 minutos en total.',done:false}
+  ]},
+  { title:'Ultimate Team', items:[
+    {label:'Foundations — una sola vez, 1.050 SP',desc:'No caducan ni se refrescan: 3 grupos de SBC (400 SP), jugar un partido en cualquier modo de FUT, y el bonus por completar los tres grupos.',done:false},
+    {label:'Objetivos semanales y diarios',desc:'Revísalos en la pestaña Objetivos de FC dentro de UT. Los diarios dan 30 SP.',done:false},
+    {label:'Partidos con objetivos apilados — tope 850 SP/día',desc:'Los partidos dan como máximo 850 SP al día entre todos los modos — lo que juegues de más no suma. Usa los mismos partidos para cumplir varios objetivos a la vez (Ones We Watched, goles por nación o posición, victorias). Para victorias/goles concretos, Squad Battles bajando a Semi-Pro o Profesional da victorias más seguras. Ojo con las posiciones: un LW no cuenta como LM — mira las posiciones alternativas de tu plantilla antes de comprar nada.',done:false}
+  ]},
+  { title:'The Grounds', items:[
+    {label:'Objetivos del mapa (diarios y semanales)',desc:'Revisa el mapa del mundo → pestaña Objetivos. Suele incluir partidas de Rush, Kickabouts y acertar blancos de Drop Kick. Es el modo que casi nadie mira, pero la SP cuenta igual para el mismo pase.',done:false}
+  ]}
+]};
 const OBJ_SEED = [
+  OBJ_PASE_TEMPORADA,
   { title:'Fundamentos', subs:[
     { title:'Inicio del camino', items:[
       {label:'Gana partido — mínima Aficionado',done:true},
@@ -1167,14 +1191,20 @@ const OBJ_STORAGE_KEY='fcguide-objetivos';
 let objData=null;
 let objUi=null; // {type:'add-item'|'edit-item'|'add-sub'|'add-group', gi, si, ii}
 
+function objEnsurePaseTemporada(){
+  if(!objData||!Array.isArray(objData.groups)) return;
+  if(objData.groups.some(g=>g.title===OBJ_PASE_TEMPORADA.title)) return;
+  objData.groups.unshift(JSON.parse(JSON.stringify(OBJ_PASE_TEMPORADA)));
+}
 function objLoad(){
   fetch('/api/objetivos').then(r=>r.ok?r.json():null).then(data=>{
-    if(data&&Array.isArray(data.groups)){ objData=data; renderObjetivos(); return; }
+    if(data&&Array.isArray(data.groups)){ objData=data; objEnsurePaseTemporada(); renderObjetivos(); return; }
     throw new Error('empty');
   }).catch(()=>{
     let cached=null;
     try{ cached=JSON.parse(localStorage.getItem(OBJ_STORAGE_KEY)); }catch(e){}
     objData=(cached&&Array.isArray(cached.groups))?cached:{groups:OBJ_SEED};
+    objEnsurePaseTemporada();
     renderObjetivos();
     document.getElementById('objSyncNote').textContent='Sin conexión con el servidor — se está guardando solo en este navegador.';
   });
