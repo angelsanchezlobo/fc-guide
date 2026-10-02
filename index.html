@@ -431,12 +431,17 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
     <div class="section-header"><span class="sec-label">Progreso</span><span class="sec-title">Objetivos</span></div>
     <div class="section-note">Marca lo que ya has completado. Se guarda en el servidor si la API está desplegada — si no, el cambio se queda solo en este navegador.</div>
 
-    <div class="items" id="paseTemporadaLanding">
-      <div class="gp-card" role="button" tabindex="0" id="paseTemporadaCard">
-        <span class="gp-card-label">Progreso</span>
-        <span class="gp-card-title">Pase de temporada</span>
-        <span class="gp-card-count">Cómo subirlo rápido combinando modos</span>
+    <div id="objetivosMain">
+      <div class="items" id="paseTemporadaLanding">
+        <div class="gp-card" role="button" tabindex="0" id="paseTemporadaCard">
+          <span class="gp-card-label">Progreso</span>
+          <span class="gp-card-title">Pase de temporada</span>
+          <span class="gp-card-count">Cómo subirlo rápido combinando modos</span>
+        </div>
       </div>
+
+      <div class="sync-row"><div class="obj-sync-note" id="objSyncNote"></div><button class="save-now-btn" id="objSaveNowBtn">Guardar ahora</button></div>
+      <div id="objetivosList"></div>
     </div>
 
     <div class="pase-temporada" id="paseTemporadaDetail" hidden>
@@ -465,9 +470,6 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
         </div>
       </div>
     </div>
-
-    <div class="sync-row"><div class="obj-sync-note" id="objSyncNote"></div><button class="save-now-btn" id="objSaveNowBtn">Guardar ahora</button></div>
-    <div id="objetivosList"></div>
   </div>
 
 </main>
@@ -1170,24 +1172,20 @@ document.getElementById('gameplayBack').addEventListener('click',()=>{
   location.hash='gameplay';
 });
 
-// Pase de temporada en Objetivos: misma idea que las tarjetas de Gameplay —
-// una card que se pulsa para ver el detalle, en vez de tenerlo todo siempre
-// desplegado. No hace falta recordar el estado entre visitas.
-function openPaseTemporada(){
-  document.getElementById('paseTemporadaLanding').hidden=true;
-  document.getElementById('paseTemporadaDetail').hidden=false;
-}
-function closePaseTemporada(){
-  document.getElementById('paseTemporadaDetail').hidden=true;
-  document.getElementById('paseTemporadaLanding').hidden=false;
-}
-document.getElementById('paseTemporadaCard').addEventListener('click',openPaseTemporada);
+// Pase de temporada en Objetivos: subpágina de verdad (como las categorías
+// de Gameplay), con su propia ruta por hash — así "Volver" es una navegación
+// real, no solo un desplegable que finge serlo.
+document.getElementById('paseTemporadaCard').addEventListener('click',()=>{
+  location.hash='objetivos/pase-temporada';
+});
 document.getElementById('paseTemporadaCard').addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ') return;
   e.preventDefault();
-  openPaseTemporada();
+  location.hash='objetivos/pase-temporada';
 });
-document.getElementById('paseTemporadaBack').addEventListener('click',closePaseTemporada);
+document.getElementById('paseTemporadaBack').addEventListener('click',()=>{
+  location.hash='objetivos';
+});
 
 function applyFilters(){
   const isLanding=activeSection==='landing';
@@ -2279,6 +2277,11 @@ function applyRoute(){
   if(view==='gameplay'){
     activeSection=SECTION_IDS.includes(parts[1])?parts[1]:'landing';
     applyFilters();
+  }
+  if(view==='objetivos'){
+    const showPase=parts[1]==='pase-temporada';
+    document.getElementById('objetivosMain').hidden=showPase;
+    document.getElementById('paseTemporadaDetail').hidden=!showPase;
   }
 }
 document.querySelectorAll('.tab').forEach(btn=>{
