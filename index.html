@@ -431,8 +431,16 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
     <div class="section-header"><span class="sec-label">Progreso</span><span class="sec-title">Objetivos</span></div>
     <div class="section-note">Marca lo que ya has completado. Se guarda en el servidor si la API está desplegada — si no, el cambio se queda solo en este navegador.</div>
 
-    <div class="pase-temporada">
-      <div class="gal-h">Pase de temporada</div>
+    <div class="items" id="paseTemporadaLanding">
+      <div class="gp-card" role="button" tabindex="0" id="paseTemporadaCard">
+        <span class="gp-card-label">Progreso</span>
+        <span class="gp-card-title">Pase de temporada</span>
+        <span class="gp-card-count">Cómo subirlo rápido combinando modos</span>
+      </div>
+    </div>
+
+    <div class="pase-temporada" id="paseTemporadaDetail" hidden>
+      <button class="gp-back" id="paseTemporadaBack">&larr; Volver</button>
       <div class="gal-note" style="max-width:640px;margin-bottom:24px;">El pase tiene 30 niveles de 1.000 SP cada uno. Cinco modos lo alimentan y la SP de cualquiera de ellos suma al mismo pase: Ultimate Team, Manager Career, Manager Live, Player Career y The Grounds. Combinar modos es mucho más rápido que jugar solo UT — con todo combinado el nivel 15 puede llegar en ~8 días; solo con UT, en unas 2 semanas. <strong>Fuente:</strong> guías de comunidad (fut.gg y agregadores similares), no confirmado por jugadores pro — las cifras pueden variar algo entre guías, comprueba siempre la pestaña Objetivos del juego.</div>
       <div class="gal-tiers" style="max-width:640px;">
         <div class="gal-tier">
@@ -1161,6 +1169,25 @@ document.getElementById('gameplayBack').addEventListener('click',()=>{
   document.getElementById('searchInput').value='';
   location.hash='gameplay';
 });
+
+// Pase de temporada en Objetivos: misma idea que las tarjetas de Gameplay —
+// una card que se pulsa para ver el detalle, en vez de tenerlo todo siempre
+// desplegado. No hace falta recordar el estado entre visitas.
+function openPaseTemporada(){
+  document.getElementById('paseTemporadaLanding').hidden=true;
+  document.getElementById('paseTemporadaDetail').hidden=false;
+}
+function closePaseTemporada(){
+  document.getElementById('paseTemporadaDetail').hidden=true;
+  document.getElementById('paseTemporadaLanding').hidden=false;
+}
+document.getElementById('paseTemporadaCard').addEventListener('click',openPaseTemporada);
+document.getElementById('paseTemporadaCard').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  e.preventDefault();
+  openPaseTemporada();
+});
+document.getElementById('paseTemporadaBack').addEventListener('click',closePaseTemporada);
 
 function applyFilters(){
   const isLanding=activeSection==='landing';
