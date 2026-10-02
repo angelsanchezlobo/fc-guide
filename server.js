@@ -20,6 +20,7 @@ const STORES = {
   '/api/objetivos': path.join(__dirname, 'objetivos-data.json'),
   '/api/tacticas': path.join(__dirname, 'tacticas-data.json'),
   '/api/recomendaciones': path.join(__dirname, 'recomendaciones-data.json'),
+  '/api/meta': path.join(__dirname, 'meta-data.json'),
 };
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads');

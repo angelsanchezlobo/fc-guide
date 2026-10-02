@@ -362,6 +362,12 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
       <div class="section-header"><span class="sec-label">Pelota parada</span><span class="sec-title">Corners, faltas y saques</span></div>
       <div class="items" id="items-pelota"></div>
     </div>
+    <div class="section-wrap" data-section="meta">
+      <div class="section-header"><span class="sec-label">Gameplay</span><span class="sec-title">Meta</span></div>
+      <div class="section-note">Capturas de pantalla y notas sobre la meta actual — cartas rotas, ajustes, lo que esté funcionando ahora mismo.</div>
+      <div class="sync-row"><div class="rec-sync-note" id="metaSyncNote"></div><button class="save-now-btn" id="metaSaveNowBtn">Guardar ahora</button></div>
+      <div id="metaUi"></div>
+    </div>
     </div>
   </div>
 
@@ -980,6 +986,7 @@ function refreshAllViews(){
   if(typeof renderObjetivos==='function') renderObjetivos();
   if(typeof renderTacticas==='function') renderTacticas();
   if(typeof renderRecomendaciones==='function') renderRecomendaciones();
+  if(typeof metaRender==='function') metaRender();
 }
 async function adminLogin(){
   const pw=prompt('Contraseña de administrador:');
@@ -1125,7 +1132,7 @@ document.getElementById('searchInput').addEventListener('input',e=>doSearch(e.ta
 
 function renderGameplayLanding(){
   const el=document.getElementById('gameplayCards');
-  el.innerHTML=SECTION_IDS.map(sec=>{
+  const dataCards=SECTION_IDS.map(sec=>{
     const wrap=document.querySelector('.section-wrap[data-section="'+sec+'"]');
     const label=wrap.querySelector('.sec-label').textContent;
     const title=wrap.querySelector('.sec-title').textContent;
@@ -1136,6 +1143,13 @@ function renderGameplayLanding(){
       +'<span class="gp-card-count">'+(count?count+' mecánicas':'Próximamente')+'</span>'
       +'</div>';
   }).join('');
+  const metaCount=metaData?metaData.length:0;
+  const metaCard='<div class="gp-card" role="button" tabindex="0" data-gp-open="meta">'
+    +'<span class="gp-card-label">Gameplay</span>'
+    +'<span class="gp-card-title">Meta</span>'
+    +'<span class="gp-card-count">'+(metaCount?metaCount+' fotos':'Sin fotos aún')+'</span>'
+    +'</div>';
+  el.innerHTML=dataCards+metaCard;
 }
 document.getElementById('gameplayCards').addEventListener('click',e=>{
   const card=e.target.closest('[data-gp-open]');
@@ -1161,12 +1175,17 @@ function applyFilters(){
   document.getElementById('gameplayLanding').hidden=!showLanding;
   document.getElementById('gameplaySections').hidden=showLanding;
   document.getElementById('gameplayBack').hidden=isLanding;
+  // "Meta" no es una sección de DATA (no tiene .item ni se busca por texto),
+  // así que se queda fuera del bucle genérico de abajo y se decide aparte.
+  const metaWrap=document.querySelector('.section-wrap[data-section="meta"]');
+  const metaVisible=activeSection==='meta'&&!searching;
+  if(metaWrap) metaWrap.classList.toggle('hidden',!metaVisible);
   if(showLanding){
     document.getElementById('noResults').classList.remove('visible');
     return;
   }
-  let anyVisible=false;
-  document.querySelectorAll('#gameplaySections .section-wrap').forEach(sw=>{
+  let anyVisible=metaVisible;
+  document.querySelectorAll('#gameplaySections .section-wrap:not([data-section="meta"])').forEach(sw=>{
     const sec=sw.dataset.section;
     const sectionMatch=isLanding||activeSection===sec;
     const cards=sw.querySelectorAll('.item');
@@ -1938,6 +1957,238 @@ recSections.addEventListener('change',e=>{
   fileInput.value='';
 });
 
+/* ── GAMEPLAY: Meta — fotos sueltas con título+descripción, dentro de
+   Gameplay en vez de Mercado. Sistema separado del de Recomendaciones
+   (datos propios, endpoint propio /api/meta): solo comparte infraestructura
+   genérica ya existente (el login de admin y /api/uploads). ── */
+const META_STORAGE_KEY='fcguide-meta';
+let metaData=null; // [{id,url,title,desc,date,pending?}]
+let metaZoneOpen=false;
+
+function metaLoad(){
+  fetch('/api/meta').then(r=>r.ok?r.json():null).then(data=>{
+    if(Array.isArray(data)){
+      metaData=data;
+      metaRender();
+      metaRetryPending();
+      return;
+    }
+    throw new Error('empty');
+  }).catch(()=>{
+    let cached=null;
+    try{ cached=JSON.parse(localStorage.getItem(META_STORAGE_KEY)); }catch(e){}
+    metaData=Array.isArray(cached)?cached:[];
+    metaRender();
+    const note=document.getElementById('metaSyncNote');
+    if(note) note.textContent='Sin conexión con el servidor — viendo la copia guardada en este navegador. Lo que pegues ahora se sube solo en cuanto vuelva la conexión.';
+  });
+}
+function metaPersist(){
+  const note=document.getElementById('metaSyncNote');
+  note.classList.remove('sync-ok','sync-err');
+  note.textContent='Guardando…';
+  const syncable=metaData.filter(it=>!it.pending);
+  return fetch('/api/meta',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Auth':OBJ_API_TOKEN},
+    body:JSON.stringify(syncable)
+  }).then(r=>{
+    if(!r.ok) throw new Error('bad status');
+    note.textContent='Guardado ✓';
+    note.classList.add('sync-ok');
+  }).catch(()=>{
+    note.textContent='No se pudo guardar en el servidor — sigue solo en este navegador.';
+    note.classList.add('sync-err');
+  });
+}
+let metaSaveTimer=null;
+function metaSave(){
+  try{ localStorage.setItem(META_STORAGE_KEY,JSON.stringify(metaData)); }catch(e){}
+  clearTimeout(metaSaveTimer);
+  metaSaveTimer=setTimeout(metaPersist,400);
+}
+function metaSaveNow(){
+  try{ localStorage.setItem(META_STORAGE_KEY,JSON.stringify(metaData)); }catch(e){}
+  clearTimeout(metaSaveTimer);
+  metaPersist();
+}
+document.getElementById('metaSaveNowBtn').addEventListener('click',metaSaveNow);
+
+function metaUploadBlob(blob){
+  return fetch('/api/uploads',{
+    method:'POST',
+    headers:{'Content-Type':blob.type,'X-Auth':OBJ_API_TOKEN},
+    body:blob
+  }).then(r=>{
+    if(!r.ok) throw new Error('upload failed');
+    return r.json();
+  });
+}
+function metaAddItem(url,pending){
+  if(!metaData) metaData=[];
+  const item={id:Date.now()+'-'+Math.random().toString(36).slice(2,8),url,title:'',desc:'',date:new Date().toISOString().slice(0,10)};
+  if(pending) item.pending=true;
+  metaData.unshift(item);
+  metaRender();
+  metaSave();
+}
+function metaUploadAndAdd(blob){
+  const note=document.getElementById('metaSyncNote');
+  note.textContent='Subiendo imagen…';
+  metaUploadBlob(blob).then(data=>{
+    metaAddItem(data.url,false);
+    note.textContent='';
+  }).catch(()=>{
+    // Sin conexión: se guarda igual en este navegador (como data URL) y se
+    // reintenta subir sola en segundo plano en cuanto haya conexión.
+    const reader=new FileReader();
+    reader.onload=()=>{
+      metaAddItem(reader.result,true);
+      note.textContent='Sin conexión — guardada solo en este navegador. Se subirá sola en cuanto vuelva la conexión.';
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+function metaDataURLtoBlob(dataURL){
+  const [meta,b64]=dataURL.split(',');
+  const mime=meta.match(/:(.*?);/)[1];
+  const bin=atob(b64);
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return new Blob([bytes],{type:mime});
+}
+function metaRetryPending(){
+  if(!metaData) return;
+  metaData.filter(it=>it.pending).forEach(item=>{
+    metaUploadBlob(metaDataURLtoBlob(item.url)).then(data=>{
+      item.url=data.url;
+      delete item.pending;
+      metaRender();
+      metaSave();
+    }).catch(()=>{}); // sigue pendiente — se reintenta en la próxima carga o al recuperar conexión
+  });
+}
+window.addEventListener('online',metaRetryPending);
+
+function metaCardHtml(it){
+  if(!isAdmin&&!it.title&&!it.desc){
+    return '<div class="rec-card" data-meta-id="'+escapeHtml(it.id)+'">'
+      +'<img src="'+escapeHtml(it.url)+'" alt="Imagen" loading="lazy">'
+      +'<div class="rec-card-body"><div class="rec-card-date">'+escapeHtml(it.date)+'</div></div></div>';
+  }
+  const titleField=isAdmin
+    ?'<input type="text" class="rec-card-title-input" data-meta-title data-id="'+escapeHtml(it.id)+'" placeholder="Título" value="'+escapeHtml(it.title||'')+'">'
+    :(it.title?'<div class="rec-card-title-input">'+escapeHtml(it.title)+'</div>':'');
+  const descField=isAdmin
+    ?'<textarea class="rec-card-caption-input" data-meta-desc data-id="'+escapeHtml(it.id)+'" placeholder="Descripción (opcional)" rows="1">'+escapeHtml(it.desc||'')+'</textarea>'
+    :(it.desc?'<div class="rec-card-caption-input">'+escapeHtml(it.desc)+'</div>':'');
+  return '<div class="rec-card" data-meta-id="'+escapeHtml(it.id)+'">'
+    +'<img src="'+escapeHtml(it.url)+'" alt="'+escapeHtml(it.title||'Imagen')+'" loading="lazy">'
+    +(it.pending?'<div class="rec-card-pending">Sin subir — se sincroniza sola</div>':'')
+    +(isAdmin?'<button class="rec-card-del" data-meta-del data-id="'+escapeHtml(it.id)+'" aria-label="Eliminar">&times;</button>':'')
+    +'<div class="rec-card-body">'
+    +titleField
+    +descField
+    +'<div class="rec-card-date">'+escapeHtml(it.date)+'</div>'
+    +'</div></div>';
+}
+
+function metaRender(){
+  const el=document.getElementById('metaUi');
+  if(!el) return;
+  const items=metaData||[];
+  if(!isAdmin) metaZoneOpen=false;
+  const cards=items.length?items.map(metaCardHtml).join(''):'<div class="rec-empty">Todavía no hay imágenes.</div>';
+  el.innerHTML=
+    (isAdmin?'<button class="obj-add-btn" data-meta-toggle-zone>'+(metaZoneOpen?'Cancelar':'+ Nueva')+'</button>':'')
+    +(metaZoneOpen?'<div class="rec-paste-zone" data-meta-zone tabindex="0">Haz clic aquí y pega una imagen (Ctrl+V), o <label class="rec-file-label">elige un archivo<input type="file" data-meta-file accept="image/*" hidden></label></div>':'')
+    +'<div class="rec-list">'+cards+'</div>';
+  el.querySelectorAll('textarea.rec-card-caption-input').forEach(autoResizeTextarea);
+  const syncRow=document.getElementById('metaSaveNowBtn').closest('.sync-row');
+  if(syncRow) syncRow.hidden=!isAdmin;
+  renderGameplayLanding();
+}
+
+const metaUi=document.getElementById('metaUi');
+metaUi.addEventListener('load',e=>{
+  if(!e.target.matches('.rec-card img')) return;
+  const ta=e.target.closest('.rec-card').querySelector('textarea.rec-card-caption-input');
+  if(ta) autoResizeTextarea(ta);
+},true);
+metaUi.addEventListener('click',e=>{
+  if(e.target.matches('.rec-card img')){
+    openImgModal(e.target.src,e.target.alt);
+    return;
+  }
+  if(!isAdmin) return;
+  if(e.target.closest('[data-meta-toggle-zone]')){
+    metaZoneOpen=!metaZoneOpen;
+    metaRender();
+    return;
+  }
+  const delBtn=e.target.closest('[data-meta-del]');
+  if(delBtn){
+    metaData=metaData.filter(it=>it.id!==delBtn.dataset.id);
+    metaRender();
+    metaSave();
+  }
+});
+metaUi.addEventListener('change',e=>{
+  if(!isAdmin) return;
+  const t=e.target;
+  if(t.matches('[data-meta-title]')||t.matches('[data-meta-desc]')){
+    const item=metaData.find(it=>it.id===t.dataset.id);
+    if(!item) return;
+    if(t.matches('[data-meta-title]')) item.title=t.value.trim();
+    else item.desc=t.value.trim();
+    metaSave();
+    return;
+  }
+  const fileInput=e.target.closest('[data-meta-file]');
+  if(fileInput){
+    const file=[...fileInput.files].find(f=>f.type&&f.type.startsWith('image/'));
+    if(file) metaUploadAndAdd(file);
+    fileInput.value='';
+  }
+});
+metaUi.addEventListener('input',e=>{
+  if(e.target.matches('[data-meta-desc]')) autoResizeTextarea(e.target);
+});
+metaUi.addEventListener('keydown',e=>{
+  if(!isAdmin) return;
+  if(e.key!=='Enter'||e.shiftKey) return;
+  if(!e.target.matches('[data-meta-title]')&&!e.target.matches('[data-meta-desc]')) return;
+  e.preventDefault();
+  e.target.blur();
+  metaSaveNow();
+});
+metaUi.addEventListener('paste',e=>{
+  if(!isAdmin) return;
+  const zone=e.target.closest('[data-meta-zone]');
+  if(!zone) return;
+  const items=(e.clipboardData&&e.clipboardData.items)||[];
+  const imgItem=[...items].find(it=>it.type&&it.type.startsWith('image/'));
+  if(imgItem){ e.preventDefault(); metaUploadAndAdd(imgItem.getAsFile()); }
+});
+metaUi.addEventListener('dragover',e=>{
+  const zone=e.target.closest('[data-meta-zone]');
+  if(!zone) return;
+  e.preventDefault();
+  zone.classList.add('drag');
+});
+metaUi.addEventListener('dragleave',e=>{
+  const zone=e.target.closest('[data-meta-zone]');
+  if(zone) zone.classList.remove('drag');
+});
+metaUi.addEventListener('drop',e=>{
+  const zone=e.target.closest('[data-meta-zone]');
+  if(!zone) return;
+  e.preventDefault();
+  zone.classList.remove('drag');
+  const file=e.dataTransfer&&[...e.dataTransfer.files].find(f=>f.type&&f.type.startsWith('image/'));
+  if(file) metaUploadAndAdd(file);
+});
+
 /* ── Galería: progreso estático de fichas ya conseguidas (rango C salvo que se indique otro) ── */
 const GALERIA_PROGRESO=[
   [
@@ -2011,7 +2262,7 @@ function applyRoute(){
   showView(view);
   updateTabsActive(view);
   if(view==='gameplay'){
-    activeSection=SECTION_IDS.includes(parts[1])?parts[1]:'landing';
+    activeSection=(SECTION_IDS.includes(parts[1])||parts[1]==='meta')?parts[1]:'landing';
     applyFilters();
   }
 }
@@ -2031,6 +2282,7 @@ applyRoute();
 objLoad();
 tacLoad();
 recLoad();
+metaLoad();
 </script>
 </body>
 </html>
