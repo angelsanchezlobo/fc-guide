@@ -560,9 +560,9 @@ const DATA = {
     {
       name:'Bruiser: solo cuerpo con cuerpo, una vez',
       buttons:['Cruz (Bruiser)'],
-      cuando:'Contacto hombro con hombro con el rival, o muy cerca de él al lado',
-      como:'Dale al Bruiser una sola vez en el momento del contacto. La entrada la reservas para los centrales sin miedo cerca del área, cuando presionas con los mediocentros, o cuando el rival ataca de frente o se le ha escapado el balón claramente.',
-      no:'Repetir el Bruiser varias veces seguidas → el jugador se ralentiza',
+      cuando:'Contacto hombro con hombro con el rival, o muy cerca de él al lado — típico en un duelo de carrera donde vais los dos en la misma dirección, no persiguiendo desde atrás',
+      como:'Dale al Bruiser una sola vez en el momento del contacto, a la misma altura que el rival. La entrada la reservas para los centrales sin miedo cerca del área, cuando presionas con los mediocentros, o cuando el rival ataca de frente o se le ha escapado el balón claramente.',
+      no:'Repetir el Bruiser varias veces seguidas → el jugador se ralentiza. Tampoco pulsarlo sin estar a la misma altura — si vas por detrás, antes de llegar hombro con hombro no hace efecto',
       videoId:'ao2LRn9YhF8',videoStart:126,source:'AndoniiPM'
     },
     {
@@ -588,6 +588,7 @@ const DATA = {
       cuando:'Necesitas moverte rápido manteniéndote siempre de cara al balón/rival, sobre todo defendiendo en el borde del área ante un recorte',
       como:'Mantén L2+R2 a la vez. Te deja girar de un lado a otro sin perder velocidad, siempre de cara. En el borde del área es casi obligatorio: aguanta con L2+R2 mientras el rival gira, y mete la entrada justo cuando vaya a girar.',
       no:'Usar bregar cuando el rival se va en velocidad en línea recta → vas más lento que sin él, mejor soltarlo y perseguir a máxima velocidad',
+      notas:'Si tu jugador tiene el playstyle Insuperable, ojo: solo se activa con L2+R2 (sprint jockey/"cangrejito"), no con L2 solo. Es fácil pensar que basta con mantener L2, pero el playstyle no hace nada hasta que añades el R2.',
       videoId:'ao2LRn9YhF8',videoStart:448,source:'AndoniiPM'
     },
     {
@@ -597,6 +598,38 @@ const DATA = {
       como:'Los centrales son el último recurso: solo se usan cuando el rival ataca por el borde o dentro del área. Baja los mediocentros manualmente lo máximo posible — no bajan solos, y si no lo haces el atacante rival se queda libre entre tu medio campo y tu defensa. Mantén las líneas de medios y defensa muy juntas para no dejar espacio.',
       no:'Sacar a los centrales a presionar fuera del área → fallas más entradas y dejas espacio libre detrás, justo lo que menos quieres',
       videoId:'ao2LRn9YhF8',videoStart:498,source:'AndoniiPM'
+    },
+    {
+      name:'Jockey tackle — entrada automática',
+      buttons:['L2 (jockey)','L2+R2 (jockey rápido)'],
+      cuando:'Estás bien posicionado delante del rival, sin necesidad de robar el balón de inmediato — sobre todo dentro del área, donde importa más la posición que llegar primero al balón',
+      como:'Mantén L2 (jockey lento) o L2+R2 (jockey rápido) colocándote en el camino del rival. Si te mantienes bien posicionado, el juego puede disparar una entrada automática cuando el contacto sea el adecuado.',
+      no:'Esperar la entrada automática cuando es tu defensor el que se mete en el rival en vez de al revés → el disparo automático solo salta cuando es el rival quien se mete en tu jugador. Si hace un mal gesto sin venir hacia ti, el juego no lo castiga solo — tienes que meter tú la entrada con Círculo',
+      videoId:'Q6-rwJAyIwk',videoStart:163
+    },
+    {
+      name:'Entrada dura (R1+Círculo)',
+      buttons:['R1','Círculo'],
+      cuando:'Medio campo, con tus mediocentros o extremos — no recomendable dentro de tu propia área ni persiguiendo de espaldas',
+      como:'Mantén R1 y pulsa Círculo. Es una entrada más agresiva que la estándar, con la misma lógica de ángulo y seguridad del balón que la entrada normal.',
+      no:'Usarla persiguiendo al rival por detrás (la animación es más lenta, te puede dejar atrás) o dentro de tu propia área (animación larga y agresiva — si falla, castigo claro)',
+      videoId:'Q6-rwJAyIwk',videoStart:313
+    },
+    {
+      name:'Entrada deslizante (Cuadrado)',
+      buttons:['Cuadrado'],
+      cuando:'Último instante: ángulo claro, balón abierto, pero no te da tiempo a llegar con una entrada normal porque el rival está a punto de superarte',
+      como:'Pulsa Cuadrado para deslizarte hacia el balón en vez de quedarte de pie estirando la pierna.',
+      no:'Abusar de ella en cualquier situación — es solo para el último momento; hay que aprender el timing y no sobre-usarla',
+      videoId:'Q6-rwJAyIwk',videoStart:418
+    },
+    {
+      name:'Falta profesional (R1+Cruz)',
+      buttons:['R1','Cruz'],
+      cuando:'Contraataque peligroso del rival que no puedes parar de otra forma, y quieres frenarlo sí o sí',
+      como:'Mantén R1 y pulsa Cruz: tu jugador agarra y tira al rival al suelo.',
+      no:'Usarla cuando el rival ya ha superado tu línea defensiva — a esas alturas no sirve de nada, solo te llevas la tarjeta',
+      videoId:'Q6-rwJAyIwk',videoStart:458
     }
   ],
   desmarques:[
@@ -696,6 +729,15 @@ const DATA = {
       cuando:'Los extremos con espacio en banda, y en general a partir de campo rival con mediocentro ofensivo o delantero centro (a veces también con el mediocentro)',
       como:'Pasa con L1+Cruz. Úsalo muchas veces en campo rival para crear movimientos y acumular jugadores en ataque.',
       notas:'Según Andoni (pro, Discord RTG FC Academy), los extremos siempre deberían recibir así.'
+    },
+    {
+      name:'Pase con croqueta (L1 + RS)',
+      buttons:['L1 (mantener)','RS (a un lado)','+ botón de pase'],
+      cuando:'Zona congestionada donde el pase directo está bloqueado o presionado, sobre todo cerca del área rival',
+      como:'Mantén L1 y mueve el stick derecho a un lado mientras das el pase. Cambia la animación y el ángulo de salida, dejándote liberar el balón desde una posición donde un pase normal no saldría.',
+      skill:'4',
+      notas:'Requiere un jugador con al menos 4 estrellas de regate.',
+      videoId:'-F-t6ovOVjc',videoStart:438
     }
   ],
   ataque:[
@@ -734,6 +776,7 @@ const DATA = {
       cuando:'Necesitas rosca desde un ángulo alternativo, con jugador con playstyle de tiro adecuado',
       como:'Mantén L2 mientras tiras.',
       no:'Sin el playstyle de tiro adecuado → el efecto no sale correctamente',
+      notas:'Variante "trivela baja al primer palo": mantén L2 y pulsa el botón de tiro dos veces (como el tiro raso potente) desde el punto de penalti o cuando el portero ya ha salido — manda el balón raso a la esquina, muy difícil de parar para el portero. Según Andoni (pro, Discord RTG FC Academy).',
       videoId:'mOLGH3mvqKE',videoStart:488,source:'Deep Researcher FC'
     },
     {
@@ -853,6 +896,22 @@ const DATA = {
       como:'Al meter un cambio de dirección con el stick izquierdo, no esperes a que el jugador termine de girar del todo hacia esa dirección — mete el siguiente cambio antes de que acabe la animación. Así encadenas giros rápidos difíciles de leer.',
       notas:'Cuanto más tarde reacciona el rival, más fácil te resulta encontrar el hueco para tirar o escapar; pero si reacciona demasiado rápido, se arriesga a sobrecomprometerse y perder la posición — requiere un mando en buen estado para los inputs rápidos.',
       videoId:'SckWbBtJavk',videoStart:227
+    },
+    {
+      name:'L1 speedboost',
+      buttons:['L1 (mantener)','→ R2 (al tocar con la bota)'],
+      cuando:'Vas a recibir o ya llevas el balón y quieres un burst de velocidad manteniendo buen ángulo, no solo correr en línea recta',
+      como:'Mantén L1 para colocar al jugador con buen ángulo y postura de arranque. Sin soltar L1, en el momento de tocar el balón con la bota, pulsa R2 para salir disparado.',
+      notas:'Importante no soltar L1 en ningún momento — soltarlo antes de pulsar R2 no activa el burst. Combínalo con playstyles de Rapid/Cohete (p. ej. Diabi, Raen) para un efecto aún mayor. Según Andoni (pro, Discord RTG FC Academy).',
+      videoId:'BB_F6aD8hsM',videoStart:346,source:'Andoni'
+    },
+    {
+      name:'Bicicleta speedboost',
+      buttons:['RS (semicírculo 90°)','LS (dirección de salida)','+ R2 (cancelar)'],
+      cuando:'Uno contra uno o en banda, cuando quieres despistar al rival sobre hacia dónde vas a salir',
+      como:'Haz un semicírculo de 90° con el stick derecho en la dirección en la que corres. A mitad de la animación de la bicicleta, apunta con el stick izquierdo hacia donde quieres salir y pulsa R2 para cancelar la animación y salir disparado.',
+      notas:'Funciona bien en banda para salir disparado y filtrar el pase al delantero, o en un 1v1 para despistar al defensor antes de salir. Según Andoni (pro, Discord RTG FC Academy).',
+      videoId:'BB_F6aD8hsM',videoStart:397,source:'Andoni'
     }
   ],
   pelota:[
