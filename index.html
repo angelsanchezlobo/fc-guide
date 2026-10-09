@@ -476,7 +476,43 @@ div.rec-card-title-input,div.rec-card-caption-input{cursor:default;}
 
 <script>
 const DATA = {
-  patrones:[],
+  patrones:[
+    {
+      name:'Pasa al hombre libre, no al más cercano',
+      buttons:[],
+      cuando:'Vas a decidir el siguiente pase con el balón controlado',
+      como:'Antes de pasar, levanta la vista del poseedor del balón y mira todo el campo: busca dónde se ha generado ventaja real, no solo quién está más cerca. Muchas veces el valor de desmarcar a un jugador no es que el balón le llegue a él, sino atraer al defensor que lo marca y dejar libre a otro compañero.',
+      notas:'Ejemplo: desmarcas al extremo hacia la banda, el rival switchea su lateral para cubrirlo, y tu delantero se queda solo — el pase tiene que ir al delantero, no al extremo que sirvió de cebo. Fuente: PlayMuchBetter (academia).'
+    },
+    {
+      name:'Crea el ángulo antes de pasar o tirar',
+      buttons:[],
+      cuando:'Vas a intentar un pase al hueco o un tiro con efecto (p. ej. trivela) y el ángulo que tienes no es bueno',
+      como:'No te quedes de espaldas o en línea recta con el rival: ajusta el cuerpo con un toque o un regate breve, sobre todo en diagonal, antes de ejecutar el pase o el tiro. Un pequeño cambio de ángulo suele ser la diferencia entre que entre o se bloquee.',
+      notas:'Para la trivela en concreto no sirve de nada intentarla sin preparar antes el ángulo del cuerpo. Fuente: PlayMuchBetter (academia).'
+    },
+    {
+      name:'Atrae para liberar: fija al rival antes de soltar el pase',
+      buttons:[],
+      cuando:'Conduces entre líneas con un centrocampista y hay un delantero o extremo que puede quedarse libre si el rival sale a presionarte',
+      como:'Sigue conduciendo hacia el rival que te puede presionar sin soltar el balón todavía. En el momento en que ese defensor decide saltar a por ti, el espacio que deja se abre para tu compañero — ahí es cuando sueltas el pase.',
+      notas:'La presión del rival sobre ti casi siempre abre un hueco en otra parte del campo; el timing de cuándo sueltas el balón es la clave, no solo detectar que el hueco existe. Fuente: PlayMuchBetter (academia).'
+    },
+    {
+      name:'Pase o conducción: deja que decida el rival',
+      buttons:[],
+      cuando:'Conduces el balón entre líneas y no tienes claro si pasar o seguir llevándolo',
+      como:'Sigue conduciendo mientras el rival no salte a presionarte. Si no sale, sigues avanzando; si sale, ya tienes el hueco para el pase que deja mano a mano. No decidas tú antes de tiempo — reacciona a lo que haga el defensor.',
+      notas:'Pensar solo en pases constantes deja de lado la conducción como herramienta para romper líneas defensivas. Fuente: PlayMuchBetter (academia).'
+    },
+    {
+      name:'Reinicia el ataque si no hay ventaja clara',
+      buttons:[],
+      cuando:'Estás atacando cerca del área rival pero no tienes una opción clara de pase o tiro',
+      como:'No fuerces una decisión mala solo por estar ya en zona de ataque. Da un pase hacia atrás, reorganiza y vuelve a construir la jugada desde cero.',
+      notas:'Volver atrás no es un fracaso, es otra oportunidad de generar una ocasión mejor — es algo que se ve mucho en el juego de los jugadores pro. Fuente: PlayMuchBetter (academia).'
+    }
+  ],
   defensa:[
     {
       name:'Defender el espacio, no el balón',
@@ -598,6 +634,38 @@ const DATA = {
       como:'Los centrales son el último recurso: solo se usan cuando el rival ataca por el borde o dentro del área. Baja los mediocentros manualmente lo máximo posible — no bajan solos, y si no lo haces el atacante rival se queda libre entre tu medio campo y tu defensa. Mantén las líneas de medios y defensa muy juntas para no dejar espacio.',
       no:'Sacar a los centrales a presionar fuera del área → fallas más entradas y dejas espacio libre detrás, justo lo que menos quieres',
       videoId:'ao2LRn9YhF8',videoStart:498,source:'AndoniiPM'
+    },
+    {
+      name:'Protege el centro y el área — cede la banda',
+      buttons:[],
+      cuando:'Filosofía general al defender, en cualquier situación',
+      como:'El objetivo principal al defender no es robar el balón constantemente, sino impedir que el rival progrese por el carril central o entre dentro del área. Si tienes que elegir qué espacio conceder, concede la banda antes que el centro.',
+      no:'Tratar todas las zonas del campo por igual → por banda, el rival necesita regatear y recorrer más espacio para hacer daño; por el centro, un 1v1 ganado ya es ocasión clara',
+      notas:'Fuente: PlayMuchBetter (academia).'
+    },
+    {
+      name:'No rompas la línea salvo "acción gol" segura',
+      buttons:[],
+      cuando:'Dudas entre salir con un central o lateral a presionar, o mantener la línea',
+      como:'Solo selecciona a un central o lateral para saltar fuera de posición cuando sepas con certeza que vas a recuperar el balón, o cuando no robarlo ahora mismo signifique gol seguro del rival. Fuera de esos dos casos, mantén la línea y defiende con mediocentros o bregando.',
+      no:'Saltar por sensación de peligro sin que sea una acción gol real → al revisar repeticiones se ve que muchos saltos "por miedo" no hacían tanta falta, y abren justo el hueco que de verdad hace daño',
+      notas:'Fuente: PlayMuchBetter (academia).'
+    },
+    {
+      name:'Contra el rombo (3 MC+MCO+2 DC): muerde con los laterales',
+      buttons:[],
+      cuando:'El rival juega con rombo (3 mediocentros, un MCO y dos delanteros centros) — sin extremos, así que no hay amenaza real por banda',
+      como:'Usa tus laterales, que quedan libres de marca, para presionar por dentro al MCO, a los delanteros o a los mediocentros rivales. Baja también con tus propios mediocentros — uno retrocede y el otro activa la presión de segundo jugador — porque si no, el rombo te supera en número en el medio.',
+      no:'Sacar a un central a presionar al MCO o al delantero en transición → es el error más común contra el rombo y deja la portería a merced de un pase o combinación R1+Cruz',
+      notas:'Combínalo con bajar la profundidad defensiva a 35 si el rival te castiga mucho con pases filtrados o L1 triángulo a la espalda. Fuente: PlayMuchBetter (academia).'
+    },
+    {
+      name:'Profundidad a 35 contra contras de L1 triángulo',
+      buttons:[],
+      cuando:'El rival te está metiendo repetidamente L1 triángulos o contras rápidas y te deja mano a mano con el portero',
+      como:'Pausa el partido y baja la profundidad defensiva a 35. Esto deja tu línea más atrás, dándote más margen para defender el pase filtrado. Aun así, tienes que seguir cambiando de jugador manualmente antes de que salga el pase para cubrir el desmarque — bajar la profundidad no lo defiende solo.',
+      no:'Pensar que basta con bajar la profundidad y dejar de switchear → el ajuste ayuda, pero no sustituye cambiar de jugador a tiempo para cubrir la carrera',
+      notas:'Fuente: PlayMuchBetter (academia).'
     },
     {
       name:'Jockey tackle — entrada automática',
@@ -784,7 +852,7 @@ const DATA = {
       buttons:['L1','R1','Tiro'],
       cuando:'Escorado, para pegarle cruzado desde el borde del área o incluso algo más lejos',
       como:'Mantén L1+R1 y pulsa el botón de tiro cargando unas 3 barras de potencia. Con un jugador con mejor playstyle de tiro el efecto es aún mejor.',
-      notas:'Señalada por Andoni (pro, Discord RTG FC Academy) como una de las jugadas de ataque más rotas de FC27. También se puede tirar de primeras, sin controlar el balón antes.'
+      notas:'Señalada por Andoni (pro, Discord RTG FC Academy) como una de las jugadas de ataque más rotas de FC27. También se puede tirar de primeras, sin controlar el balón antes. Contra un rival encerrado atrás: hunde por banda hasta línea de fondo para meter su defensa dentro del área, recicla el balón a tus mediocentros con espacio y tiempo, y lee qué hace el jugador que controla el rival — si no te switchea a tiempo o no mantiene la distancia, tienes la ventana para el power shot a la escuadra. Fuente: PlayMuchBetter (academia).'
     }
   ],
   regates:[
